@@ -69,3 +69,5 @@ const rest = new REST().setToken(token);
     console.error(error);
   }
 })();
+
+//script to update commands
