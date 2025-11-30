@@ -24,12 +24,12 @@ export const storyBeg = new EmbedBuilder()
 
 export const spStartButtons = new ActionRowBuilder().addComponents(
   new ButtonBuilder()
-    .setCustomId("sp_story_1_no")
+    .setCustomId("cancel")
     .setLabel("Cancel")
     .setStyle(ButtonStyle.Danger),
 
   new ButtonBuilder()
-    .setCustomId("sp_story_1_yes")
+    .setCustomId("confirm")
     .setLabel("Confirm")
     .setStyle(ButtonStyle.Success)
 );

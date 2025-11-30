@@ -2,6 +2,20 @@ import { Events, MessageFlags } from "discord.js";
 import { client } from "../index";
 
 client.on(Events.InteractionCreate, async (interaction) => {
+  if (interaction.isButton()) {
+    const handler = client.buttonHandlers.get(interaction.customId);
+    if (!handler) {
+      console.error(
+        "No button handler found for customId " + interaction.customId
+      );
+    }
+    try {
+      await handler.execute(interaction);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   if (!interaction.isChatInputCommand()) return;
   const command = interaction.client.commands.get(interaction.commandName);
   if (!command) {

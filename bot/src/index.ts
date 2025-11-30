@@ -9,6 +9,7 @@ console.log(process.env.DISCORD_TOKEN);
 export const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.commands = new Collection();
+client.buttonHandlers = new Collection();
 
 const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
@@ -40,6 +41,19 @@ const eventFiles = fs
 for (const file of eventFiles) {
   const filePath = path.join(eventsPath, file);
   require(filePath);
+}
+
+const buttonHandlersPath = path.join(__dirname, "buttonhandlers");
+const buttonHandlerFiles = fs
+  .readdirSync(buttonHandlersPath)
+  .filter((file) => file.endsWith(".js"));
+
+for (const file of buttonHandlerFiles) {
+  const filePath = path.join(buttonHandlersPath, file);
+  const handler = require(filePath);
+  if ("id" in handler && "execute" in handler) {
+    client.buttonHandlers.set(handler.id, handler);
+  }
 }
 
 client.login(process.env.DISCORD_TOKEN);
