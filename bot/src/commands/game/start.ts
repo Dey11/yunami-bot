@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
-import { spStartButtons } from "../../components/design/singleplayer1";
-import { storyBeg } from "../../components/design/singleplayer1";
+import { spStartButtons } from "../../components/design/story1";
+import { storyBeg } from "../../components/design/story1";
 import { listButtons } from "../../components/buttons/list.buttons";
 
 export const data = new SlashCommandBuilder()
