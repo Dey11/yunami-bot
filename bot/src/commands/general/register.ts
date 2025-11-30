@@ -38,6 +38,5 @@ export async function execute(interaction: any) {
       text: "Yunami • Co-op Anime Adventures",
     })
     .setTimestamp();
-
   await interaction.reply({ embeds: [embed], components: [registerButtons] });
 }
