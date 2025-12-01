@@ -1,5 +1,4 @@
 import { createProfileButtons } from "../components/buttons/create.profile";
-import { registerButtons } from "../components/buttons/register.buttons";
 import { registerEmbed } from "../components/embeds/register";
 
 module.exports = {

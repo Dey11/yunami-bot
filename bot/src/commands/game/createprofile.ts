@@ -6,8 +6,8 @@ import {
 import { registerButtons } from "../../components/buttons/register.buttons";
 
 export const data = new SlashCommandBuilder()
-  .setName("register")
-  .setDescription("Register your account with Yunami.");
+  .setName("createprofile")
+  .setDescription("Create your profile with Yunami.");
 
 export async function execute(interaction: any) {
   if (!interaction.isChatInputCommand()) return;
