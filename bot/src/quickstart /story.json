@@ -1,0 +1,87 @@
+{
+  "id": "prologue_1",
+  "firstNodeId": "intro_gate",
+  "nodes": {
+    "intro_gate": {
+      "id": "intro_gate",
+      "title": "The Gate of Shattered Worlds",
+      "content": "You awaken at a broken shrine. A faint blue portal flickers before you...",
+      "imageUrl": "https://www.superherotoystore.com/cdn/shop/articles/Website_Blog_creatives_29_1600x.jpg?v=1713945144",
+      "choices": [
+        {
+          "id": "inspect_portal",
+          "label": "Inspect the portal",
+          "emoji": "🔍",
+          "style": 1,
+          "nextNodeId": "portal_inspect"
+        },
+        {
+          "id": "look_around",
+          "label": "Look around the shrine",
+          "emoji": "🌿",
+          "style": 2,
+          "nextNodeId": "shrine_search"
+        }
+      ]
+    },
+    "portal_inspect": {
+      "id": "portal_inspect",
+      "title": "A Call Beyond",
+      "content": "The portal hums when you get close, reacting to your presence...",
+      "imageUrl": "https://example.com/portal_close.png",
+      "choices": [
+        {
+          "id": "step_in",
+          "label": "Step into the portal",
+          "emoji": "🌀",
+          "style": 3,
+          "nextNodeId": "first_battle_intro"
+        },
+        {
+          "id": "back_off",
+          "label": "Back away",
+          "emoji": "↩️",
+          "style": 2,
+          "nextNodeId": "shrine_search"
+        }
+      ]
+    },
+    "shrine_search": {
+      "id": "shrine_search",
+      "title": "Forgotten Offerings",
+      "content": "You find broken charms and a worn blade resting at the altar...",
+      "imageUrl": "https://example.com/shrine.png",
+      "choices": [
+        {
+          "id": "take_blade",
+          "label": "Take the blade",
+          "emoji": "🗡️",
+          "style": 1,
+          "nextNodeId": "first_battle_intro"
+        },
+        {
+          "id": "leave_it",
+          "label": "Leave it be",
+          "emoji": "🙏",
+          "style": 2,
+          "nextNodeId": "first_battle_intro"
+        }
+      ]
+    },
+    "first_battle_intro": {
+      "id": "first_battle_intro",
+      "title": "Prologue – First Clash",
+      "content": "The world twists and you’re pulled into combat...",
+      "imageUrl": "https://example.com/battle_intro.png",
+      "choices": [
+        {
+          "id": "begin_battle",
+          "label": "Begin Battle",
+          "emoji": "⚔️",
+          "style": 1,
+          "nextNodeId": null
+        }
+      ]
+    }
+  }
+}

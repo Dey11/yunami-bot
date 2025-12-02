@@ -51,8 +51,9 @@ const buttonHandlerFiles = fs
 for (const file of buttonHandlerFiles) {
   const filePath = path.join(buttonHandlersPath, file);
   const handler = require(filePath);
-  if ("id" in handler && "execute" in handler) {
-    client.buttonHandlers.set(handler.id, handler);
+  const ids = Array.isArray(handler.id) ? handler.id : [handler.id];
+  for (const id of ids) {
+    client.buttonHandlers.set(id, handler);
   }
 }
 
