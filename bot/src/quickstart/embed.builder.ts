@@ -20,7 +20,6 @@ export async function storySceneBuilder(nodeId: keyof typeof data.nodes) {
       })
       .setImage(data.nodes[nodeId].imageUrl);
 
-    // Replace lines 23-34 with:
     const choicesButton = new ActionRowBuilder<ButtonBuilder>();
     for (const choice of data.nodes[nodeId].choices) {
       choicesButton.addComponents(
