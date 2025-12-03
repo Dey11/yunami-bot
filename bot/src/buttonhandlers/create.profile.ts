@@ -1,5 +1,5 @@
-import { storySceneBuilder } from "../quickstart /embed.builder";
-import data from "../quickstart /story.json";
+import { storySceneBuilder } from "../quickstart/embed.builder";
+import data from "../quickstart/story.json";
 
 const nodeKeys = Object.keys(data.nodes);
 const choices: string[] = Object.values(data.nodes).flatMap((node: any) =>
