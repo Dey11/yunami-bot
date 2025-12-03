@@ -1,8 +1,4 @@
-import {
-  SlashCommandBuilder,
-  CommandInteraction,
-  EmbedBuilder,
-} from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import { registerButtons } from "../../components/buttons/register.buttons";
 
 export const data = new SlashCommandBuilder()
