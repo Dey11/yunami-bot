@@ -1,5 +1,6 @@
-import { ironPulseEmbed } from "../sample";
-module.exports = {
+import { ironPulseEmbed } from "../sample.js";
+
+export const handler = {
   id: "confirm",
   async execute(interaction: any) {
     console.log(interaction.customId);

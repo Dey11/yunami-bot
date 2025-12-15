@@ -4,7 +4,7 @@ import {
   ButtonStyle,
   EmbedBuilder,
 } from "discord.js";
-import data from "./story.json";
+import data from "./story.json" with { type: "json" };
 
 export async function storySceneBuilder(nodeId: keyof typeof data.nodes) {
   try {
