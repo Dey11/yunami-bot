@@ -1,19 +1,12 @@
-import { createProfileButtons } from "../components/buttons/create.profile";
-import { registerEmbed } from "../components/embeds/register";
+import { createProfileButtons } from "../components/buttons/create.profile.js";
+import { registerEmbed } from "../components/embeds/register.js";
+import { buildCanvas } from "../quickstart/canvas.builder.js";
 
-module.exports = {
-  id: "exit",
-  async execute(interaction: any) {
-    console.log(interaction.customId);
-    await interaction.message.delete();
-  },
-};
-
-module.exports = {
+export const handler = {
   id: "register",
   async execute(interaction: any) {
     console.log(interaction.customId);
-    await interaction.update({
+    await interaction.reply({
       embeds: [registerEmbed],
       components: [createProfileButtons],
     });

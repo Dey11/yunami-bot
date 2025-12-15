@@ -1,4 +1,4 @@
-module.exports = {
+export const handler = {
   id: "cancel",
   async execute(interaction: any) {
     console.log(interaction.customId);

@@ -1,5 +1,5 @@
 import { Events, MessageFlags } from "discord.js";
-import { client } from "../index";
+import { client } from "../index.js";
 
 client.on(Events.InteractionCreate, async (interaction) => {
   if (interaction.isButton()) {

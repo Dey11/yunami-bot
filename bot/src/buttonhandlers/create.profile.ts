@@ -1,5 +1,5 @@
-import { storySceneBuilder } from "../quickstart/embed.builder";
-import data from "../quickstart/story.json";
+import { storySceneBuilder } from "../quickstart/embed.builder.js";
+import data from "../quickstart/story.json" with { type: "json" };
 
 const nodeKeys = Object.keys(data.nodes);
 const choices: string[] = Object.values(data.nodes).flatMap((node: any) =>
@@ -9,7 +9,7 @@ const allNextNodeIds: string[] = Object.values(data.nodes)
   .flatMap((node: any) => node.choices.map((choice: any) => choice.nextNodeId))
   .filter((id: string | null) => id != null);
 
-module.exports = {
+export const handler = {
   id: ["createProfile"].concat(nodeKeys).concat(choices),
   async execute(interaction: any) {
     console.log(nodeKeys);
