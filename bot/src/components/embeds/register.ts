@@ -3,6 +3,7 @@ import { EmbedBuilder } from "discord.js";
 export const registerEmbed = new EmbedBuilder()
   .setColor(0x5865f2)
   .setTitle("Yunami Registration")
+  // .setImage("attachment://Background.png")
   .setDescription(
     "Welcome to **Yunami** – a co-op, turn-based anime adventure for up to **4 players**.\n" +
       "Use this panel to understand how to register and start your journey."

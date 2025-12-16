@@ -5,34 +5,39 @@ import {
   EmbedBuilder,
 } from "discord.js";
 import data from "./story.json" with { type: "json" };
+import { buildCanvas } from "./canvas.builder.js";
 
 export async function storySceneBuilder(nodeId: keyof typeof data.nodes) {
-  try {
-    console.log(data.nodes[nodeId]);
-    console.log(nodeId);
-    console.log(data.nodes[nodeId].id);
-    const cutsceneEmbed = new EmbedBuilder()
-      .setColor(0x0e1015)
-      .setTitle(data.nodes[nodeId].title)
-      .setDescription(data.nodes[nodeId].content)
-      .setFooter({
-        text: "Your choices decide your trait",
-      })
-      .setImage(data.nodes[nodeId].imageUrl);
+  const node = data.nodes[nodeId];
 
-    const choicesButton = new ActionRowBuilder<ButtonBuilder>();
-    for (const choice of data.nodes[nodeId].choices) {
-      choicesButton.addComponents(
-        new ButtonBuilder()
-          .setCustomId(choice.id)
-          .setLabel(choice.label)
-          .setEmoji(choice.emoji)
-          .setStyle(choice.style || ButtonStyle.Primary)
-      );
-    }
-    return [cutsceneEmbed, choicesButton];
-  } catch (error) {
-    console.error(error);
-    return [null, null];
+
+  const cutsceneImage = node.imageUrl
+    ? await buildCanvas(node.imageUrl)
+    : null;
+
+  const cutsceneEmbed = new EmbedBuilder()
+    .setColor(0x0e1015)
+    .setTitle(node.title)
+    .setDescription(node.content)
+    .setFooter({
+      text: "Your choices decide your trait",
+    });
+
+
+  if (cutsceneImage) {
+    cutsceneEmbed.setImage(`attachment://${cutsceneImage.name}`);
   }
+
+  const choicesButton = new ActionRowBuilder<ButtonBuilder>();
+  for (const choice of node.choices) {
+    choicesButton.addComponents(
+      new ButtonBuilder()
+        .setCustomId(choice.id)
+        .setLabel(choice.label)
+        .setEmoji(choice.emoji)
+        .setStyle(choice.style || ButtonStyle.Primary)
+    );
+  }
+
+  return [cutsceneEmbed, choicesButton, cutsceneImage];
 }

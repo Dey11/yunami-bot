@@ -14,27 +14,40 @@ export const handler = {
   async execute(interaction: any) {
     console.log(nodeKeys);
     console.log(choices);
+
     try {
       if (interaction.customId === "createProfile") {
-        const [cutsceneEmbed, choicesButton] = await storySceneBuilder(
-          "intro_gate"
+        await interaction.deferUpdate();
+        const [cutsceneEmbed, choicesButton, cutsceneImage] =
+          await storySceneBuilder("intro_gate");
+        await interaction.editReply(
+          cutsceneImage
+            ? {
+                embeds: [cutsceneEmbed],
+                files: [cutsceneImage],
+                components: [choicesButton],
+              }
+            : {
+                embeds: [cutsceneEmbed],
+                components: [choicesButton],
+              }
         );
-        await interaction.update({
-          embeds: [cutsceneEmbed],
-          components: [choicesButton],
-        });
       }
 
       for (const node of Object.values(data.nodes)) {
         const matchedChoice = node.choices.find(
           (choice: any) => choice.id === interaction.customId
         );
+
         if (matchedChoice && matchedChoice.nextNodeId) {
-          const [cutsceneEmbed, choicesButton] = await storySceneBuilder(
-            matchedChoice.nextNodeId as keyof typeof data.nodes
-          );
-          await interaction.update({
+          await interaction.deferUpdate();
+          const [cutsceneEmbed, choicesButton, cutsceneImage] =
+            await storySceneBuilder(
+              matchedChoice.nextNodeId as keyof typeof data.nodes
+            );
+          await interaction.editReply({
             embeds: [cutsceneEmbed],
+            files: [],
             components: [choicesButton],
           });
           return;
