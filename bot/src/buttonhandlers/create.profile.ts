@@ -1,45 +1,76 @@
 import { storySceneBuilder } from "../quickstart/embed.builder.js";
-import data from "../quickstart/story.json" with { type: "json" };
+import { storyGraph } from "../quickstart/story.graph.js";
 
-const nodeKeys = Object.keys(data.nodes);
-const choices: string[] = Object.values(data.nodes).flatMap((node: any) =>
-  node.choices.map((choice: any) => choice.id)
+const episodes = storyGraph.listEpisodes();
+const startIds = episodes.map((episode) => `start:${episode.id}`);
+const choiceIds = episodes.flatMap((episode) =>
+  storyGraph.getAllChoiceIds(episode.id).map((choiceId) => `choice:${episode.id}:${choiceId}`)
 );
-const allNextNodeIds: string[] = Object.values(data.nodes)
-  .flatMap((node: any) => node.choices.map((choice: any) => choice.nextNodeId))
-  .filter((id: string | null) => id != null);
+
+function parseChoiceId(customId: string) {
+  if (!customId.startsWith("choice:")) return null;
+  const [, episodeId, choiceId] = customId.split(":");
+  if (!episodeId || !choiceId) return null;
+  return { episodeId, choiceId };
+}
+
+function parseStartId(customId: string) {
+  if (!customId.startsWith("start:")) return null;
+  const [, episodeId] = customId.split(":");
+  if (!episodeId) return null;
+  return { episodeId };
+}
 
 export const handler = {
-  id: ["createProfile"].concat(nodeKeys).concat(choices),
+  id: ["createProfile", ...startIds, ...choiceIds],
   async execute(interaction: any) {
-    console.log(nodeKeys);
-    console.log(choices);
     try {
       if (interaction.customId === "createProfile") {
-        const [cutsceneEmbed, choicesButton] = await storySceneBuilder(
-          "intro_gate"
+        const fallbackEpisode = episodes[0];
+        if (!fallbackEpisode) return;
+        const [cutsceneEmbed, choicesButton] = storySceneBuilder(
+          fallbackEpisode.id,
+          fallbackEpisode.entryNodeId
         );
+        if (!cutsceneEmbed) return;
         await interaction.update({
           embeds: [cutsceneEmbed],
-          components: [choicesButton],
+          components: choicesButton.components.length ? [choicesButton] : [],
         });
+        return;
       }
 
-      for (const node of Object.values(data.nodes)) {
-        const matchedChoice = node.choices.find(
-          (choice: any) => choice.id === interaction.customId
+      const startMatch = parseStartId(interaction.customId);
+      if (startMatch) {
+        const episode = storyGraph.getEpisode(startMatch.episodeId);
+        if (!episode) return;
+        const [cutsceneEmbed, choicesButton] = storySceneBuilder(
+          episode.id,
+          episode.entryNodeId
         );
-        if (matchedChoice && matchedChoice.nextNodeId) {
-          const [cutsceneEmbed, choicesButton] = await storySceneBuilder(
-            matchedChoice.nextNodeId as keyof typeof data.nodes
-          );
-          await interaction.update({
-            embeds: [cutsceneEmbed],
-            components: [choicesButton],
-          });
-          return;
-        }
+        if (!cutsceneEmbed) return;
+        await interaction.update({
+          embeds: [cutsceneEmbed],
+          components: choicesButton.components.length ? [choicesButton] : [],
+        });
+        return;
       }
+
+      const choiceMatch = parseChoiceId(interaction.customId);
+      if (!choiceMatch) return;
+
+      const nextNodeId = storyGraph.getNextNodeId(choiceMatch.episodeId, choiceMatch.choiceId);
+      if (!nextNodeId) return;
+
+      const [cutsceneEmbed, choicesButton] = storySceneBuilder(
+        choiceMatch.episodeId,
+        nextNodeId
+      );
+      if (!cutsceneEmbed) return;
+      await interaction.update({
+        embeds: [cutsceneEmbed],
+        components: choicesButton.components.length ? [choicesButton] : [],
+      });
     } catch (error) {
       console.error(error);
     }

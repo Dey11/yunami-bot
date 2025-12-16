@@ -1,7 +1,11 @@
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
-import { spStartButtons } from "../../components/design/story1.js";
 import { storyBeg } from "../../components/design/story1.js";
 import { listButtons } from "../../components/buttons/list.buttons.js";
+import { storyGraph } from "../../quickstart/story.graph.js";
+import { buildStartButtons } from "../../components/buttons/start.buttons.js";
+
+const episodes = storyGraph.listEpisodes();
+const storyThumbnail = storyBeg.toJSON().thumbnail?.url;
 
 export const data = new SlashCommandBuilder()
   .setName("startsingleplayer")
@@ -12,44 +16,39 @@ export const data = new SlashCommandBuilder()
       .setDescription("Story number to start (see the story list).")
       .setRequired(false)
       .setMinValue(1)
-      .setMaxValue(3)
+      .setMaxValue(Math.max(1, episodes.length))
   );
 
 export async function execute(interaction: any) {
   const storyNumber = interaction.options.getInteger("story");
 
   if (storyNumber) {
-    switch (storyNumber) {
-      case 1:
-        await interaction.reply({
-          embeds: [storyBeg],
-          components: [spStartButtons],
-        });
-        break;
-
-      case 2:
-        await interaction.reply({
-          embeds: [storyBeg],
-          components: [spStartButtons],
-        });
-        break;
-
-      case 3:
-        await interaction.reply({
-          embeds: [storyBeg],
-          components: [spStartButtons],
-        });
-        break;
-
-      default:
-        await interaction.reply({
-          content: "That story number is not available yet.",
-          ephemeral: true,
-        });
+    const selectedEpisode = episodes[storyNumber - 1];
+    if (!selectedEpisode) {
+      await interaction.reply({
+        content: "That story number is not available yet.",
+        ephemeral: true,
+      });
+      return;
     }
 
+    const heroEmbed = EmbedBuilder.from(storyBeg)
+      .setTitle(selectedEpisode.title)
+      .setDescription(selectedEpisode.description);
+
+    const startButtons = buildStartButtons(selectedEpisode.id);
+
+    await interaction.reply({
+      embeds: [heroEmbed],
+      components: [startButtons],
+    });
     return;
   }
+
+  const storyFields = episodes.map((episode, index) => ({
+    name: `Story ${index + 1}: ${episode.title}`,
+    value: episode.description,
+  }));
 
   const storiesEmbed = new EmbedBuilder()
     .setColor(0x00b3b3)
@@ -62,21 +61,7 @@ export async function execute(interaction: any) {
       "All currently available single‑player campaigns are listed below.\n"
     )
     .addFields(
-      {
-        name: "Story 1",
-        value:
-          "Spiritbound Academy\nA curse saturates an elite academy where memories fracture and corridors shift.",
-      },
-      {
-        name: "Story 2",
-        value:
-          "Ashen Blade Chronicles\nA realm‑walking swordsman hunts a forbidden name across fractured realms.",
-      },
-      {
-        name: "Story 3",
-        value:
-          "Iron Pulse Rebellion\nA techno‑city powered by divine engines edges toward collapse and open revolt.",
-      },
+      ...storyFields,
       {
         name: "Info",
         value:
@@ -84,10 +69,13 @@ export async function execute(interaction: any) {
       },
       {
         name: "Page",
-        value: "Page 1 | Stories: 3",
+        value: `Page 1 | Stories: ${episodes.length}`,
       }
-    )
-    .setThumbnail("https://your.cdn/path/to/logo.png");
+    );
+
+  if (storyThumbnail) {
+    storiesEmbed.setThumbnail(storyThumbnail);
+  }
 
   await interaction.reply({
     embeds: [storiesEmbed],

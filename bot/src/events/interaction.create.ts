@@ -8,6 +8,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       console.error(
         "No button handler found for customId " + interaction.customId
       );
+      return;
     }
     try {
       await handler.execute(interaction);
