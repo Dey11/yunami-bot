@@ -5,6 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "build": "bunx tsc -p tsconfig.json && cp -r src/stories dist/",
+    "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,6 +16,7 @@
   "dependencies": {
     "@napi-rs/canvas": "^0.1.84",
     "dotenv": "^17.2.3",
+    "zod": "^3.23.8",
     "typescript": "^5.9.3"
   },
   "devDependencies": {

@@ -1,0 +1,142 @@
+{
+  "episodes": [
+    {
+      "id": "story1",
+      "title": "Spiritbound Academy",
+      "description": "A curse-scarred academy, a broken shrine, and the first step beyond the portal. Reach checkpoints to earn new cards.",
+      "entryNodeId": "shrine_awaken",
+      "nodes": {
+        "shrine_awaken": {
+          "id": "shrine_awaken",
+          "title": "Awakening at the Shrine",
+          "content": "Cold stone under your palms. A broken shrine. A blue portal flickers like a heartbeat. In the distance, bells from Spiritbound Academy echo through fog.",
+          "imageUrl": "https://www.superherotoystore.com/cdn/shop/articles/Website_Blog_creatives_29_1600x.jpg?v=1713945144",
+          "checkpoint": {"cardId": "spiritbound:recruit-001", "cardName": "Academy Initiate"},
+          "choices": [
+            {
+              "id": "inspect_portal",
+              "label": "Inspect the portal sigil",
+              "emoji": "🔍",
+              "style": 1,
+              "nextNodeId": "portal_sigil"
+            },
+            {
+              "id": "head_academy",
+              "label": "Follow the bells to the academy",
+              "emoji": "🌿",
+              "style": 2,
+              "nextNodeId": "academy_gate"
+            }
+          ]
+        },
+        "portal_sigil": {
+          "id": "portal_sigil",
+          "title": "The Sigil Answers",
+          "content": "The sigil warms under your fingertips. The portal reacts — not to power, but to intent. A whisper: 'Choose what you are willing to lose.'",
+          "choices": [
+            {
+              "id": "step_in",
+              "label": "Step through",
+              "emoji": "🌀",
+              "style": 3,
+              "nextNodeId": "mirror_hall"
+            },
+            {
+              "id": "back_off",
+              "label": "Back away",
+              "emoji": "↩️",
+              "style": 2,
+              "nextNodeId": "academy_gate"
+            }
+          ]
+        },
+        "academy_gate": {
+          "id": "academy_gate",
+          "title": "Spiritbound Academy Gate",
+          "content": "Students in ink-black robes watch from behind iron bars. A caretaker with hollow eyes offers you a lantern — and a warning about the Mirror Hall.",
+          "checkpoint": {"cardId": "spiritbound:ally-002", "cardName": "Lantern Caretaker"},
+          "choices": [
+            {
+              "id": "take_lantern",
+              "label": "Accept the lantern",
+              "emoji": "🗡️",
+              "style": 1,
+              "nextNodeId": "mirror_hall"
+            },
+            {
+              "id": "refuse_help",
+              "label": "Refuse and go alone",
+              "emoji": "🙏",
+              "style": 2,
+              "nextNodeId": "mirror_hall"
+            }
+          ]
+        },
+        "mirror_hall": {
+          "id": "mirror_hall",
+          "title": "The Mirror Hall",
+          "content": "Mirrors line the corridor, each reflecting a version of you that made different choices. One mirror bleeds shadow — a spirit is trapped inside.",
+          "choices": [
+            {
+              "id": "break_mirror",
+              "label": "Break the mirror",
+              "emoji": "💥",
+              "style": "Danger",
+              "nextNodeId": "ending_shattered"
+            },
+            {
+              "id": "free_spirit",
+              "label": "Free the spirit",
+              "emoji": "🕯️",
+              "style": "Success",
+              "nextNodeId": "spirit_pact"
+            }
+          ]
+        },
+        "spirit_pact": {
+          "id": "spirit_pact",
+          "title": "A Pact in Candlelight",
+          "content": "The spirit bows. It offers a pact: protection now, but a debt later. The academy watches. So does the portal.",
+          "checkpoint": {"cardId": "spiritbound:spirit-003", "cardName": "Bound Spirit"},
+          "choices": [
+            {
+              "id": "accept_pact",
+              "label": "Accept the pact",
+              "emoji": "🤝",
+              "style": "Success",
+              "nextNodeId": "ending_bound"
+            },
+            {
+              "id": "decline_pact",
+              "label": "Decline and walk away",
+              "emoji": "🚪",
+              "style": "Secondary",
+              "nextNodeId": "ending_alone"
+            }
+          ]
+        },
+        "ending_shattered": {
+          "id": "ending_shattered",
+          "title": "Ending: Shattered Truth",
+          "content": "The mirror breaks — and so does something inside you. The portal opens wider, but the academy doors close. You leave with power and no allies.",
+          "ending": true,
+          "choices": []
+        },
+        "ending_bound": {
+          "id": "ending_bound",
+          "title": "Ending: The Spiritbound",
+          "content": "The pact seals with a warm sting. The spirit stands beside you. The caretaker smiles — not kindly, but knowingly. The story continues in your cards.",
+          "ending": true,
+          "choices": []
+        },
+        "ending_alone": {
+          "id": "ending_alone",
+          "title": "Ending: Lantern in the Fog",
+          "content": "You refuse the debt. The hall goes silent. The lantern flickers, and you step back into the fog with your name intact — and your fate unwritten.",
+          "ending": true,
+          "choices": []
+        }
+      }
+    }
+  ]
+}

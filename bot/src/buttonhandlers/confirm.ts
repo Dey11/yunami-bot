@@ -1,12 +1,9 @@
-import { ironPulseEmbed } from "../sample.js";
-
 export const handler = {
   id: "confirm",
   async execute(interaction: any) {
-    console.log(interaction.customId);
+    const title = interaction.message.embeds?.[0]?.title ?? "";
     await interaction.reply({
-      content: "You chose to play " + interaction.message.embeds[0].title,
-      embeds: [ironPulseEmbed],
+      content: `You chose to play ${title}.`,
     });
   },
 };

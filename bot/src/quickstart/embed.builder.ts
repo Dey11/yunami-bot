@@ -4,35 +4,62 @@ import {
   ButtonStyle,
   EmbedBuilder,
 } from "discord.js";
-import data from "./story.json" with { type: "json" };
+import { storyGraph } from "./story.graph.js";
 
-export async function storySceneBuilder(nodeId: keyof typeof data.nodes) {
-  try {
-    console.log(data.nodes[nodeId]);
-    console.log(nodeId);
-    console.log(data.nodes[nodeId].id);
-    const cutsceneEmbed = new EmbedBuilder()
-      .setColor(0x0e1015)
-      .setTitle(data.nodes[nodeId].title)
-      .setDescription(data.nodes[nodeId].content)
-      .setFooter({
-        text: "Your choices decide your trait",
-      })
-      .setImage(data.nodes[nodeId].imageUrl);
-
-    const choicesButton = new ActionRowBuilder<ButtonBuilder>();
-    for (const choice of data.nodes[nodeId].choices) {
-      choicesButton.addComponents(
-        new ButtonBuilder()
-          .setCustomId(choice.id)
-          .setLabel(choice.label)
-          .setEmoji(choice.emoji)
-          .setStyle(choice.style || ButtonStyle.Primary)
-      );
-    }
-    return [cutsceneEmbed, choicesButton];
-  } catch (error) {
-    console.error(error);
-    return [null, null];
+function resolveButtonStyle(style: unknown): ButtonStyle {
+  if (typeof style === "number") {
+    if (style === ButtonStyle.Primary) return ButtonStyle.Primary;
+    if (style === ButtonStyle.Secondary) return ButtonStyle.Secondary;
+    if (style === ButtonStyle.Success) return ButtonStyle.Success;
+    if (style === ButtonStyle.Danger) return ButtonStyle.Danger;
   }
+
+  if (typeof style === "string") {
+    const lowered = style.toLowerCase();
+    if (lowered === "primary") return ButtonStyle.Primary;
+    if (lowered === "secondary") return ButtonStyle.Secondary;
+    if (lowered === "success") return ButtonStyle.Success;
+    if (lowered === "danger") return ButtonStyle.Danger;
+  }
+
+  return ButtonStyle.Primary;
+}
+
+export function storySceneBuilder(episodeId: string, nodeId: string) {
+  const node = storyGraph.getNode(episodeId, nodeId);
+  if (!node) {
+    return [null, null] as const;
+  }
+
+  const checkpointText = node.checkpoint
+    ? ` • Checkpoint: ${node.checkpoint.cardName ?? node.checkpoint.cardId}`
+    : "";
+
+  const cutsceneEmbed = new EmbedBuilder()
+    .setColor(0x0e1015)
+    .setTitle(node.title)
+    .setDescription(node.content)
+    .setFooter({
+      text: `Your choices decide your trait${checkpointText}`,
+    });
+
+  if (node.imageUrl) {
+    cutsceneEmbed.setImage(node.imageUrl);
+  }
+
+  const isEnding = storyGraph.isEnding(episodeId, nodeId);
+  const choicesButton = new ActionRowBuilder<ButtonBuilder>();
+
+  if (!isEnding) {
+    for (const choice of node.choices) {
+      const button = new ButtonBuilder()
+        .setCustomId(`choice:${episodeId}:${choice.id}`)
+        .setLabel(choice.label)
+        .setStyle(resolveButtonStyle(choice.style));
+      if (choice.emoji) button.setEmoji(choice.emoji);
+      choicesButton.addComponents(button);
+    }
+  }
+
+  return [cutsceneEmbed, choicesButton] as const;
 }
