@@ -1,127 +1,124 @@
 {
-  "episodes": [
-    {
-      "id": "story3",
-      "title": "Iron Pulse Rebellion",
-      "description": "A techno-city powered by divine engines edges toward collapse and open revolt. Hit checkpoints to earn new cards.",
-      "entryNodeId": "neon_flicker",
-      "nodes": {
-        "neon_flicker": {
-          "id": "neon_flicker",
-          "title": "Neon Flicker",
-          "content": "Above the techno-city, divine engines cough light into smog. A rebel frequency slips into your comm: 'We can shut it down — if you choose a side.'",
-          "checkpoint": {"cardId": "iron:gear-001", "cardName": "Pulse Core Shard"},
-          "choices": [
-            {
-              "id": "join_rebels",
-              "label": "Join the rebels",
-              "emoji": "📡",
-              "style": "Primary",
-              "nextNodeId": "safehouse"
-            },
-            {
-              "id": "help_order",
-              "label": "Report to city order",
-              "emoji": "🛡️",
-              "style": "Secondary",
-              "nextNodeId": "control_tower"
-            }
-          ]
+  "id": "story3",
+  "title": "Iron Pulse Rebellion",
+  "description": "A techno-city powered by divine engines edges toward collapse and open revolt. Hit checkpoints to earn new cards.",
+  "firstNodeId": "neon_flicker",
+  "nodes": {
+    "neon_flicker": {
+      "id": "neon_flicker",
+      "title": "Neon Flicker",
+      "content": "Above the techno-city, divine engines cough light into smog. A rebel frequency slips into your comm: 'We can shut it down — if you choose a side.'",
+      "imageUrl": "Background.png",
+      "choices": [
+        {
+          "id": "s3_join_rebels",
+          "label": "Join the rebels",
+          "emoji": "📡",
+          "style": 1,
+          "nextNodeId": "safehouse"
         },
-        "safehouse": {
-          "id": "safehouse",
-          "title": "Undergrid Safehouse",
-          "content": "The rebels hide beneath coolant pipes and prayer-wires. Their leader hands you a schematic: sabotage the engine, or hijack it.",
-          "checkpoint": {"cardId": "iron:ally-002", "cardName": "Undergrid Rebel"},
-          "choices": [
-            {
-              "id": "sabotage",
-              "label": "Sabotage the engine",
-              "emoji": "🧨",
-              "style": "Danger",
-              "nextNodeId": "engine_chamber"
-            },
-            {
-              "id": "hijack",
-              "label": "Hijack the engine",
-              "emoji": "🧩",
-              "style": "Success",
-              "nextNodeId": "engine_chamber"
-            }
-          ]
-        },
-        "control_tower": {
-          "id": "control_tower",
-          "title": "Control Tower",
-          "content": "Order officers offer you a badge and a lie: 'The engines are stable.' Behind glass, you see the truth — a divine core screaming in static.",
-          "choices": [
-            {
-              "id": "obey",
-              "label": "Obey orders",
-              "emoji": "📋",
-              "style": "Secondary",
-              "nextNodeId": "engine_chamber"
-            },
-            {
-              "id": "defect",
-              "label": "Defect quietly",
-              "emoji": "🕶️",
-              "style": "Primary",
-              "nextNodeId": "safehouse"
-            }
-          ]
-        },
-        "engine_chamber": {
-          "id": "engine_chamber",
-          "title": "Divine Engine Chamber",
-          "content": "The engine is alive — not with fire, but with a borrowed god. It offers you power in exchange for control. The city waits for your decision.",
-          "checkpoint": {"cardId": "iron:boss-003", "cardName": "Divine Engine"},
-          "choices": [
-            {
-              "id": "shut_down",
-              "label": "Shut it down",
-              "emoji": "⛔",
-              "style": "Danger",
-              "nextNodeId": "ending_blackout"
-            },
-            {
-              "id": "stabilize",
-              "label": "Stabilize and share power",
-              "emoji": "⚙️",
-              "style": "Success",
-              "nextNodeId": "ending_reform"
-            },
-            {
-              "id": "seize",
-              "label": "Seize control",
-              "emoji": "👑",
-              "style": "Danger",
-              "nextNodeId": "ending_tyrant"
-            }
-          ]
-        },
-        "ending_blackout": {
-          "id": "ending_blackout",
-          "title": "Ending: City Blackout",
-          "content": "The lights die. The engines go silent. The city survives — but the streets belong to whoever moves first. You walk away with sparks on your hands.",
-          "ending": true,
-          "choices": []
-        },
-        "ending_reform": {
-          "id": "ending_reform",
-          "title": "Ending: Pulse Reform",
-          "content": "You stabilize the core and split its output. Rebels and order are forced to negotiate. The city wakes up to a future that isn’t owned by one side.",
-          "ending": true,
-          "choices": []
-        },
-        "ending_tyrant": {
-          "id": "ending_tyrant",
-          "title": "Ending: Engine Tyrant",
-          "content": "You take the engine’s voice and make it yours. The city kneels — at first. Then it learns your name like a curse.",
-          "ending": true,
-          "choices": []
+        {
+          "id": "s3_help_order",
+          "label": "Report to city order",
+          "emoji": "🛡️",
+          "style": 2,
+          "nextNodeId": "control_tower"
         }
-      }
+      ]
+    },
+    "safehouse": {
+      "id": "safehouse",
+      "title": "Undergrid Safehouse",
+      "content": "The rebels hide beneath coolant pipes and prayer-wires. Their leader hands you a schematic: sabotage the engine, or hijack it.",
+      "imageUrl": "Background.png",
+      "choices": [
+        {
+          "id": "s3_sabotage",
+          "label": "Sabotage the engine",
+          "emoji": "🧨",
+          "style": 4,
+          "nextNodeId": "engine_chamber"
+        },
+        {
+          "id": "s3_hijack",
+          "label": "Hijack the engine",
+          "emoji": "🧩",
+          "style": 3,
+          "nextNodeId": "engine_chamber"
+        }
+      ]
+    },
+    "control_tower": {
+      "id": "control_tower",
+      "title": "Control Tower",
+      "content": "Order officers offer you a badge and a lie: 'The engines are stable.' Behind glass, you see the truth — a divine core screaming in static.",
+      "imageUrl": "Background.png",
+      "choices": [
+        {
+          "id": "s3_obey",
+          "label": "Obey orders",
+          "emoji": "📋",
+          "style": 2,
+          "nextNodeId": "engine_chamber"
+        },
+        {
+          "id": "s3_defect",
+          "label": "Defect quietly",
+          "emoji": "🕶️",
+          "style": 1,
+          "nextNodeId": "safehouse"
+        }
+      ]
+    },
+    "engine_chamber": {
+      "id": "engine_chamber",
+      "title": "Divine Engine Chamber",
+      "content": "The engine is alive — not with fire, but with a borrowed god. It offers you power in exchange for control. The city waits for your decision.",
+      "imageUrl": "Background.png",
+      "choices": [
+        {
+          "id": "s3_shut_down",
+          "label": "Shut it down",
+          "emoji": "⛔",
+          "style": 4,
+          "nextNodeId": "ending_blackout"
+        },
+        {
+          "id": "s3_stabilize",
+          "label": "Stabilize and share power",
+          "emoji": "⚙️",
+          "style": 3,
+          "nextNodeId": "ending_reform"
+        },
+        {
+          "id": "s3_seize",
+          "label": "Seize control",
+          "emoji": "👑",
+          "style": 4,
+          "nextNodeId": "ending_tyrant"
+        }
+      ]
+    },
+    "ending_blackout": {
+      "id": "ending_blackout",
+      "title": "Ending: City Blackout",
+      "content": "The lights die. The engines go silent. The city survives — but the streets belong to whoever moves first. You walk away with sparks on your hands.",
+      "imageUrl": "Background.png",
+      "choices": []
+    },
+    "ending_reform": {
+      "id": "ending_reform",
+      "title": "Ending: Pulse Reform",
+      "content": "You stabilize the core and split its output. Rebels and order are forced to negotiate. The city wakes up to a future that isn't owned by one side.",
+      "imageUrl": "Background.png",
+      "choices": []
+    },
+    "ending_tyrant": {
+      "id": "ending_tyrant",
+      "title": "Ending: Engine Tyrant",
+      "content": "You take the engine's voice and make it yours. The city kneels — at first. Then it learns your name like a curse.",
+      "imageUrl": "Background.png",
+      "choices": []
     }
-  ]
+  }
 }

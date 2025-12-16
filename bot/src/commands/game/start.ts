@@ -1,10 +1,10 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from "discord.js";
 import { storyBeg } from "../../components/design/story1.js";
 import { listButtons } from "../../components/buttons/list.buttons.js";
 import { storyGraph } from "../../quickstart/story.graph.js";
 import { buildStartButtons } from "../../components/buttons/start.buttons.js";
 
-const episodes = storyGraph.listEpisodes();
+const episodes = storyGraph.listEpisodes().filter((ep: any) => ep.id !== "prologue_1");
 const storyThumbnail = storyBeg.toJSON().thumbnail?.url;
 
 export const data = new SlashCommandBuilder()
@@ -27,14 +27,14 @@ export async function execute(interaction: any) {
     if (!selectedEpisode) {
       await interaction.reply({
         content: "That story number is not available yet.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
 
     const heroEmbed = EmbedBuilder.from(storyBeg)
       .setTitle(selectedEpisode.title)
-      .setDescription(selectedEpisode.description);
+      .setDescription(selectedEpisode.description || "No description available.");
 
     const startButtons = buildStartButtons(selectedEpisode.id);
 
@@ -47,7 +47,7 @@ export async function execute(interaction: any) {
 
   const storyFields = episodes.map((episode, index) => ({
     name: `Story ${index + 1}: ${episode.title}`,
-    value: episode.description,
+    value: episode.description || "No description available.",
   }));
 
   const storiesEmbed = new EmbedBuilder()

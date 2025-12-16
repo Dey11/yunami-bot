@@ -4,11 +4,10 @@ import {
   ButtonStyle,
   EmbedBuilder,
 } from "discord.js";
-import data from "./story.json" with { type: "json" };
 import { buildCanvas } from "./canvas.builder.js";
 
-export async function storySceneBuilder(nodeId: keyof typeof data.nodes) {
-  const node = data.nodes[nodeId];
+export async function storySceneBuilder(nodeId: string, storyData: any) {
+  const node = storyData.nodes[nodeId];
 
 
   const cutsceneImage = node.imageUrl
