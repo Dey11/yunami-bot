@@ -3,7 +3,22 @@ import { client } from "../index.js";
 
 client.on(Events.InteractionCreate, async (interaction) => {
   if (interaction.isButton()) {
-    const handler = client.buttonHandlers.get(interaction.customId);
+    let handler = client.buttonHandlers.get(interaction.customId);
+    if (!handler) {
+      for (const [key, value] of client.buttonHandlers.entries()) {
+        if (value instanceof RegExp && value.test(interaction.customId)) {
+          handler = client.buttonHandlers.get(key);
+          break;
+        }
+      }
+      for (const [key, h] of client.buttonHandlers.entries()) {
+        if ((key as any) instanceof RegExp && (key as any).test(interaction.customId)) {
+          handler = h;
+          break;
+        }
+      }
+    }
+
     if (!handler) {
       console.error(
         "No button handler found for customId " + interaction.customId
