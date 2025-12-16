@@ -4,62 +4,39 @@ import {
   ButtonStyle,
   EmbedBuilder,
 } from "discord.js";
-import { storyGraph } from "./story.graph.js";
+import { buildCanvas } from "./canvas.builder.js";
 
-function resolveButtonStyle(style: unknown): ButtonStyle {
-  if (typeof style === "number") {
-    if (style === ButtonStyle.Primary) return ButtonStyle.Primary;
-    if (style === ButtonStyle.Secondary) return ButtonStyle.Secondary;
-    if (style === ButtonStyle.Success) return ButtonStyle.Success;
-    if (style === ButtonStyle.Danger) return ButtonStyle.Danger;
-  }
+export async function storySceneBuilder(nodeId: string, storyData: any) {
+  const node = storyData.nodes[nodeId];
 
-  if (typeof style === "string") {
-    const lowered = style.toLowerCase();
-    if (lowered === "primary") return ButtonStyle.Primary;
-    if (lowered === "secondary") return ButtonStyle.Secondary;
-    if (lowered === "success") return ButtonStyle.Success;
-    if (lowered === "danger") return ButtonStyle.Danger;
-  }
 
-  return ButtonStyle.Primary;
-}
-
-export function storySceneBuilder(episodeId: string, nodeId: string) {
-  const node = storyGraph.getNode(episodeId, nodeId);
-  if (!node) {
-    return [null, null] as const;
-  }
-
-  const checkpointText = node.checkpoint
-    ? ` • Checkpoint: ${node.checkpoint.cardName ?? node.checkpoint.cardId}`
-    : "";
+  const cutsceneImage = node.imageUrl
+    ? await buildCanvas(node.imageUrl)
+    : null;
 
   const cutsceneEmbed = new EmbedBuilder()
     .setColor(0x0e1015)
     .setTitle(node.title)
     .setDescription(node.content)
     .setFooter({
-      text: `Your choices decide your trait${checkpointText}`,
+      text: "Your choices decide your trait",
     });
 
-  if (node.imageUrl) {
-    cutsceneEmbed.setImage(node.imageUrl);
+
+  if (cutsceneImage) {
+    cutsceneEmbed.setImage(`attachment://${cutsceneImage.name}`);
   }
 
-  const isEnding = storyGraph.isEnding(episodeId, nodeId);
   const choicesButton = new ActionRowBuilder<ButtonBuilder>();
-
-  if (!isEnding) {
-    for (const choice of node.choices) {
-      const button = new ButtonBuilder()
-        .setCustomId(`choice:${episodeId}:${choice.id}`)
+  for (const choice of node.choices) {
+    choicesButton.addComponents(
+      new ButtonBuilder()
+        .setCustomId(choice.id)
         .setLabel(choice.label)
-        .setStyle(resolveButtonStyle(choice.style));
-      if (choice.emoji) button.setEmoji(choice.emoji);
-      choicesButton.addComponents(button);
-    }
+        .setEmoji(choice.emoji)
+        .setStyle(choice.style || ButtonStyle.Primary)
+    );
   }
 
-  return [cutsceneEmbed, choicesButton] as const;
+  return [cutsceneEmbed, choicesButton, cutsceneImage];
 }

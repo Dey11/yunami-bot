@@ -1,119 +1,117 @@
 {
-  "episodes": [
-    {
-      "id": "story2",
-      "title": "Ashen Blade Chronicles",
-      "description": "A realm-walking swordsman hunts a forbidden name across fractured realms. Hit checkpoints to earn new cards.",
-      "entryNodeId": "cinder_arrival",
-      "nodes": {
-        "cinder_arrival": {
-          "id": "cinder_arrival",
-          "title": "Arrival on Cinders",
-          "content": "The air tastes like burnt paper. Between two ruined skies, your blade points toward a name you swore to erase.",
-          "checkpoint": {"cardId": "ashen:weapon-001", "cardName": "Ashen Blade"},
-          "choices": [
-            {
-              "id": "track_whispers",
-              "label": "Follow the whispers",
-              "emoji": "👂",
-              "style": "Primary",
-              "nextNodeId": "market_of_masks"
-            },
-            {
-              "id": "challenge_warrior",
-              "label": "Challenge the lone warrior",
-              "emoji": "⚔️",
-              "style": "Danger",
-              "nextNodeId": "duel_at_ash"
-            }
-          ]
+  "id": "story2",
+  "title": "Ashen Blade Chronicles",
+  "description": "A realm-walking swordsman hunts a forbidden name across fractured realms. Hit checkpoints to earn new cards.",
+  "firstNodeId": "cinder_arrival",
+  "nodes": {
+    "cinder_arrival": {
+      "id": "cinder_arrival",
+      "title": "Arrival on Cinders",
+      "content": "The air tastes like burnt paper. Between two ruined skies, your blade points toward a name you swore to erase.",
+      "imageUrl": "Background.png",
+      "choices": [
+        {
+          "id": "s2_track_whispers",
+          "label": "Follow the whispers",
+          "emoji": "👂",
+          "style": 1,
+          "nextNodeId": "market_of_masks"
         },
-        "market_of_masks": {
-          "id": "market_of_masks",
-          "title": "Market of Masks",
-          "content": "Vendors trade memories for coin. A masked broker offers you a shortcut to the forbidden name — for a price you can’t unsay.",
-          "choices": [
-            {
-              "id": "pay_memory",
-              "label": "Pay with a memory",
-              "emoji": "🧠",
-              "style": "Secondary",
-              "nextNodeId": "fracture_gate"
-            },
-            {
-              "id": "refuse_deal",
-              "label": "Refuse the deal",
-              "emoji": "🚫",
-              "style": "Secondary",
-              "nextNodeId": "duel_at_ash"
-            }
-          ]
-        },
-        "duel_at_ash": {
-          "id": "duel_at_ash",
-          "title": "Duel at the Ashline",
-          "content": "The warrior’s stance is perfect — too perfect. Their blade is familiar, like an echo. They ask one question: 'Do you want truth, or victory?'",
-          "checkpoint": {"cardId": "ashen:ally-002", "cardName": "Ashline Duelist"},
-          "choices": [
-            {
-              "id": "seek_truth",
-              "label": "Seek truth",
-              "emoji": "📜",
-              "style": "Success",
-              "nextNodeId": "fracture_gate"
-            },
-            {
-              "id": "take_victory",
-              "label": "Take victory",
-              "emoji": "🏆",
-              "style": "Danger",
-              "nextNodeId": "ending_hollow"
-            }
-          ]
-        },
-        "fracture_gate": {
-          "id": "fracture_gate",
-          "title": "The Fracture Gate",
-          "content": "A gate of cracked glass shows the name you hunt written across countless timelines. One timeline saves a city. Another burns it.",
-          "choices": [
-            {
-              "id": "erase_name",
-              "label": "Erase the name",
-              "emoji": "✒️",
-              "style": "Danger",
-              "nextNodeId": "ending_erase"
-            },
-            {
-              "id": "carry_name",
-              "label": "Carry the name",
-              "emoji": "🗡️",
-              "style": "Success",
-              "nextNodeId": "ending_guard"
-            }
-          ]
-        },
-        "ending_hollow": {
-          "id": "ending_hollow",
-          "title": "Ending: Hollow Victory",
-          "content": "You win the duel — and lose the reason you started. The realms stop whispering. The blade stays sharp. Your story becomes quiet.",
-          "ending": true,
-          "choices": []
-        },
-        "ending_erase": {
-          "id": "ending_erase",
-          "title": "Ending: The Erasure",
-          "content": "You strike the name from the gate. The fracture seals. Somewhere a city survives — somewhere else, you never existed to save it.",
-          "ending": true,
-          "choices": []
-        },
-        "ending_guard": {
-          "id": "ending_guard",
-          "title": "Ending: The Guardian Blade",
-          "content": "You sheath the blade and take the name with you. The gate remains, but it no longer owns you. The realms will test you again.",
-          "ending": true,
-          "choices": []
+        {
+          "id": "s2_challenge_warrior",
+          "label": "Challenge the lone warrior",
+          "emoji": "⚔️",
+          "style": 4,
+          "nextNodeId": "duel_at_ash"
         }
-      }
+      ]
+    },
+    "market_of_masks": {
+      "id": "market_of_masks",
+      "title": "Market of Masks",
+      "content": "Vendors trade memories for coin. A masked broker offers you a shortcut to the forbidden name — for a price you can't unsay.",
+      "imageUrl": "Background.png",
+      "choices": [
+        {
+          "id": "s2_pay_memory",
+          "label": "Pay with a memory",
+          "emoji": "🧠",
+          "style": 2,
+          "nextNodeId": "fracture_gate"
+        },
+        {
+          "id": "s2_refuse_deal",
+          "label": "Refuse the deal",
+          "emoji": "🚫",
+          "style": 2,
+          "nextNodeId": "duel_at_ash"
+        }
+      ]
+    },
+    "duel_at_ash": {
+      "id": "duel_at_ash",
+      "title": "Duel at the Ashline",
+      "content": "The warrior's stance is perfect — too perfect. Their blade is familiar, like an echo. They ask one question: 'Do you want truth, or victory?'",
+      "imageUrl": "Background.png",
+      "choices": [
+        {
+          "id": "s2_seek_truth",
+          "label": "Seek truth",
+          "emoji": "📜",
+          "style": 3,
+          "nextNodeId": "fracture_gate"
+        },
+        {
+          "id": "s2_take_victory",
+          "label": "Take victory",
+          "emoji": "🏆",
+          "style": 4,
+          "nextNodeId": "ending_hollow"
+        }
+      ]
+    },
+    "fracture_gate": {
+      "id": "fracture_gate",
+      "title": "The Fracture Gate",
+      "content": "A gate of cracked glass shows the name you hunt written across countless timelines. One timeline saves a city. Another burns it.",
+      "imageUrl": "Background.png",
+      "choices": [
+        {
+          "id": "s2_erase_name",
+          "label": "Erase the name",
+          "emoji": "✒️",
+          "style": 4,
+          "nextNodeId": "ending_erase"
+        },
+        {
+          "id": "s2_carry_name",
+          "label": "Carry the name",
+          "emoji": "🗡️",
+          "style": 3,
+          "nextNodeId": "ending_guard"
+        }
+      ]
+    },
+    "ending_hollow": {
+      "id": "ending_hollow",
+      "title": "Ending: Hollow Victory",
+      "content": "You win the duel — and lose the reason you started. The realms stop whispering. The blade stays sharp. Your story becomes quiet.",
+      "imageUrl": "Background.png",
+      "choices": []
+    },
+    "ending_erase": {
+      "id": "ending_erase",
+      "title": "Ending: The Erasure",
+      "content": "You strike the name from the gate. The fracture seals. Somewhere a city survives — somewhere else, you never existed to save it.",
+      "imageUrl": "Background.png",
+      "choices": []
+    },
+    "ending_guard": {
+      "id": "ending_guard",
+      "title": "Ending: The Guardian Blade",
+      "content": "You sheath the blade and take the name with you. The gate remains, but it no longer owns you. The realms will test you again.",
+      "imageUrl": "Background.png",
+      "choices": []
     }
-  ]
+  }
 }
