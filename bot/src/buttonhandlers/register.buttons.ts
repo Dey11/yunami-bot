@@ -10,5 +10,13 @@ export const handler = {
       embeds: [registerEmbed],
       components: [createProfileButtons],
     });
+    // const canvas = await buildCanvas();
+    // await interaction.deferReply();
+    // await interaction.editReply({
+    //   embeds: [registerEmbed],
+    //   files: [canvas],
+
+    //   components: [createProfileButtons],
+    // });
   },
 };

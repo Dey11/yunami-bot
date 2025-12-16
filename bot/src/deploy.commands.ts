@@ -43,20 +43,20 @@ const rest = new REST().setToken(token);
 (async () => {
   try {
     // Load commands dynamically
-    for (const filePath of commandFiles) {
+for (const filePath of commandFiles) {
       try {
         const command = await import(filePath);
-        if ("data" in command && "execute" in command) {
-          commands.push(command.data.toJSON());
-        } else {
-          console.log(
-            `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
-          );
+  if ("data" in command && "execute" in command) {
+    commands.push(command.data.toJSON());
+  } else {
+    console.log(
+      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+    );
         }
       } catch (error) {
         console.error(`[ERROR] Failed to load command at ${filePath}:`, error);
-      }
-    }
+  }
+}
 
     console.log(
       `Started refreshing ${commands.length} application (/) commands.`
