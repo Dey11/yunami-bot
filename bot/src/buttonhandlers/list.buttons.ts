@@ -1,7 +1,15 @@
+import { MessageFlags } from "discord.js";
+
 export const handler = {
-  id: "exit",
+  id: ["previous", "next", "exit"],
   async execute(interaction: any) {
-    console.log(interaction.customId);
-    await interaction.message.delete();
+    if (interaction.customId === "exit") {
+      await interaction.message.delete();
+      return;
+    }
+    await interaction.reply({
+      content: "Only one page available for now.",
+      flags: MessageFlags.Ephemeral
+    });
   },
 };
