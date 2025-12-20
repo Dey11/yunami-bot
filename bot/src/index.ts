@@ -53,20 +53,31 @@ async function loadEvents() {
 
 async function loadButtonHandlers() {
   const buttonHandlersPath = path.join(__dirname, "buttonhandlers");
-  const buttonHandlerFiles = fs
-    .readdirSync(buttonHandlersPath)
-    .filter((file) => file.endsWith(".js"));
 
-  for (const file of buttonHandlerFiles) {
-    const filePath = path.join(buttonHandlersPath, file);
-    const { handler } = await import(`file://${filePath}`);
-    const ids = Array.isArray(handler.id) ? handler.id : [handler.id];
-    for (const id of ids) {
-      client.buttonHandlers.set(id, handler);
+  function loadHandlersRecursive(dir: string) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+
+      if (entry.isDirectory()) {
+        // Recursively load handlers in subdirectories
+        loadHandlersRecursive(fullPath);
+      } else if (entry.isFile() && entry.name.endsWith(".js")) {
+        // Load handler file
+        (async () => {
+          const { handler } = await import(`file://${fullPath}`);
+          const ids = Array.isArray(handler.id) ? handler.id : [handler.id];
+          for (const id of ids) {
+            client.buttonHandlers.set(id, handler);
+          }
+        })();
+      }
     }
   }
-}
 
+  loadHandlersRecursive(buttonHandlersPath);
+}
 async function initializeBot() {
   await loadCommands();
   await loadEvents();
