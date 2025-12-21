@@ -4,7 +4,8 @@ export const handler = {
   id: ["previous", "next", "exit"],
   async execute(interaction: any) {
     if (interaction.customId === "exit") {
-      await interaction.message.delete();
+      await interaction.deferUpdate();
+      await interaction.deleteReply();
       return;
     }
     await interaction.reply({
