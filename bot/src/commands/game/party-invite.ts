@@ -1,5 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import { partyInviteButton } from "../../components/buttons/party-invite.js";
+import { getPartyByOwner } from "../../quickstart/party.session.js";
+import { MessageFlags } from "discord.js";
 
 export const data = new SlashCommandBuilder()
   .setName("party-invite")
@@ -16,8 +18,18 @@ export async function execute(interaction: any) {
   const user = interaction.options.getUser("user");
   if (!user) return;
 
+  const party = await getPartyByOwner(interaction.user.id);
+
+  if (!party) {
+    await interaction.reply({
+      content: "You don't have a party yet",
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
+  }
+
   await interaction.reply({
-    content: `${interaction.username} invited ${user.toString()} to your party`,
-    components: [partyInviteButton(interaction.user.id)],
+    content: `${interaction.user.username} invited ${user.toString()} to join their party: **${party.name}**`,
+    components: [partyInviteButton(interaction.user.id, user.id)],
   });
 }
