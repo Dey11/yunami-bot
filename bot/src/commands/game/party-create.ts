@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
-import { createParty } from "../../quickstart/party.session.js";
+import { createParty, getPartyByPlayer } from "../../quickstart/party.session.js";
+import { MessageFlags } from "discord.js";
 
 export const data = new SlashCommandBuilder()
   .setName("party-create")
@@ -23,6 +24,16 @@ export async function execute(interaction: any) {
   if (!interaction.isChatInputCommand()) return;
   const name = interaction.options.getString("name");
   const size = interaction.options.getInteger("size");
+
+  const existingParty = getPartyByPlayer(interaction.user.id);
+  if (existingParty) {
+    await interaction.reply({
+      content: `You are already in a party named "${existingParty.name}". You cannot create a new one.`,
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
+  }
+
   const party = createParty(
     interaction.user.id,
     interaction.user.username,
