@@ -32,7 +32,8 @@ export const handler = {
             if (matchedChoice.nextNodeId) {
                 await interaction.deferUpdate();
                 const [embed, buttons, image] = await storySceneBuilder(matchedChoice.nextNodeId, storyData);
-                const payload: any = { embeds: [embed], components: [buttons] };
+                const payload: any = { embeds: [embed], components: [] };
+                if (buttons) payload.components = [buttons];
                 if (image) payload.files = [image];
 
                 await interaction.editReply(payload);

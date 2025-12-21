@@ -28,15 +28,18 @@ export async function storySceneBuilder(nodeId: string, storyData: any) {
   }
 
   const choicesButton = new ActionRowBuilder<ButtonBuilder>();
-  for (const choice of node.choices) {
-    choicesButton.addComponents(
-      new ButtonBuilder()
-        .setCustomId(choice.id)
-        .setLabel(choice.label)
-        .setEmoji(choice.emoji)
-        .setStyle(choice.style || ButtonStyle.Primary)
-    );
+  if (node.choices && node.choices.length > 0) {
+    for (const choice of node.choices) {
+      choicesButton.addComponents(
+        new ButtonBuilder()
+          .setCustomId(choice.id)
+          .setLabel(choice.label)
+          .setEmoji(choice.emoji)
+          .setStyle(choice.style || ButtonStyle.Primary)
+      );
+    }
+    return [cutsceneEmbed, choicesButton, cutsceneImage];
   }
 
-  return [cutsceneEmbed, choicesButton, cutsceneImage];
+  return [cutsceneEmbed, null, cutsceneImage];
 }

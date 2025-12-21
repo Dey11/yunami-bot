@@ -49,11 +49,17 @@ export const handler = {
 
         const [embed, components, attachment] = await storySceneBuilder(firstNodeId, storyData);
 
-        await interaction.editReply({
+        const payload: any = {
             content: `Multiplayer Story Started: ${storyData.title}`,
             embeds: [embed],
-            components: [components],
-            files: attachment ? [attachment] : []
-        });
+            files: attachment ? [attachment] : [],
+            components: []
+        };
+
+        if (components) {
+            payload.components = [components];
+        }
+
+        await interaction.editReply(payload);
     }
 };
