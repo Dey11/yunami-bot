@@ -1,9 +1,10 @@
 import { MessageFlags } from "discord.js";
 import { storySceneBuilder } from "../quickstart/embed.builder.js";
 import { getSession, recordChoice } from "../quickstart/runtime.graph.js";
+import { renderNode } from "../engine/dispatcher.js";
 
 export const handler = {
-    id: /^(?!start:).+/,
+    id: /^(?!start:)(?!engine:).+/,
     async execute(interaction: any) {
         const odId = interaction.user.id;
         const session = getSession(odId);
@@ -20,6 +21,7 @@ export const handler = {
         let matchedChoice = null;
 
         for (const node of Object.values(storyData.nodes) as any[]) {
+            if (!node.choices) continue;
             const found = node.choices.find((c: any) => c.id === interaction.customId);
             if (found) {
                 matchedChoice = found;
@@ -31,12 +33,21 @@ export const handler = {
             recordChoice(odId, matchedChoice.id, matchedChoice.nextNodeId);
             if (matchedChoice.nextNodeId) {
                 await interaction.deferUpdate();
-                const [embed, buttons, image] = await storySceneBuilder(matchedChoice.nextNodeId, storyData);
-                const payload: any = { embeds: [embed], components: [] };
-                if (buttons) payload.components = [buttons];
-                if (image) payload.files = [image];
+                const nextNode = storyData.nodes[matchedChoice.nextNodeId];
 
-                await interaction.editReply(payload);
+                if (nextNode.type) {
+                    const furtherNextId = nextNode.type_specific?.extra_data?.nextNodeId;
+                    const result = await renderNode(nextNode, furtherNextId);
+                    const payload: any = { embeds: [result.embed], components: result.components ?? [] };
+                    if (result.attachment) payload.files = [result.attachment];
+                    await interaction.editReply(payload);
+                } else {
+                    const [embed, buttons, image] = await storySceneBuilder(matchedChoice.nextNodeId, storyData);
+                    const payload: any = { embeds: [embed], components: [] };
+                    if (buttons) payload.components = [buttons];
+                    if (image) payload.files = [image];
+                    await interaction.editReply(payload);
+                }
             } else {
                 await interaction.reply({ content: "The story ends here... for now.", flags: MessageFlags.Ephemeral });
             }
