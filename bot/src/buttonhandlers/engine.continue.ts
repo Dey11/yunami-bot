@@ -3,10 +3,10 @@ import { getSession, recordChoice } from "../quickstart/runtime.graph.js";
 import { renderNode } from "../engine/dispatcher.js";
 
 export const handler = {
-    id: /^engine:narrative:continue:(.+)$/,
+    id: /^engine:continue:(.+)$/,
 
     async execute(interaction: any) {
-        const match = interaction.customId.match(/^engine:narrative:continue:(.+)$/);
+        const match = interaction.customId.match(/^engine:continue:(.+)$/);
         if (!match) return;
 
         const nextNodeId = match[1];

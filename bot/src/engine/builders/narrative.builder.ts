@@ -38,7 +38,7 @@ export async function buildNarrativeNode(
         components = [
             new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
-                    .setCustomId(`engine:narrative:continue:${nextNodeId}`)
+                    .setCustomId(`engine:continue:${nextNodeId}`)
                     .setLabel("Continue")
                     .setEmoji("▶️")
                     .setStyle(ButtonStyle.Primary)
