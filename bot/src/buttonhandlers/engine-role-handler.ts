@@ -1,6 +1,6 @@
 import { MessageFlags } from "discord.js";
-import { getSession, recordChoice, getPartyRole } from "../quickstart/runtime.graph.js";
-import { getPartyByPlayer } from "../quickstart/party.session.js";
+import { getSession, recordChoice, getPartyRole } from "../quickstart/runtime-graph.js";
+import { getPartyByPlayer } from "../quickstart/party-session.js";
 
 export const handler = {
     id: /^role:(.+):(.+)$/,

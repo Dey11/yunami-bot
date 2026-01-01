@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } from "discord.js";
-import { getPartyByPlayer } from "../../quickstart/party.session.js";
+import { getPartyByPlayer } from "../../quickstart/party-session.js";
 
 export const data = new SlashCommandBuilder()
     .setName("party-lobby")

@@ -1,7 +1,7 @@
 import type { StoryNode, Preconditions } from "./types.js";
 import type { MultiplayerSession } from "../types/party.js";
-import { getSession } from "../quickstart/runtime.graph.js";
-import { getPartyByPlayer } from "../quickstart/party.session.js";
+import { getSession } from "../quickstart/runtime-graph.js";
+import { getPartyByPlayer } from "../quickstart/party-session.js";
 
 export interface PreconditionResult {
     allowed: boolean;

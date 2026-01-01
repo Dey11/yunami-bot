@@ -1,5 +1,5 @@
 import { MessageFlags } from "discord.js";
-import { getPartyByOwner, getPartyByPlayer } from "../../quickstart/party.session.js";
+import { getPartyByOwner, getPartyByPlayer } from "../../quickstart/party-session.js";
 
 export const handler = {
   id: /^reject_party_invite:/,

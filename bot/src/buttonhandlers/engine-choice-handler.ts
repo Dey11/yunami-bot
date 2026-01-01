@@ -6,9 +6,13 @@ import {
     isChoiceLocked,
     getResource,
     modifyResource,
-} from "../quickstart/runtime.graph.js";
-import { getPartyByPlayer } from "../quickstart/party.session.js";
+    setActiveMessage,
+    getVote,
+    recordVote,
+} from "../quickstart/runtime-graph.js";
+import { getPartyByPlayer } from "../quickstart/party-session.js";
 import { renderNodeWithContext } from "../engine/dispatcher.js";
+import { recordPlayerInput } from "../engine/outcome-engine.js";
 import type { Choice } from "../engine/types.js";
 
 export const handler = {
@@ -55,7 +59,18 @@ export const handler = {
             return;
         }
 
-        if (isChoiceLocked(odId, nodeId, choiceId)) {
+        const isTimedNode = currentNode.type === "timed";
+
+        if (isTimedNode) {
+            const existingVote = getVote(odId, nodeId);
+            if (existingVote) {
+                await interaction.reply({
+                    content: "You have already voted on this decision.",
+                    flags: MessageFlags.Ephemeral,
+                });
+                return;
+            }
+        } else if (isChoiceLocked(odId, nodeId, choiceId)) {
             await interaction.reply({
                 content: "You have already made this choice.",
                 flags: MessageFlags.Ephemeral,
@@ -74,10 +89,9 @@ export const handler = {
                 }
             }
         }
-
-        if (choice.ephemeral_confirmation) {
+        if (choice.ephemeral_confirmation || isTimedNode) {
             await interaction.reply({
-                content: `You chose: **${choice.label}**. Your choice has been recorded.`,
+                content: `You chose: **${choice.label}**. Your vote has been recorded.`,
                 flags: MessageFlags.Ephemeral,
             });
         } else {
@@ -93,10 +107,16 @@ export const handler = {
         lockChoice(odId, nodeId, choiceId);
         recordChoice(odId, choiceId, choice.nextNodeId ?? null);
 
-        if (choice.nextNodeId) {
+        if (isTimedNode) {
+            recordVote(odId, nodeId, choiceId);
+        }
+
+        const party = getPartyByPlayer(odId);
+        recordPlayerInput(nodeId, odId, { choiceId }, party?.id);
+
+        if (!isTimedNode && choice.nextNodeId) {
             const nextNode = session.storyData.nodes?.[choice.nextNodeId];
             if (nextNode) {
-                const party = getPartyByPlayer(odId);
                 const context = {
                     playerId: odId,
                     nodeId: nextNode.id,
@@ -108,11 +128,12 @@ export const handler = {
 
                 if (choice.ephemeral_confirmation) {
                     await interaction.message.edit(payload);
+                    setActiveMessage(odId, interaction.message.channelId, interaction.message.id);
                 } else {
-                    await interaction.editReply(payload);
+                    const reply = await interaction.editReply(payload);
+                    setActiveMessage(odId, reply.channelId, reply.id);
                 }
             }
         }
     },
 };
-

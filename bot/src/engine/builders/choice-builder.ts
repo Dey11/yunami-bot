@@ -5,9 +5,9 @@ import {
     StringSelectMenuBuilder,
     EmbedBuilder,
 } from "discord.js";
-import { buildCanvas } from "../../quickstart/canvas.builder.js";
-import { getResource, getPartyRole, isChoiceLocked } from "../../quickstart/runtime.graph.js";
-import { getPartyByPlayer } from "../../quickstart/party.session.js";
+import { buildCanvas } from "../../quickstart/canvas-builder.js";
+import { getResource, getPartyRole, isChoiceLocked } from "../../quickstart/runtime-graph.js";
+import { getPartyByPlayer } from "../../quickstart/party-session.js";
 import type { StoryNode, BuilderResult, Choice, SelectMenu, RoleReservedAction } from "../types.js";
 import type { MultiplayerSession } from "../../types/party.js";
 

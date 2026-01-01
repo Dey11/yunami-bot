@@ -1,6 +1,6 @@
-import { storySceneBuilder } from "../quickstart/embed.builder.js";
-import { startPartyStory, getPartyByOwner } from "../quickstart/party.session.js";
-import { storyGraph } from "../quickstart/story.graph.js";
+import { storySceneBuilder } from "../quickstart/embed-builder.js";
+import { startPartyStory, getPartyByOwner } from "../quickstart/party-session.js";
+import { storyGraph } from "../quickstart/story-graph.js";
 import { MessageFlags } from "discord.js";
 
 export const handler = {

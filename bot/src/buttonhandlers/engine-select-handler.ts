@@ -1,5 +1,5 @@
 import { MessageFlags } from "discord.js";
-import { getSession, recordChoice } from "../quickstart/runtime.graph.js";
+import { getSession, recordChoice } from "../quickstart/runtime-graph.js";
 
 export const handler = {
     id: /^select:(.+):(.+)$/,

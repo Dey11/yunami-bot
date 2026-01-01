@@ -4,7 +4,7 @@ import {
   ButtonStyle,
   EmbedBuilder,
 } from "discord.js";
-import { buildCanvas } from "./canvas.builder.js";
+import { buildCanvas } from "./canvas-builder.js";
 
 export async function storySceneBuilder(nodeId: string, storyData: any) {
   const node = storyData.nodes[nodeId];

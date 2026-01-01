@@ -4,7 +4,7 @@ import {
     ButtonStyle,
     EmbedBuilder,
 } from "discord.js";
-import { buildCanvas } from "../../quickstart/canvas.builder.js";
+import { buildCanvas } from "../../quickstart/canvas-builder.js";
 import type { StoryNode, BuilderResult } from "../types.js";
 
 export async function buildNarrativeNode(
