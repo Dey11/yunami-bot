@@ -1,25 +1,62 @@
 import type { StoryNode, BuilderResult } from "./types.js";
+import type { MultiplayerSession } from "../types/party.js";
 import { buildNarrativeNode } from "./builders/narrative.builder.js";
+import { checkPreconditions } from "./preconditions.js";
+import { executeSideEffects } from "./side-effects.js";
+import { getPartyByPlayer } from "../quickstart/party.session.js";
+
+export interface NodeLoadResult {
+  allowed: boolean;
+  reason?: string;
+  result?: BuilderResult;
+}
+
+export async function loadAndRenderNode(
+  node: StoryNode,
+  playerId: string,
+  nextNodeId?: string,
+  party?: MultiplayerSession | null
+): Promise<NodeLoadResult> {
+  const preconditionResult = checkPreconditions(node, playerId, party);
+  if (!preconditionResult.allowed) {
+    return {
+      allowed: false,
+      reason: preconditionResult.reason,
+    };
+  }
+
+  if (!party) {
+    party = getPartyByPlayer(playerId);
+  }
+
+  await executeSideEffects(node, playerId, party);
+
+  const result = await renderNode(node, nextNodeId);
+  return {
+    allowed: true,
+    result,
+  };
+}
 
 export async function renderNode(
-    node: StoryNode,
-    nextNodeId?: string
+  node: StoryNode,
+  nextNodeId?: string
 ): Promise<BuilderResult> {
-    switch (node.type) {
-        case "narrative":
-            return buildNarrativeNode(node, nextNodeId);
+  switch (node.type) {
+    case "narrative":
+      return buildNarrativeNode(node, nextNodeId);
 
-        case "choice":
-        case "timed":
-        case "dm":
-        case "memory":
-        case "sequence":
-        case "combat":
-        case "social":
-        case "meta":
-            throw new Error(`Builder for type "${node.type}" not implemented yet`);
+    case "choice":
+    case "timed":
+    case "dm":
+    case "memory":
+    case "sequence":
+    case "combat":
+    case "social":
+    case "meta":
+      throw new Error(`Builder for type "${node.type}" not implemented yet`);
 
-        default:
-            throw new Error(`Unknown node type: ${node.type}`);
-    }
+    default:
+      throw new Error(`Unknown node type: ${node.type}`);
+  }
 }
