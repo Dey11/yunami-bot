@@ -4,7 +4,7 @@ import { getSession, recordChoice } from "../quickstart/runtime.graph.js";
 import { renderNode } from "../engine/dispatcher.js";
 
 export const handler = {
-    id: /^(?!start:)(?!engine:).+/,
+    id: /^(?!start:)(?!engine:)(?!choice:)(?!select:)(?!role:).+/,
     async execute(interaction: any) {
         const odId = interaction.user.id;
         const session = getSession(odId);

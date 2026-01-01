@@ -1,6 +1,7 @@
 import type { StoryNode, BuilderResult } from "./types.js";
 import type { MultiplayerSession } from "../types/party.js";
 import { buildNarrativeNode } from "./builders/narrative.builder.js";
+import { buildChoiceNode, type ChoiceBuilderContext } from "./builders/choice.builder.js";
 import { checkPreconditions } from "./preconditions.js";
 import { executeSideEffects } from "./side-effects.js";
 import { getPartyByPlayer } from "../quickstart/party.session.js";
@@ -31,15 +32,22 @@ export async function loadAndRenderNode(
 
   await executeSideEffects(node, playerId, party);
 
-  const result = await renderNode(node, nextNodeId);
+  const context: ChoiceBuilderContext = {
+    playerId,
+    nodeId: node.id,
+    party,
+  };
+
+  const result = await renderNodeWithContext(node, context, nextNodeId);
   return {
     allowed: true,
     result,
   };
 }
 
-export async function renderNode(
+export async function renderNodeWithContext(
   node: StoryNode,
+  context: ChoiceBuilderContext,
   nextNodeId?: string
 ): Promise<BuilderResult> {
   switch (node.type) {
@@ -47,6 +55,8 @@ export async function renderNode(
       return buildNarrativeNode(node, nextNodeId);
 
     case "choice":
+      return buildChoiceNode(node, context);
+
     case "timed":
     case "dm":
     case "memory":
@@ -59,4 +69,16 @@ export async function renderNode(
     default:
       throw new Error(`Unknown node type: ${node.type}`);
   }
+}
+
+export async function renderNode(
+  node: StoryNode,
+  nextNodeId?: string
+): Promise<BuilderResult> {
+  const defaultContext: ChoiceBuilderContext = {
+    playerId: "",
+    nodeId: node.id,
+    party: null,
+  };
+  return renderNodeWithContext(node, defaultContext, nextNodeId);
 }

@@ -1,27 +1,32 @@
 import { Events, MessageFlags } from "discord.js";
 import { client } from "../index.js";
 
-client.on(Events.InteractionCreate, async (interaction) => {
-  if (interaction.isButton()) {
-    let handler = client.buttonHandlers.get(interaction.customId);
-    if (!handler) {
-      for (const [key, value] of client.buttonHandlers.entries()) {
-        if (value instanceof RegExp && value.test(interaction.customId)) {
-          handler = client.buttonHandlers.get(key);
-          break;
-        }
-      }
-      for (const [key, h] of client.buttonHandlers.entries()) {
-        if ((key as any) instanceof RegExp && (key as any).test(interaction.customId)) {
-          handler = h;
-          break;
-        }
+async function findHandler(customId: string) {
+  let handler = client.buttonHandlers.get(customId);
+  if (!handler) {
+    for (const [key, value] of client.buttonHandlers.entries()) {
+      if (value instanceof RegExp && value.test(customId)) {
+        handler = client.buttonHandlers.get(key);
+        break;
       }
     }
+    for (const [key, h] of client.buttonHandlers.entries()) {
+      if ((key as any) instanceof RegExp && (key as any).test(customId)) {
+        handler = h;
+        break;
+      }
+    }
+  }
+  return handler;
+}
+
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (interaction.isButton() || interaction.isStringSelectMenu()) {
+    const handler = await findHandler(interaction.customId);
 
     if (!handler) {
       console.error(
-        "No button handler found for customId " + interaction.customId
+        "No handler found for customId " + interaction.customId
       );
       return;
     }
@@ -55,3 +60,4 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
 });
+
