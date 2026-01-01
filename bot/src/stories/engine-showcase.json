@@ -1,0 +1,220 @@
+{
+  "id": "engine_showcase",
+  "title": "Engine Showcase Story",
+  "description": "A comprehensive test story showcasing all engine features.",
+  "firstNodeId": "intro",
+  "nodes": {
+    "intro": {
+      "id": "intro",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Welcome",
+      "public_embed": {
+        "title": "🎮 Engine Showcase",
+        "description": "This story demonstrates all the new engine features:\n\n• **Choices** with costs and confirmations\n• **Timed voting** with progress bar\n• **DM deliveries** for private info\n• **Outcome resolution** based on votes",
+        "color": 5793266,
+        "fields": [
+          { "name": "Your Mission", "value": "Navigate through various scenarios to test each feature." }
+        ]
+      },
+      "type_specific": {
+        "extra_data": { "nextNodeId": "choice_demo" }
+      }
+    },
+    "choice_demo": {
+      "id": "choice_demo",
+      "schema_version": 1,
+      "type": "choice",
+      "title": "Choice Demo",
+      "public_embed": {
+        "title": "💰 The Merchant",
+        "description": "A traveling merchant offers you various goods. Each has a different cost.",
+        "color": 15844367,
+        "fields": [
+          { "name": "Your Credits", "value": "You have 10 credits to spend." }
+        ],
+        "footer": "Some choices cost credits!"
+      },
+      "type_specific": {
+        "choices": [
+          {
+            "id": "buy_potion",
+            "label": "Buy Health Potion",
+            "emoji": "🧪",
+            "style": 1,
+            "cost": { "credits": 3 },
+            "ephemeral_confirmation": true,
+            "nextNodeId": "bought_potion"
+          },
+          {
+            "id": "buy_sword",
+            "label": "Buy Sword",
+            "emoji": "⚔️",
+            "style": 4,
+            "cost": { "credits": 7 },
+            "ephemeral_confirmation": true,
+            "nextNodeId": "bought_sword"
+          },
+          {
+            "id": "skip_merchant",
+            "label": "Keep Walking",
+            "emoji": "🚶",
+            "style": 2,
+            "nextNodeId": "vote_demo"
+          }
+        ]
+      },
+      "ui_hints": {
+        "disable_after_click": true
+      }
+    },
+    "bought_potion": {
+      "id": "bought_potion",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Potion Purchased",
+      "public_embed": {
+        "title": "🧪 Health Potion Acquired!",
+        "description": "The merchant hands you a glowing red vial. You feel prepared for danger.",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": { "nextNodeId": "vote_demo" }
+      }
+    },
+    "bought_sword": {
+      "id": "bought_sword",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Sword Purchased",
+      "public_embed": {
+        "title": "⚔️ Legendary Sword Acquired!",
+        "description": "The blade gleams in the light. This cost most of your credits, but it's worth it!",
+        "color": 15158332
+      },
+      "type_specific": {
+        "extra_data": { "nextNodeId": "vote_demo" }
+      }
+    },
+    "vote_demo": {
+      "id": "vote_demo",
+      "schema_version": 1,
+      "type": "timed",
+      "title": "Timed Vote",
+      "public_embed": {
+        "title": "🗳️ The Crossroads",
+        "description": "The path splits into three directions. Your party must decide which way to go.\n\n**Vote now!** The majority wins when time runs out.",
+        "color": 3447003,
+        "fields": [
+          { "name": "⚔️ Left Path", "value": "Leads to a known bandit camp" },
+          { "name": "🏔️ Center Path", "value": "Climbs into treacherous mountains" },
+          { "name": "🌲 Right Path", "value": "Through a mysterious forest" }
+        ]
+      },
+      "type_specific": {
+        "timers": {
+          "duration_seconds": 25
+        },
+        "choices": [
+          {
+            "id": "path_left",
+            "label": "Bandit Camp",
+            "emoji": "⚔️",
+            "style": 4,
+            "nextNodeId": "bandit_path"
+          },
+          {
+            "id": "path_center",
+            "label": "Mountains",
+            "emoji": "🏔️",
+            "style": 1,
+            "nextNodeId": "mountain_path"
+          },
+          {
+            "id": "path_right",
+            "label": "Forest",
+            "emoji": "🌲",
+            "style": 3,
+            "nextNodeId": "forest_path"
+          }
+        ],
+        "outcome_rules": {
+          "on_all_inputs_or_timeout": {
+            "compute": "majority"
+          }
+        }
+      },
+      "ui_hints": {
+        "disable_after_click": true
+      }
+    },
+    "bandit_path": {
+      "id": "bandit_path",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Bandit Encounter",
+      "public_embed": {
+        "title": "⚔️ Ambush!",
+        "description": "The bandits were expecting you! Steel clashes as combat begins.",
+        "color": 15158332,
+        "fields": [
+          { "name": "Outcome", "value": "This path leads to combat encounters (not yet implemented)." }
+        ]
+      }
+    },
+    "mountain_path": {
+      "id": "mountain_path",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Mountain Climb",
+      "public_embed": {
+        "title": "🏔️ The Climb",
+        "description": "The air grows thin as you ascend. The view is breathtaking, but the path is treacherous.",
+        "color": 9807270,
+        "fields": [
+          { "name": "Outcome", "value": "A challenging but rewarding path." }
+        ]
+      }
+    },
+    "forest_path": {
+      "id": "forest_path",
+      "schema_version": 1,
+      "type": "dm",
+      "title": "Forest Secrets",
+      "public_embed": {
+        "title": "🌲 Whispers in the Trees",
+        "description": "The forest is alive with secrets. Some of you may receive private information...",
+        "color": 2067276,
+        "fields": [
+          { "name": "Note", "value": "In multiplayer, DMs would be sent to specific party roles." }
+        ]
+      },
+      "type_specific": {
+        "dm_deliveries": [
+          {
+            "recipient_role": "scout",
+            "content": { "text": "🔍 **Secret Intel**: You spot hidden tracks leading to treasure!" }
+          }
+        ],
+        "extra_data": { "nextNodeId": "ending" }
+      },
+      "side_effects_on_enter": {
+        "spawn_dm_jobs": true
+      }
+    },
+    "ending": {
+      "id": "ending",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "The End",
+      "public_embed": {
+        "title": "🎉 Showcase Complete!",
+        "description": "You've tested all the major engine features:\n\n✅ Narrative nodes\n✅ Choice nodes with costs\n✅ Timed voting with progress bar\n✅ DM delivery nodes\n✅ Outcome resolution",
+        "color": 5793266,
+        "fields": [
+          { "name": "What's Next?", "value": "More node types coming: Combat, Social, Memory, Sequence" }
+        ]
+      }
+    }
+  }
+}
