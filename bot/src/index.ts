@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { startTimerManager } from "./engine/timer.manager.js";
 
 dotenv.config();
 
@@ -61,10 +62,8 @@ async function loadButtonHandlers() {
       const fullPath = path.join(dir, entry.name);
 
       if (entry.isDirectory()) {
-        // Recursively load handlers in subdirectories
         loadHandlersRecursive(fullPath);
       } else if (entry.isFile() && entry.name.endsWith(".js")) {
-        // Load handler file
         (async () => {
           const { handler } = await import(`file://${fullPath}`);
           const ids = Array.isArray(handler.id) ? handler.id : [handler.id];
@@ -78,11 +77,14 @@ async function loadButtonHandlers() {
 
   loadHandlersRecursive(buttonHandlersPath);
 }
+
 async function initializeBot() {
   await loadCommands();
   await loadEvents();
   await loadButtonHandlers();
-  client.login(process.env.DISCORD_TOKEN);
+  await client.login(process.env.DISCORD_TOKEN);
+  startTimerManager();
 }
 
 initializeBot();
+

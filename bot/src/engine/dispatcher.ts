@@ -2,6 +2,7 @@ import type { StoryNode, BuilderResult } from "./types.js";
 import type { MultiplayerSession } from "../types/party.js";
 import { buildNarrativeNode } from "./builders/narrative.builder.js";
 import { buildChoiceNode, type ChoiceBuilderContext } from "./builders/choice.builder.js";
+import { buildTimedNode } from "./builders/timed.builder.js";
 import { checkPreconditions } from "./preconditions.js";
 import { executeSideEffects } from "./side-effects.js";
 import { getPartyByPlayer } from "../quickstart/party.session.js";
@@ -58,6 +59,8 @@ export async function renderNodeWithContext(
       return buildChoiceNode(node, context);
 
     case "timed":
+      return buildTimedNode(node, context);
+
     case "dm":
     case "memory":
     case "sequence":
