@@ -1,6 +1,6 @@
-import { createProfileButtons } from "../components/buttons/create.profile.js";
+import { createProfileButtons } from "../components/buttons/create-profile.js";
 import { registerEmbed } from "../components/embeds/register.js";
-import { buildCanvas } from "../quickstart/canvas.builder.js";
+import { buildCanvas } from "../quickstart/canvas-builder.js";
 
 export const handler = {
   id: "register",

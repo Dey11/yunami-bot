@@ -1,6 +1,6 @@
 import type { MultiplayerSession } from "../types/party.js";
-import { getSession, initSession } from "./runtime.graph.js";
-import { storyGraph } from "./story.graph.js";
+import { getSession, initSession } from "./runtime-graph.js";
+import { storyGraph } from "./story-graph.js";
 
 const partySessions = new Map<string, MultiplayerSession>();
 

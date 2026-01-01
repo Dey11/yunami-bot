@@ -1,11 +1,12 @@
 import type { StoryNode, BuilderResult } from "./types.js";
 import type { MultiplayerSession } from "../types/party.js";
-import { buildNarrativeNode } from "./builders/narrative.builder.js";
-import { buildChoiceNode, type ChoiceBuilderContext } from "./builders/choice.builder.js";
-import { buildTimedNode } from "./builders/timed.builder.js";
+import { buildNarrativeNode } from "./builders/narrative-builder.js";
+import { buildChoiceNode, type ChoiceBuilderContext } from "./builders/choice-builder.js";
+import { buildTimedNode } from "./builders/timed-builder.js";
+import { buildDMNode } from "./builders/dm-builder.js";
 import { checkPreconditions } from "./preconditions.js";
 import { executeSideEffects } from "./side-effects.js";
-import { getPartyByPlayer } from "../quickstart/party.session.js";
+import { getPartyByPlayer } from "../quickstart/party-session.js";
 
 export interface NodeLoadResult {
   allowed: boolean;
@@ -62,6 +63,8 @@ export async function renderNodeWithContext(
       return buildTimedNode(node, context);
 
     case "dm":
+      return buildDMNode(node, nextNodeId);
+
     case "memory":
     case "sequence":
     case "combat":

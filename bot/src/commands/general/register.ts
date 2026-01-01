@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
-import { registerButtons } from "../../components/buttons/register.buttons.js";
+import { registerButtons } from "../../components/buttons/register-buttons.js";
 
 export const data = new SlashCommandBuilder()
   .setName("register")

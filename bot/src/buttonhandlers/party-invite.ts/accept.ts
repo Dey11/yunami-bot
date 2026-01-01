@@ -1,7 +1,7 @@
 import {
   getPartyByOwner,
   invitePlayerToParty,
-} from "../../quickstart/party.session.js";
+} from "../../quickstart/party-session.js";
 import { MessageFlags } from "discord.js";
 
 export const handler = {

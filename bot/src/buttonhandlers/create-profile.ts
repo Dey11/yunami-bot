@@ -1,6 +1,6 @@
-import { storySceneBuilder } from "../quickstart/embed.builder.js";
-import { initSession } from "../quickstart/runtime.graph.js";
-import { storyGraph } from "../quickstart/story.graph.js";
+import { storySceneBuilder } from "../quickstart/embed-builder.js";
+import { initSession } from "../quickstart/runtime-graph.js";
+import { storyGraph } from "../quickstart/story-graph.js";
 
 export const handler = {
   id: "createProfile",

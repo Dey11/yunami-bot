@@ -1,8 +1,8 @@
 import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from "discord.js";
 import { storyBeg } from "../../components/design/story1.js";
-import { listButtons } from "../../components/buttons/list.buttons.js";
-import { storyGraph } from "../../quickstart/story.graph.js";
-import { buildStartButtons } from "../../components/buttons/start.buttons.js";
+import { listButtons } from "../../components/buttons/list-buttons.js";
+import { storyGraph } from "../../quickstart/story-graph.js";
+import { buildStartButtons } from "../../components/buttons/start-buttons.js";
 
 const episodes = storyGraph.listEpisodes().filter((ep: any) => ep.id !== "prologue_1");
 const storyThumbnail = storyBeg.toJSON().thumbnail?.url;

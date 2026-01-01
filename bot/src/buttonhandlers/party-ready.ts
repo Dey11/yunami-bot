@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } from "discord.js";
-import { getPartyByPlayer, setPlayerReady } from "../quickstart/party.session.js";
+import { getPartyByPlayer, setPlayerReady } from "../quickstart/party-session.js";
 
 export const handler = {
     id: [/^party_toggle_ready:(true|false)$/, "refresh_lobby"],

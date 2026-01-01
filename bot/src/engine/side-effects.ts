@@ -1,7 +1,7 @@
 import type { StoryNode } from "./types.js";
 import type { MultiplayerSession } from "../types/party.js";
-import { getSession, getPartyRole } from "../quickstart/runtime.graph.js";
-import { getPartyByPlayer } from "../quickstart/party.session.js";
+import { getSession, getPartyRole } from "../quickstart/runtime-graph.js";
+import { getPartyByPlayer } from "../quickstart/party-session.js";
 import { client } from "../index.js";
 
 export async function executeSideEffects(

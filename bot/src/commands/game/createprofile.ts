@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
-import { registerButtons } from "../../components/buttons/register.buttons.js";
-import { buildCanvas } from "../../quickstart/canvas.builder.js";
+import { registerButtons } from "../../components/buttons/register-buttons.js";
+import { buildCanvas } from "../../quickstart/canvas-builder.js";
 
 export const data = new SlashCommandBuilder()
   .setName("createprofile")

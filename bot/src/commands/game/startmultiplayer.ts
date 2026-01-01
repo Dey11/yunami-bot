@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from "discord.js";
-import { getPartyByOwner, areAllPlayersReady } from "../../quickstart/party.session.js";
-import { storyGraph } from "../../quickstart/story.graph.js";
+import { getPartyByOwner, areAllPlayersReady } from "../../quickstart/party-session.js";
+import { storyGraph } from "../../quickstart/story-graph.js";
 
 export const data = new SlashCommandBuilder()
     .setName("startmultiplayer")

@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { partyInviteButton } from "../../components/buttons/party-invite.js";
-import { getPartyByOwner } from "../../quickstart/party.session.js";
+import { getPartyByOwner } from "../../quickstart/party-session.js";
 import { MessageFlags } from "discord.js";
 
 export const data = new SlashCommandBuilder()

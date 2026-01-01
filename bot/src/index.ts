@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { startTimerManager } from "./engine/timer.manager.js";
+import { startTimerManager } from "./engine/timer-manager.js";
 
 dotenv.config();
 
@@ -84,7 +84,10 @@ async function initializeBot() {
   await loadButtonHandlers();
   await client.login(process.env.DISCORD_TOKEN);
   startTimerManager();
+  const { startProgressUpdater } = await import("./engine/timer-progress.js");
+  startProgressUpdater();
 }
 
 initializeBot();
+
 

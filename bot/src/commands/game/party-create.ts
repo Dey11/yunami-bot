@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import { createParty, getPartyByPlayer } from "../../quickstart/party.session.js";
+import { createParty, getPartyByPlayer } from "../../quickstart/party-session.js";
 import { MessageFlags } from "discord.js";
 
 export const data = new SlashCommandBuilder()

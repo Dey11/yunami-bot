@@ -15,6 +15,7 @@ export type PlayerSession = {
     { startTime: number; duration: number; nodeId: string }
   >;
   partyRole?: string;
+  activeMessage?: { channelId: string; messageId: string };
 };
 
 const sessions = new Map<string, PlayerSession>();
@@ -43,6 +44,7 @@ export function initSession(
     activeVotes: new Map(),
     activeTimers: new Map(),
     partyRole: undefined,
+    activeMessage: undefined,
   };
   sessions.set(odId, session);
   return session;
@@ -243,3 +245,29 @@ export function getPartyRole(odId: string): string | undefined {
   const session = sessions.get(odId);
   return session?.partyRole;
 }
+
+export function setActiveMessage(
+  odId: string,
+  channelId: string,
+  messageId: string
+): void {
+  const session = sessions.get(odId);
+  if (session) {
+    session.activeMessage = { channelId, messageId };
+  }
+}
+
+export function getActiveMessage(
+  odId: string
+): { channelId: string; messageId: string } | undefined {
+  const session = sessions.get(odId);
+  return session?.activeMessage;
+}
+
+export function clearActiveMessage(odId: string): void {
+  const session = sessions.get(odId);
+  if (session) {
+    session.activeMessage = undefined;
+  }
+}
+

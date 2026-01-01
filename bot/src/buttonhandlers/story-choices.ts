@@ -1,6 +1,6 @@
 import { MessageFlags } from "discord.js";
-import { storySceneBuilder } from "../quickstart/embed.builder.js";
-import { getSession, recordChoice } from "../quickstart/runtime.graph.js";
+import { storySceneBuilder } from "../quickstart/embed-builder.js";
+import { getSession, recordChoice } from "../quickstart/runtime-graph.js";
 import { renderNode } from "../engine/dispatcher.js";
 
 export const handler = {

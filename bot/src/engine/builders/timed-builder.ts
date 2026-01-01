@@ -5,9 +5,10 @@ import {
     StringSelectMenuBuilder,
     EmbedBuilder,
 } from "discord.js";
-import { buildCanvas } from "../../quickstart/canvas.builder.js";
-import { getResource, getPartyRole, isChoiceLocked, startTimer } from "../../quickstart/runtime.graph.js";
-import { getPartyByPlayer } from "../../quickstart/party.session.js";
+import { buildCanvas } from "../../quickstart/canvas-builder.js";
+import { getResource, getPartyRole, isChoiceLocked, startTimer } from "../../quickstart/runtime-graph.js";
+import { getPartyByPlayer } from "../../quickstart/party-session.js";
+import { buildProgressBar } from "../timer-progress.js";
 import type { StoryNode, BuilderResult, Choice, SelectMenu, RoleReservedAction } from "../types.js";
 import type { MultiplayerSession } from "../../types/party.js";
 
@@ -33,17 +34,13 @@ export async function buildTimedNode(
 
     if (publicEmbed?.description) embed.setDescription(publicEmbed.description);
 
-    let footerText = publicEmbed?.footer ?? "";
     if (timer?.duration_seconds) {
-        const expiresAt = Math.floor(Date.now() / 1000) + timer.duration_seconds;
-        const timerDisplay = `⏱️ Expires <t:${expiresAt}:R>`;
-        footerText = footerText ? `${footerText} • ${timerDisplay}` : timerDisplay;
+        const progressBar = buildProgressBar(timer.duration_seconds, timer.duration_seconds);
+        embed.setFooter({ text: `⏱️ ${progressBar} ${timer.duration_seconds}s` });
 
         startTimer(context.playerId, `timer:${context.nodeId}`, context.nodeId, timer.duration_seconds);
-    }
-
-    if (footerText) {
-        embed.setFooter({ text: footerText });
+    } else if (publicEmbed?.footer) {
+        embed.setFooter({ text: publicEmbed.footer });
     }
 
     if (publicEmbed?.fields?.length) {
