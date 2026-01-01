@@ -19,6 +19,10 @@ export type PlayerSession = {
 
 const sessions = new Map<string, PlayerSession>();
 
+export function getSessionsMap(): Map<string, PlayerSession> {
+  return sessions;
+}
+
 export function initSession(
   odId: string,
   storyId: string,
