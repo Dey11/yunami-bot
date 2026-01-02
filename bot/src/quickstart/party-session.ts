@@ -1,6 +1,6 @@
-import type { MultiplayerSession } from "../types/party.js";
-import { getSession, initSession } from "./runtime-graph.js";
-import { storyGraph } from "./story-graph.js";
+import type { MultiplayerSession } from '../types/party.js';
+import { getSession, initSession } from './runtime-graph.js';
+import { storyGraph } from './story-graph.js';
 
 const partySessions = new Map<string, MultiplayerSession>();
 
@@ -33,7 +33,7 @@ export function createParty(
         isReady: false,
       },
     ],
-    status: "waiting",
+    status: 'waiting',
     createdAt: new Date(),
     inviteCode: generateInviteCode(),
   };
@@ -50,7 +50,7 @@ export async function getPartyByOwner(
   ownerId: string
 ): Promise<MultiplayerSession | undefined> {
   for (const party of partySessions.values()) {
-    if (party.ownerId === ownerId && party.status === "waiting") {
+    if (party.ownerId === ownerId && party.status === 'waiting') {
       return party;
     }
   }
@@ -63,8 +63,8 @@ export function getPartyByPlayer(
   for (const party of partySessions.values()) {
     if (
       party.players.some((p) => p.odId === playerId) &&
-      party.status !== "ended" &&
-      party.status !== "cancelled"
+      party.status !== 'ended' &&
+      party.status !== 'cancelled'
     ) {
       return party;
     }
@@ -80,24 +80,24 @@ export async function invitePlayerToParty(
   const party = partySessions.get(partyId);
 
   if (!party) {
-    return { success: false, message: "Party not found" };
+    return { success: false, message: 'Party not found' };
   }
 
-  if (party.status !== "waiting") {
-    return { success: false, message: "Party is not accepting new members" };
+  if (party.status !== 'waiting') {
+    return { success: false, message: 'Party is not accepting new members' };
   }
 
   if (party.players.length >= party.maxSize) {
-    return { success: false, message: "Party is full" };
+    return { success: false, message: 'Party is full' };
   }
 
   if (party.players.some((p) => p.odId === playerId)) {
-    return { success: false, message: "Player is already in the party" };
+    return { success: false, message: 'Player is already in the party' };
   }
 
   const existingParty = getPartyByPlayer(playerId);
   if (existingParty && existingParty.id !== partyId) {
-    return { success: false, message: "Player is already in another party" };
+    return { success: false, message: 'Player is already in another party' };
   }
 
   party.players.push({
@@ -107,7 +107,7 @@ export async function invitePlayerToParty(
     isReady: false,
   });
 
-  return { success: true, message: "Player added to party", party };
+  return { success: true, message: 'Player added to party', party };
 }
 
 export function removePlayerFromParty(
@@ -117,14 +117,14 @@ export function removePlayerFromParty(
   const party = partySessions.get(partyId);
   if (!party) return false;
 
-  if (party.status === "active") {
+  if (party.status === 'active') {
     return false;
   }
 
   party.players = party.players.filter((p) => p.odId !== playerId);
 
   if (party.ownerId === playerId || party.players.length === 0) {
-    party.status = "cancelled";
+    party.status = 'cancelled';
     partySessions.delete(partyId);
   }
 
@@ -175,20 +175,20 @@ export function startPartyStory(
   const party = partySessions.get(partyId);
 
   if (!party) {
-    return { success: false, message: "Party not found" };
+    return { success: false, message: 'Party not found' };
   }
 
-  if (party.status !== "waiting") {
-    return { success: false, message: "Party is not in waiting state" };
+  if (party.status !== 'waiting') {
+    return { success: false, message: 'Party is not in waiting state' };
   }
 
   if (party.players.length < 2) {
-    return { success: false, message: "Need at least 2 players to start" };
+    return { success: false, message: 'Need at least 2 players to start' };
   }
 
   const storyData = storyGraph.getStory(storyId);
   if (!storyData) {
-    return { success: false, message: "Story not found" };
+    return { success: false, message: 'Story not found' };
   }
 
   party.players.forEach((player) => {
@@ -201,17 +201,17 @@ export function startPartyStory(
     player.playerSession = player.odId;
   });
 
-  party.status = "active";
+  party.status = 'active';
   party.storyId = storyId;
   party.currentNodeId = storyData.firstNodeId || storyData.entryNodeId;
   party.startedAt = new Date();
 
-  return { success: true, message: "Party story started", party };
+  return { success: true, message: 'Party story started', party };
 }
 
 export function updatePartyNode(partyId: string, nextNodeId: string): boolean {
   const party = partySessions.get(partyId);
-  if (!party || party.status !== "active") return false;
+  if (!party || party.status !== 'active') return false;
 
   party.currentNodeId = nextNodeId;
 
@@ -229,7 +229,7 @@ export function endParty(partyId: string): MultiplayerSession | undefined {
   const party = partySessions.get(partyId);
   if (!party) return undefined;
 
-  party.status = "ended";
+  party.status = 'ended';
   party.endedAt = new Date();
 
   return party;
@@ -237,16 +237,16 @@ export function endParty(partyId: string): MultiplayerSession | undefined {
 
 export function cancelParty(partyId: string): boolean {
   const party = partySessions.get(partyId);
-  if (!party || party.status !== "waiting") return false;
+  if (!party || party.status !== 'waiting') return false;
 
-  party.status = "cancelled";
+  party.status = 'cancelled';
   partySessions.delete(partyId);
   return true;
 }
 
 export function getAllActiveParties(): MultiplayerSession[] {
   return Array.from(partySessions.values()).filter(
-    (p) => p.status === "waiting" || p.status === "active"
+    (p) => p.status === 'waiting' || p.status === 'active'
   );
 }
 
@@ -254,7 +254,7 @@ export function getPartyByInviteCode(
   inviteCode: string
 ): MultiplayerSession | undefined {
   for (const party of partySessions.values()) {
-    if (party.inviteCode === inviteCode && party.status === "waiting") {
+    if (party.inviteCode === inviteCode && party.status === 'waiting') {
       return party;
     }
   }
@@ -266,7 +266,7 @@ export function cleanupOldParties(maxAgeMinutes: number = 60): number {
   let cleaned = 0;
 
   for (const [id, party] of partySessions.entries()) {
-    if (party.status === "ended" || party.status === "cancelled") {
+    if (party.status === 'ended' || party.status === 'cancelled') {
       const age = now.getTime() - (party.endedAt || party.createdAt).getTime();
       if (age > maxAgeMinutes * 60 * 1000) {
         partySessions.delete(id);

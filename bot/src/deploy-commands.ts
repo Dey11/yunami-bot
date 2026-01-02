@@ -1,7 +1,7 @@
-import { REST, Routes } from "discord.js";
-import { readdirSync, statSync } from "fs";
-import { join } from "path";
-import { config } from "dotenv";
+import { REST, Routes } from 'discord.js';
+import { readdirSync, statSync } from 'fs';
+import { join } from 'path';
+import { config } from 'dotenv';
 
 config();
 
@@ -12,10 +12,10 @@ const guildId: string | undefined = process.env.GUILD_ID;
 console.log(token, clientId, guildId);
 
 if (!token || !clientId || !guildId) {
-  throw new Error("Missing required environment variables");
+  throw new Error('Missing required environment variables');
 }
 
-const commandsPath: string = join(process.cwd(), "dist", "commands");
+const commandsPath: string = join(process.cwd(), 'dist', 'commands');
 
 const commands: unknown[] = [];
 
@@ -29,7 +29,7 @@ function getCommandFiles(dir: string): string[] {
 
     if (stat.isDirectory()) {
       files.push(...getCommandFiles(itemPath));
-    } else if (item.endsWith(".js")) {
+    } else if (item.endsWith('.js')) {
       files.push(itemPath);
     }
   }
@@ -43,20 +43,20 @@ const rest = new REST().setToken(token);
 (async () => {
   try {
     // Load commands dynamically
-for (const filePath of commandFiles) {
+    for (const filePath of commandFiles) {
       try {
         const command = await import(filePath);
-  if ("data" in command && "execute" in command) {
-    commands.push(command.data.toJSON());
-  } else {
-    console.log(
-      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
-    );
+        if ('data' in command && 'execute' in command) {
+          commands.push(command.data.toJSON());
+        } else {
+          console.log(
+            `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+          );
         }
       } catch (error) {
         console.error(`[ERROR] Failed to load command at ${filePath}:`, error);
-  }
-}
+      }
+    }
 
     console.log(
       `Started refreshing ${commands.length} application (/) commands.`
@@ -71,7 +71,7 @@ for (const filePath of commandFiles) {
       `Successfully reloaded ${data.length} application (/) commands.`
     );
   } catch (error: unknown) {
-    console.error("Failed to deploy commands:", error);
+    console.error('Failed to deploy commands:', error);
   }
 })();
 

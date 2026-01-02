@@ -1,9 +1,9 @@
-import { createProfileButtons } from "../components/buttons/create-profile.js";
-import { registerEmbed } from "../components/embeds/register.js";
-import { buildCanvas } from "../quickstart/canvas-builder.js";
+import { createProfileButtons } from '../components/buttons/create-profile.js';
+import { registerEmbed } from '../components/embeds/register.js';
+import { buildCanvas } from '../quickstart/canvas-builder.js';
 
 export const handler = {
-  id: "register",
+  id: 'register',
   async execute(interaction: any) {
     console.log(interaction.customId);
     await interaction.reply({

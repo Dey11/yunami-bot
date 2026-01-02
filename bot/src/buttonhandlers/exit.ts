@@ -1,5 +1,5 @@
 export const handler = {
-  id: "exit",
+  id: 'exit',
   async execute(interaction: any) {
     console.log(interaction.customId);
     await interaction.message.delete();
