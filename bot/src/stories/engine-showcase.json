@@ -14,11 +14,16 @@
         "description": "This story demonstrates all the engine features:\n\n• **Choices** with costs\n• **Timed voting** with progress bar\n• **Sequence puzzles**\n• **Social interactions** with reputation\n• **DM deliveries** for private info",
         "color": 5793266,
         "fields": [
-          { "name": "Your Mission", "value": "Navigate through various scenarios to test each feature." }
+          {
+            "name": "Your Mission",
+            "value": "Navigate through various scenarios to test each feature."
+          }
         ]
       },
       "type_specific": {
-        "extra_data": { "nextNodeId": "sequence_demo" }
+        "extra_data": {
+          "nextNodeId": "sequence_demo"
+        }
       }
     },
     "sequence_demo": {
@@ -31,17 +36,36 @@
         "description": "A mysterious lock blocks your path. Press the symbols in the correct order to proceed.\n\n**Hint:** The order is hidden in plain sight — 🔵 then 🔴 then 🟢",
         "color": 10181046,
         "fields": [
-          { "name": "Instructions", "value": "Click buttons in order, then Submit." }
+          {
+            "name": "Instructions",
+            "value": "Click buttons in order, then Submit."
+          }
         ]
       },
       "type_specific": {
         "sequence": {
           "steps": [
-            { "id": "red", "label": "Red", "emoji": "🔴" },
-            { "id": "blue", "label": "Blue", "emoji": "🔵" },
-            { "id": "green", "label": "Green", "emoji": "🟢" }
+            {
+              "id": "red",
+              "label": "Red",
+              "emoji": "🔴"
+            },
+            {
+              "id": "blue",
+              "label": "Blue",
+              "emoji": "🔵"
+            },
+            {
+              "id": "green",
+              "label": "Green",
+              "emoji": "🟢"
+            }
           ],
-          "correct_order": ["blue", "red", "green"],
+          "correct_order": [
+            "blue",
+            "red",
+            "green"
+          ],
           "max_attempts": 3,
           "on_success": "sequence_success",
           "on_failure": "sequence_fail"
@@ -59,7 +83,9 @@
         "color": 3066993
       },
       "type_specific": {
-        "extra_data": { "nextNodeId": "social_demo" }
+        "extra_data": {
+          "nextNodeId": "social_demo"
+        }
       }
     },
     "sequence_fail": {
@@ -73,7 +99,9 @@
         "color": 15158332
       },
       "type_specific": {
-        "extra_data": { "nextNodeId": "social_demo" }
+        "extra_data": {
+          "nextNodeId": "social_demo"
+        }
       }
     },
     "social_demo": {
@@ -135,7 +163,9 @@
         "color": 3066993
       },
       "type_specific": {
-        "extra_data": { "nextNodeId": "choice_demo" }
+        "extra_data": {
+          "nextNodeId": "choice_demo"
+        }
       }
     },
     "guard_angry": {
@@ -149,7 +179,9 @@
         "color": 15158332
       },
       "type_specific": {
-        "extra_data": { "nextNodeId": "choice_demo" }
+        "extra_data": {
+          "nextNodeId": "choice_demo"
+        }
       }
     },
     "guard_skeptical": {
@@ -163,7 +195,9 @@
         "color": 16776960
       },
       "type_specific": {
-        "extra_data": { "nextNodeId": "choice_demo" }
+        "extra_data": {
+          "nextNodeId": "choice_demo"
+        }
       }
     },
     "choice_demo": {
@@ -176,7 +210,10 @@
         "description": "A traveling merchant offers you various goods.",
         "color": 15844367,
         "fields": [
-          { "name": "Your Credits", "value": "You have 10 credits to spend." }
+          {
+            "name": "Your Credits",
+            "value": "You have 10 credits to spend."
+          }
         ],
         "footer": "Some choices cost credits!"
       },
@@ -187,7 +224,9 @@
             "label": "Buy Potion (3)",
             "emoji": "🧪",
             "style": 1,
-            "cost": { "credits": 3 },
+            "cost": {
+              "credits": 3
+            },
             "ephemeral_confirmation": true,
             "nextNodeId": "bought_item"
           },
@@ -196,7 +235,9 @@
             "label": "Buy Sword (7)",
             "emoji": "⚔️",
             "style": 4,
-            "cost": { "credits": 7 },
+            "cost": {
+              "credits": 7
+            },
             "ephemeral_confirmation": true,
             "nextNodeId": "bought_item"
           },
@@ -224,7 +265,9 @@
         "color": 3066993
       },
       "type_specific": {
-        "extra_data": { "nextNodeId": "vote_demo" }
+        "extra_data": {
+          "nextNodeId": "vote_demo"
+        }
       }
     },
     "vote_demo": {
@@ -289,7 +332,76 @@
             }
           }
         ],
-        "extra_data": { "nextNodeId": "ending" }
+        "extra_data": {
+          "nextNodeId": "memory_demo"
+        }
+      }
+    },
+    "memory_demo": {
+      "id": "memory_demo",
+      "schema_version": 1,
+      "type": "memory",
+      "title": "Memory Test",
+      "public_embed": {
+        "title": "🧠 Memory Challenge",
+        "description": "Time to test your recall! Think back to the sequence puzzle...",
+        "color": 10494192,
+        "fields": [
+          {
+            "name": "Challenge",
+            "value": "Answer correctly to prove you were paying attention!"
+          }
+        ]
+      },
+      "type_specific": {
+        "memory": {
+          "question": "What color symbol came FIRST in the lock puzzle?",
+          "correct_answers": [
+            "blue",
+            "🔵",
+            "the blue one"
+          ],
+          "case_sensitive": false,
+          "hints": [
+            "Think about the order hint...",
+            "It rhymes with 'glue'"
+          ],
+          "max_attempts": 3,
+          "on_success": "memory_success",
+          "on_failure": "memory_fail"
+        }
+      }
+    },
+    "memory_success": {
+      "id": "memory_success",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Memory Success",
+      "public_embed": {
+        "title": "Perfect Memory!",
+        "description": "You remembered correctly! Your attention to detail is impressive.",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "ending"
+        }
+      }
+    },
+    "memory_fail": {
+      "id": "memory_fail",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Memory Failed",
+      "public_embed": {
+        "title": "Memory Failed!",
+        "description": "You couldn't recall the answer... Next time, pay closer attention!",
+        "color": 15158332
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "ending"
+        }
       }
     },
     "ending": {
@@ -299,7 +411,7 @@
       "title": "The End",
       "public_embed": {
         "title": "🎉 Showcase Complete!",
-        "description": "You've tested all engine features:\n\n✅ Narrative nodes\n✅ Choice nodes with costs\n✅ Sequence puzzles\n✅ Social interactions\n✅ Timed voting\n✅ DM deliveries (check scout's DMs!)",
+        "description": "You've tested all engine features:\n\n✅ Narrative nodes\n✅ Choice nodes with costs\n✅ Sequence puzzles\n✅ Social interactions\n✅ Timed voting\n✅ DM deliveries\n✅ Memory challenges",
         "color": 5793266
       }
     }

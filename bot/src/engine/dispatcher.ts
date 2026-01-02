@@ -6,6 +6,7 @@ import { buildTimedNode } from "./builders/timed-builder.js";
 import { buildDMNode } from "./builders/dm-builder.js";
 import { buildSequenceNode } from "./builders/sequence-builder.js";
 import { buildSocialNode } from "./builders/social-builder.js";
+import { buildMemoryNode } from "./builders/memory-builder.js";
 import { checkPreconditions } from "./preconditions.js";
 import { executeSideEffects } from "./side-effects.js";
 import { getPartyByPlayer } from "../quickstart/party-session.js";
@@ -74,6 +75,8 @@ export async function renderNodeWithContext(
       return buildSocialNode(node, { playerId: context.playerId, nodeId: context.nodeId });
 
     case "memory":
+      return buildMemoryNode(node, { playerId: context.playerId, nodeId: context.nodeId });
+
     case "combat":
     case "meta":
       throw new Error(`Builder for type "${node.type}" not implemented yet`);

@@ -37,6 +37,22 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
 
+  if (interaction.isModalSubmit()) {
+    const handler = await findHandler(interaction.customId);
+
+    if (!handler) {
+      console.error(
+        "No modal handler found for customId " + interaction.customId
+      );
+      return;
+    }
+    try {
+      await handler.execute(interaction);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   if (!interaction.isChatInputCommand()) return;
   const command = interaction.client.commands.get(interaction.commandName);
   if (!command) {
@@ -47,16 +63,19 @@ client.on(Events.InteractionCreate, async (interaction) => {
     await command.execute(interaction);
   } catch (error) {
     console.error(error);
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({
-        content: "There was an error while executing this command!",
-        flags: MessageFlags.Ephemeral,
-      });
-    } else {
-      await interaction.reply({
-        content: "There was an error while executing this command!",
-        flags: MessageFlags.Ephemeral,
-      });
+    try {
+      if (interaction.replied || interaction.deferred) {
+        await interaction.followUp({
+          content: "There was an error while executing this command!",
+          flags: MessageFlags.Ephemeral,
+        });
+      } else {
+        await interaction.reply({
+          content: "There was an error while executing this command!",
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+    } catch {
     }
   }
 });
