@@ -1,0 +1,724 @@
+{
+  "id": "the-haunted-manor",
+  "title": "The Haunted Manor",
+  "description": "Investigate the abandoned Blackwood Manor and uncover its dark secrets.",
+  "firstNodeId": "intro",
+  "nodes": {
+    "intro": {
+      "id": "intro",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "The Manor Awaits",
+      "public_embed": {
+        "title": "🏚️ Blackwood Manor",
+        "description": "The old manor looms ahead, its broken windows staring down at you like hollow eyes. Locals say no one who enters after midnight ever comes back the same.\n\nYou check your watch — 11:47 PM. The iron gates creak in the wind, almost like they're inviting you in.\n\nYour investigation starts now.",
+        "image": "haunted-manor/node1.png",
+        "caption": "The manor calls to you...",
+        "color": 2303786,
+        "fields": [
+          {
+            "name": "Your Mission",
+            "value": "Find out what happened to the Blackwood family and survive the night."
+          }
+        ]
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "approach_choice"
+        }
+      }
+    },
+    "approach_choice": {
+      "id": "approach_choice",
+      "schema_version": 1,
+      "type": "choice",
+      "title": "How to Enter",
+      "public_embed": {
+        "title": "🚪 The Entrance",
+        "description": "You stand at the manor's front. The main door has a massive brass knocker shaped like a lion's head. To your left, a side window sits slightly ajar.\n\nHow do you want to get in?",
+        "color": 7506394,
+        "footer": "Choose wisely — each path has its own dangers."
+      },
+      "type_specific": {
+        "choices": [
+          {
+            "id": "front_door",
+            "label": "Knock on the door",
+            "emoji": "🚪",
+            "style": 1,
+            "nextNodeId": "front_door"
+          },
+          {
+            "id": "side_window",
+            "label": "Climb through the window",
+            "emoji": "🪟",
+            "style": 2,
+            "nextNodeId": "side_window"
+          }
+        ]
+      },
+      "ui_hints": {
+        "disable_after_click": true
+      }
+    },
+    "front_door": {
+      "id": "front_door",
+      "schema_version": 1,
+      "type": "timed",
+      "title": "The Knocker",
+      "public_embed": {
+        "title": "⏱️ The Lion's Mouth",
+        "description": "You grab the knocker and strike it three times. The sound echoes through the manor.\n\nSuddenly, the door begins to shimmer and fade — it's disappearing! You need to get through before it vanishes completely!",
+        "color": 15105570,
+        "footer": "Quick! Decide now!"
+      },
+      "type_specific": {
+        "timers": {
+          "duration_seconds": 15
+        },
+        "choices": [
+          {
+            "id": "rush_in",
+            "label": "Rush through!",
+            "emoji": "🏃",
+            "style": 4,
+            "nextNodeId": "grand_hall"
+          },
+          {
+            "id": "step_back",
+            "label": "Step back",
+            "emoji": "🚶",
+            "style": 2,
+            "nextNodeId": "door_vanished"
+          }
+        ],
+        "outcome_rules": {
+          "on_all_inputs_or_timeout": {
+            "compute": "first_choice"
+          }
+        }
+      },
+      "ui_hints": {
+        "disable_after_click": true
+      }
+    },
+    "door_vanished": {
+      "id": "door_vanished",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Too Late",
+      "public_embed": {
+        "title": "💨 Gone",
+        "description": "The door vanishes completely, leaving only solid brick. Guess you're taking the window route after all.",
+        "color": 10038562
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "side_window"
+        }
+      }
+    },
+    "side_window": {
+      "id": "side_window",
+      "schema_version": 1,
+      "type": "sequence",
+      "title": "Window Lock Puzzle",
+      "public_embed": {
+        "title": "🔐 The Rusted Lock",
+        "description": "The window has an old mechanical lock with three levers. Each lever is marked with a symbol: a Moon, a Star, and a Sun.\n\nA faded inscription reads:\n*\"First the night must fall, then hope appears, finally the day begins.\"*",
+        "color": 10181046,
+        "fields": [
+          {
+            "name": "Hint",
+            "value": "Pull the levers in the order described by the riddle."
+          }
+        ]
+      },
+      "type_specific": {
+        "sequence": {
+          "steps": [
+            {
+              "id": "sun",
+              "label": "Sun",
+              "emoji": "☀️"
+            },
+            {
+              "id": "moon",
+              "label": "Moon",
+              "emoji": "🌙"
+            },
+            {
+              "id": "star",
+              "label": "Star",
+              "emoji": "⭐"
+            }
+          ],
+          "correct_order": ["moon", "star", "sun"],
+          "max_attempts": 3,
+          "on_success": "library_entrance",
+          "on_failure": "window_jammed"
+        }
+      }
+    },
+    "window_jammed": {
+      "id": "window_jammed",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Jammed",
+      "public_embed": {
+        "title": "❌ Stuck!",
+        "description": "The mechanism jams from too many wrong attempts. You force it open with a loud crash — not exactly subtle, but you're in.",
+        "color": 15158332
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "library_entrance"
+        }
+      }
+    },
+    "grand_hall": {
+      "id": "grand_hall",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Grand Hall",
+      "public_embed": {
+        "title": "🏛️ The Grand Hall",
+        "description": "You stumble into a massive hall. Moonlight streams through broken skylights, illuminating dusty portraits of the Blackwood family.\n\nTheir painted eyes seem to follow your every move.\n\nA corridor leads deeper into the manor, toward what looks like the library.",
+        "color": 6323595
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "library_entrance"
+        }
+      }
+    },
+    "library_entrance": {
+      "id": "library_entrance",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "The Library",
+      "public_embed": {
+        "title": "📚 Blackwood Library",
+        "description": "Towering bookshelves reach to the ceiling, filled with leather-bound tomes covered in thick dust. A fire crackles in the hearth — strange, since no one has lived here for decades.\n\nThen you see her.\n\nA translucent woman in a Victorian dress stands by the fireplace, her hollow gaze locked onto you.",
+        "image": "haunted-manor/node2.png",
+        "caption": "You are not alone.",
+        "color": 3447003
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "ghost_encounter"
+        }
+      }
+    },
+    "ghost_encounter": {
+      "id": "ghost_encounter",
+      "schema_version": 1,
+      "type": "social",
+      "title": "The Ghost",
+      "public_embed": {
+        "title": "👻 Lady Blackwood",
+        "description": "The ghost floats toward you, her voice like wind through broken glass:\n\n*\"Another soul seeks answers... or another victim for my collection?\"*\n\nHow do you respond?",
+        "color": 10181046
+      },
+      "type_specific": {
+        "social": {
+          "npc_name": "Lady Blackwood",
+          "reputation_stat": "ghost_trust",
+          "approaches": [
+            {
+              "id": "sympathy",
+              "label": "I want to help you find peace",
+              "emoji": "💗",
+              "style": 1,
+              "success_chance": 70,
+              "reputation_change": 15,
+              "on_success": "ghost_success",
+              "on_failure": "ghost_skeptical"
+            },
+            {
+              "id": "demand",
+              "label": "Tell me what happened here!",
+              "emoji": "😤",
+              "style": 4,
+              "success_chance": 30,
+              "reputation_change": -10,
+              "on_success": "ghost_success",
+              "on_failure": "ghost_hostile"
+            },
+            {
+              "id": "respect",
+              "label": "I mean no disrespect, my lady",
+              "emoji": "🙇",
+              "style": 2,
+              "success_chance": 60,
+              "reputation_change": 10,
+              "on_success": "ghost_success",
+              "on_failure": "ghost_skeptical"
+            }
+          ]
+        }
+      }
+    },
+    "ghost_success": {
+      "id": "ghost_success",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Ghost Calmed",
+      "public_embed": {
+        "title": "✨ A Moment of Clarity",
+        "description": "Lady Blackwood's expression softens. For a moment, she almost looks human again.\n\n*\"You... you remind me of my daughter. Perhaps you truly can end this curse.\"*\n\nShe gestures toward a hidden panel behind the bookshelf.\n\n*\"The answers you seek lie below. But beware — my husband's spirit guards the ritual room, and he was never as forgiving as I.\"*",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "secret_passage"
+        }
+      }
+    },
+    "ghost_skeptical": {
+      "id": "ghost_skeptical",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Ghost Uncertain",
+      "public_embed": {
+        "title": "🤔 Not Convinced",
+        "description": "Lady Blackwood tilts her head, studying you.\n\n*\"Pretty words... but I've heard many promises over the years. Prove your worth.\"*\n\nShe vanishes, but a cold draft pushes a bookshelf aside, revealing a hidden passage.",
+        "color": 16776960
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "secret_passage"
+        }
+      }
+    },
+    "ghost_hostile": {
+      "id": "ghost_hostile",
+      "schema_version": 1,
+      "type": "combat",
+      "title": "Ghost Attack",
+      "public_embed": {
+        "title": "⚔️ Spectral Fury",
+        "description": "Lady Blackwood's form twists into something monstrous. Her scream shatters the windows as she lunges at you!\n\n*\"YOU DARE COMMAND ME?!\"*",
+        "color": 15158332,
+        "fields": [
+          {
+            "name": "Objective",
+            "value": "Survive the ghost's assault!"
+          }
+        ]
+      },
+      "type_specific": {
+        "combat": {
+          "enemies": [
+            {
+              "id": "lady_blackwood",
+              "name": "Enraged Lady Blackwood",
+              "hp": 30,
+              "max_hp": 30,
+              "damage_range": [4, 8]
+            }
+          ],
+          "player_hp": 50,
+          "player_max_hp": 50,
+          "threat_level": 6,
+          "actions": [
+            {
+              "id": "attack",
+              "label": "Holy Water",
+              "emoji": "💧",
+              "style": 4,
+              "damage_range": [8, 15]
+            },
+            {
+              "id": "defend",
+              "label": "Shield Prayer",
+              "emoji": "🛡️",
+              "style": 1,
+              "defense_bonus": 6
+            },
+            {
+              "id": "dodge",
+              "label": "Duck",
+              "emoji": "🏃",
+              "style": 2,
+              "dodge_chance": 45
+            },
+            {
+              "id": "flee",
+              "label": "Run Away",
+              "emoji": "🚪",
+              "style": 2
+            }
+          ],
+          "on_victory": "ghost_defeated",
+          "on_defeat": "ghost_overwhelm",
+          "on_flee": "secret_passage"
+        }
+      }
+    },
+    "ghost_defeated": {
+      "id": "ghost_defeated",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Spirit Weakened",
+      "public_embed": {
+        "title": "💫 Rest Now",
+        "description": "Lady Blackwood's form flickers and fades. Her last words are a whisper:\n\n*\"Perhaps... you are the one... the passage... behind the books...\"*\n\nShe dissolves into mist, leaving the hidden passage exposed.",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "secret_passage"
+        }
+      }
+    },
+    "ghost_overwhelm": {
+      "id": "ghost_overwhelm",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Overwhelmed",
+      "public_embed": {
+        "title": "😵 Too Strong",
+        "description": "The ghost's fury is overwhelming. You black out...\n\nWhen you wake, you're lying in a dark corridor. The spirit is gone, but she clearly wanted you to find something. A passage stands open behind you.",
+        "color": 15158332
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "secret_passage"
+        }
+      }
+    },
+    "secret_passage": {
+      "id": "secret_passage",
+      "schema_version": 1,
+      "type": "dm",
+      "title": "Hidden Clue",
+      "public_embed": {
+        "title": "🕳️ The Secret Passage",
+        "description": "A spiral staircase descends into darkness. Ancient symbols line the walls — they look important.\n\nThose with keen eyes might notice something others miss...",
+        "color": 8359053,
+        "footer": "Check your DMs if you have the Scout role."
+      },
+      "side_effects_on_enter": {
+        "spawn_dm_jobs": true
+      },
+      "type_specific": {
+        "dm_deliveries": [
+          {
+            "recipient_role": "scout",
+            "content": {
+              "text": "🔍 **Scout Intel**\n\nYou notice four symbols repeating on the walls: **Triangle, Circle, Square, Star**\n\nAn inscription reads: *\"The shape of the soul, the cycle of life, the foundation of earth, and the light of hope.\"*\n\nThis might be the answer to something ahead!"
+            }
+          }
+        ],
+        "extra_data": {
+          "nextNodeId": "ritual_room"
+        }
+      }
+    },
+    "ritual_room": {
+      "id": "ritual_room",
+      "schema_version": 1,
+      "type": "memory",
+      "title": "Symbol Test",
+      "public_embed": {
+        "title": "🔮 The Ritual Room",
+        "description": "You enter a circular chamber lit by flickering candles. In the center, a stone altar bears four carved slots.\n\nA spectral voice echoes:\n\n*\"Only those who remember may proceed. What shape represents the soul?\"*",
+        "image": "haunted-manor/node3.png",
+        "caption": "What shape is the soul?",
+        "color": 10494192,
+        "fields": [
+          {
+            "name": "Challenge",
+            "value": "Think back to the symbols you saw — or ask your scout!"
+          }
+        ]
+      },
+      "type_specific": {
+        "memory": {
+          "question": "What shape represents the soul according to the inscription?",
+          "correct_answers": ["triangle", "Triangle", "the triangle", "a triangle"],
+          "case_sensitive": false,
+          "hints": ["It has three sides...", "It points upward like a soul ascending"],
+          "max_attempts": 3,
+          "on_success": "ritual_success",
+          "on_failure": "ritual_fail"
+        }
+      }
+    },
+    "ritual_success": {
+      "id": "ritual_success",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Memory Passed",
+      "public_embed": {
+        "title": "✨ Correct!",
+        "description": "The altar glows as the correct symbol slides into place. A hidden door grinds open, revealing the final chamber.\n\nYou can feel an immense energy beyond — this is where it all ends.",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "final_confrontation"
+        }
+      }
+    },
+    "ritual_fail": {
+      "id": "ritual_fail",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Memory Failed",
+      "public_embed": {
+        "title": "❌ Wrong Answer",
+        "description": "The altar flashes red. Wrong symbol.\n\nThe door still opens — but you've triggered a ward. You'll face what's ahead at a disadvantage.",
+        "color": 15158332
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "final_confrontation"
+        }
+      }
+    },
+    "final_confrontation": {
+      "id": "final_confrontation",
+      "schema_version": 1,
+      "type": "choice",
+      "title": "The Choice",
+      "public_embed": {
+        "title": "⚡ Lord Blackwood",
+        "description": "The final chamber contains the twisted spirit of Lord Blackwood himself. His form crackles with dark energy as ancient chains bind him to a massive ritual circle.\n\n*\"So... you've come to end it. Choose your method, mortal.\"*\n\nYou see two options: fight him directly, or attempt the banishment ritual carved into the floor.",
+        "image": "haunted-manor/node4.png",
+        "caption": "Choose your method, mortal.",
+        "color": 1752220,
+        "fields": [
+          {
+            "name": "Warning",
+            "value": "This choice will determine your ending."
+          }
+        ]
+      },
+      "type_specific": {
+        "choices": [
+          {
+            "id": "fight",
+            "label": "Fight him head-on",
+            "emoji": "⚔️",
+            "style": 4,
+            "nextNodeId": "confront_spirit"
+          },
+          {
+            "id": "ritual",
+            "label": "Perform the banishment ritual",
+            "emoji": "🔮",
+            "style": 1,
+            "nextNodeId": "banish_ritual"
+          }
+        ]
+      },
+      "ui_hints": {
+        "disable_after_click": true
+      }
+    },
+    "confront_spirit": {
+      "id": "confront_spirit",
+      "schema_version": 1,
+      "type": "combat",
+      "title": "Final Battle",
+      "public_embed": {
+        "title": "⚔️ Lord Blackwood Unleashed",
+        "description": "Lord Blackwood breaks his chains with a thunderous roar. His form expands into a towering shade of pure malice.\n\n*\"FOOL! I WILL ADD YOUR SOUL TO MY COLLECTION!\"*",
+        "color": 1,
+        "fields": [
+          {
+            "name": "Objective",
+            "value": "Destroy Lord Blackwood's spirit once and for all!"
+          }
+        ]
+      },
+      "type_specific": {
+        "combat": {
+          "enemies": [
+            {
+              "id": "lord_blackwood",
+              "name": "Lord Blackwood",
+              "hp": 60,
+              "max_hp": 60,
+              "damage_range": [8, 14]
+            }
+          ],
+          "player_hp": 70,
+          "player_max_hp": 70,
+          "threat_level": 8,
+          "actions": [
+            {
+              "id": "attack",
+              "label": "Sacred Strike",
+              "emoji": "✝️",
+              "style": 4,
+              "damage_range": [12, 20]
+            },
+            {
+              "id": "defend",
+              "label": "Protective Ward",
+              "emoji": "🛡️",
+              "style": 1,
+              "defense_bonus": 8
+            },
+            {
+              "id": "dodge",
+              "label": "Evade",
+              "emoji": "💨",
+              "style": 2,
+              "dodge_chance": 40
+            },
+            {
+              "id": "flee",
+              "label": "Retreat",
+              "emoji": "🚪",
+              "style": 2
+            }
+          ],
+          "on_victory": "victory_fight",
+          "on_defeat": "defeat",
+          "on_flee": "defeat"
+        }
+      }
+    },
+    "banish_ritual": {
+      "id": "banish_ritual",
+      "schema_version": 1,
+      "type": "sequence",
+      "title": "Banishment Ritual",
+      "public_embed": {
+        "title": "🔮 The Ritual",
+        "description": "You begin tracing the ritual circle's patterns. Four steps must be completed in perfect order:\n\n*\"Salt the threshold, speak the name, light the flame, seal the shame.\"*\n\nLord Blackwood screams as you begin, trying to break your concentration!",
+        "color": 10181046,
+        "fields": [
+          {
+            "name": "Instructions",
+            "value": "Complete the ritual steps in the correct order!"
+          }
+        ]
+      },
+      "type_specific": {
+        "sequence": {
+          "steps": [
+            {
+              "id": "flame",
+              "label": "Light the Flame",
+              "emoji": "🔥"
+            },
+            {
+              "id": "salt",
+              "label": "Salt the Threshold",
+              "emoji": "🧂"
+            },
+            {
+              "id": "name",
+              "label": "Speak the Name",
+              "emoji": "🗣️"
+            },
+            {
+              "id": "seal",
+              "label": "Seal the Shame",
+              "emoji": "📜"
+            }
+          ],
+          "correct_order": ["salt", "name", "flame", "seal"],
+          "max_attempts": 2,
+          "on_success": "victory_ritual",
+          "on_failure": "partial_success"
+        }
+      }
+    },
+    "victory_fight": {
+      "id": "victory_fight",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Victory by Force",
+      "public_embed": {
+        "title": "⚔️ Vanquished!",
+        "description": "With one final strike, Lord Blackwood's form shatters into a thousand fragments of light. His anguished scream fades into silence.\n\nThe manor shudders. The curse is broken through sheer force of will.\n\nYou did it the hard way — but you did it.",
+        "color": 15844367
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "epilogue"
+        }
+      }
+    },
+    "victory_ritual": {
+      "id": "victory_ritual",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Perfect Banishment",
+      "public_embed": {
+        "title": "✨ Banished!",
+        "description": "The ritual circle blazes with holy light as you complete the final step. Lord Blackwood's spirit is pulled toward the center, his screams fading as he's dragged into oblivion.\n\n*\"No... NOOOOO—\"*\n\nSilence. The curse is truly broken, and every soul trapped here can finally rest.",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "epilogue"
+        }
+      }
+    },
+    "partial_success": {
+      "id": "partial_success",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Incomplete Ritual",
+      "public_embed": {
+        "title": "⚠️ Almost...",
+        "description": "You fumble the ritual sequence. The circle flickers but doesn't fully activate.\n\nLord Blackwood laughs, but his form is weakened. He can't maintain his power anymore.\n\n*\"This isn't over... but it seems I must sleep again...\"*\n\nHe fades away. The curse is suppressed, but not destroyed. Someone else might have to finish what you started.",
+        "color": 16776960
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "epilogue"
+        }
+      }
+    },
+    "defeat": {
+      "id": "defeat",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Fallen",
+      "public_embed": {
+        "title": "💀 Your End",
+        "description": "Lord Blackwood's power is too great. Your vision fades as cold darkness envelops you.\n\n*\"Another soul for my collection...\"*\n\nWhen dawn comes, another portrait hangs in the grand hall. Yours.\n\nThe curse continues.",
+        "color": 1
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "bad_ending"
+        }
+      }
+    },
+    "bad_ending": {
+      "id": "bad_ending",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Game Over",
+      "public_embed": {
+        "title": "💀 GAME OVER",
+        "description": "Your investigation ended in tragedy. Perhaps someone else will succeed where you failed...\n\n*Or perhaps they'll join your portrait on the wall.*",
+        "color": 1,
+        "footer": "Thanks for playing The Haunted Manor!"
+      }
+    },
+    "epilogue": {
+      "id": "epilogue",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Dawn",
+      "public_embed": {
+        "title": "🌅 A New Dawn",
+        "description": "You emerge from the manor as the first rays of sunlight break over the horizon. Behind you, the building looks less menacing now — just an old house, finally at peace.\n\nThe Blackwood family can rest. And you survived to tell the tale.\n\nMaybe next time, you'll think twice before investigating haunted houses at midnight.",
+        "image": "haunted-manor/node5.png",
+        "caption": "The nightmare is over.",
+        "color": 16766720,
+        "footer": "🎉 Congratulations! You completed The Haunted Manor!"
+      }
+    }
+  }
+}

@@ -56,11 +56,12 @@ export async function buildSocialNode(
   }
 
   let attachment = null;
+  const subtitle = publicEmbed?.caption || publicEmbed?.title || node.title || (social?.npc_name ? `💬 ${social.npc_name}` : undefined);
   if (publicEmbed?.image) {
-    attachment = await buildCanvas(publicEmbed.image);
+    attachment = await buildCanvas(publicEmbed.image, subtitle);
     embed.setImage(`attachment://${attachment.name}`);
   } else if (social?.npc_image) {
-    attachment = await buildCanvas(social.npc_image);
+    attachment = await buildCanvas(social.npc_image, subtitle);
     embed.setImage(`attachment://${attachment.name}`);
   }
 

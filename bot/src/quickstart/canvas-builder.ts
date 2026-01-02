@@ -4,7 +4,7 @@ import path from 'path';
 
 const imageCache = new Map<string, any>();
 
-export async function buildCanvas(imagePath: string) {
+export async function buildCanvas(imagePath: string, subtitle?: string) {
   const canvas = Canvas.createCanvas(2752, 1536);
   const ctx = canvas.getContext('2d');
 
@@ -18,26 +18,29 @@ export async function buildCanvas(imagePath: string) {
 
   ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-  const boxX = 320;
-  const boxY = 1150;
-  const boxW = 2120;
-  const boxH = 220;
+  if (subtitle) {
+    const boxX = 320;
+    const boxY = 1150;
+    const boxW = 2120;
+    const boxH = 220;
 
-  ctx.font = "72px 'Helvetica Neue', Arial, sans-serif";
-  ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    ctx.fillRect(boxX, boxY, boxW, boxH);
 
-  const text = 'What are you thinking mate?.';
+    ctx.font = "64px 'Helvetica Neue', Arial, sans-serif";
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
 
-  const x = boxX + boxW / 2;
-  const y = boxY + boxH / 2;
-  ctx.fillText(text, x, y);
+    const x = boxX + boxW / 2;
+    const y = boxY + boxH / 2;
+    ctx.fillText(subtitle, x, y);
+  }
 
-  // PEG (80% quality) for roughly 17x speedup vs PNG
   const buffer = await canvas.toBuffer('image/jpeg', 80);
 
   return new AttachmentBuilder(buffer, {
     name: 'Background.jpg',
   });
 }
+

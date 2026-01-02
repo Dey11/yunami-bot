@@ -203,10 +203,11 @@ function evaluateSimpleMajority(
   }
 
   const winningChoice = choices.find((c) => c.id === winningChoiceId);
+  const totalVotes = [...voteCounts.values()].reduce((a, b) => a + b, 0);
 
   return {
     nextNodeId: winningChoice?.nextNodeId ?? null,
-    message: winningChoiceId
+    message: totalVotes > 1 && winningChoiceId
       ? `Majority chose: ${winningChoice?.label}`
       : undefined,
   };
@@ -231,7 +232,7 @@ function evaluateFirstChoice(
   const choice = choices.find((c) => c.id === earliest!.choiceId);
   return {
     nextNodeId: choice?.nextNodeId ?? null,
-    message: `First choice: ${choice?.label}`,
+    message: inputs.playerInputs.size > 1 ? `First choice: ${choice?.label}` : undefined,
   };
 }
 
@@ -254,7 +255,7 @@ function evaluateLastChoice(
   const choice = choices.find((c) => c.id === latest!.choiceId);
   return {
     nextNodeId: choice?.nextNodeId ?? null,
-    message: `Last choice: ${choice?.label}`,
+    message: inputs.playerInputs.size > 1 ? `Last choice: ${choice?.label}` : undefined,
   };
 }
 
@@ -272,6 +273,6 @@ function evaluateRandom(inputs: NodeInputs, choices: Choice[]): OutcomeResult {
 
   return {
     nextNodeId: choice?.nextNodeId ?? null,
-    message: `Random selection: ${choice?.label}`,
+    message: inputs.playerInputs.size > 1 ? `Random selection: ${choice?.label}` : undefined,
   };
 }

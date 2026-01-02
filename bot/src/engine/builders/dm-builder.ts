@@ -35,7 +35,8 @@ export async function buildDMNode(
 
   let attachment = null;
   if (publicEmbed?.image) {
-    attachment = await buildCanvas(publicEmbed.image);
+    const subtitle = publicEmbed?.caption || publicEmbed?.title || node.title;
+    attachment = await buildCanvas(publicEmbed.image, subtitle);
     embed.setImage(`attachment://${attachment.name}`);
   }
 
