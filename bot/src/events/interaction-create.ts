@@ -1,5 +1,5 @@
-import { Events, MessageFlags } from "discord.js";
-import { client } from "../index.js";
+import { Events, MessageFlags } from 'discord.js';
+import { client } from '../index.js';
 
 async function findHandler(customId: string) {
   let handler = client.buttonHandlers.get(customId);
@@ -25,9 +25,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     const handler = await findHandler(interaction.customId);
 
     if (!handler) {
-      console.error(
-        "No handler found for customId " + interaction.customId
-      );
+      console.error('No handler found for customId ' + interaction.customId);
       return;
     }
     try {
@@ -42,7 +40,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (!handler) {
       console.error(
-        "No modal handler found for customId " + interaction.customId
+        'No modal handler found for customId ' + interaction.customId
       );
       return;
     }
@@ -66,17 +64,15 @@ client.on(Events.InteractionCreate, async (interaction) => {
     try {
       if (interaction.replied || interaction.deferred) {
         await interaction.followUp({
-          content: "There was an error while executing this command!",
+          content: 'There was an error while executing this command!',
           flags: MessageFlags.Ephemeral,
         });
       } else {
         await interaction.reply({
-          content: "There was an error while executing this command!",
+          content: 'There was an error while executing this command!',
           flags: MessageFlags.Ephemeral,
         });
       }
-    } catch {
-    }
+    } catch {}
   }
 });
-

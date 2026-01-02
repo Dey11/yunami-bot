@@ -1,15 +1,19 @@
-import type { StoryNode, BuilderResult } from "./types.js";
-import type { MultiplayerSession } from "../types/party.js";
-import { buildNarrativeNode } from "./builders/narrative-builder.js";
-import { buildChoiceNode, type ChoiceBuilderContext } from "./builders/choice-builder.js";
-import { buildTimedNode } from "./builders/timed-builder.js";
-import { buildDMNode } from "./builders/dm-builder.js";
-import { buildSequenceNode } from "./builders/sequence-builder.js";
-import { buildSocialNode } from "./builders/social-builder.js";
-import { buildMemoryNode } from "./builders/memory-builder.js";
-import { checkPreconditions } from "./preconditions.js";
-import { executeSideEffects } from "./side-effects.js";
-import { getPartyByPlayer } from "../quickstart/party-session.js";
+import type { StoryNode, BuilderResult } from './types.js';
+import type { MultiplayerSession } from '../types/party.js';
+import { buildNarrativeNode } from './builders/narrative-builder.js';
+import {
+  buildChoiceNode,
+  type ChoiceBuilderContext,
+} from './builders/choice-builder.js';
+import { buildTimedNode } from './builders/timed-builder.js';
+import { buildDMNode } from './builders/dm-builder.js';
+import { buildSequenceNode } from './builders/sequence-builder.js';
+import { buildSocialNode } from './builders/social-builder.js';
+import { buildMemoryNode } from './builders/memory-builder.js';
+import { buildCombatNode } from './builders/combat-builder.js';
+import { checkPreconditions } from './preconditions.js';
+import { executeSideEffects } from './side-effects.js';
+import { getPartyByPlayer } from '../quickstart/party-session.js';
 
 export interface NodeLoadResult {
   allowed: boolean;
@@ -56,29 +60,43 @@ export async function renderNodeWithContext(
   nextNodeId?: string
 ): Promise<BuilderResult> {
   switch (node.type) {
-    case "narrative":
+    case 'narrative':
       return buildNarrativeNode(node, nextNodeId);
 
-    case "choice":
+    case 'choice':
       return buildChoiceNode(node, context);
 
-    case "timed":
+    case 'timed':
       return buildTimedNode(node, context);
 
-    case "dm":
+    case 'dm':
       return buildDMNode(node, nextNodeId);
 
-    case "sequence":
-      return buildSequenceNode(node, { playerId: context.playerId, nodeId: context.nodeId });
+    case 'sequence':
+      return buildSequenceNode(node, {
+        playerId: context.playerId,
+        nodeId: context.nodeId,
+      });
 
-    case "social":
-      return buildSocialNode(node, { playerId: context.playerId, nodeId: context.nodeId });
+    case 'social':
+      return buildSocialNode(node, {
+        playerId: context.playerId,
+        nodeId: context.nodeId,
+      });
 
-    case "memory":
-      return buildMemoryNode(node, { playerId: context.playerId, nodeId: context.nodeId });
+    case 'memory':
+      return buildMemoryNode(node, {
+        playerId: context.playerId,
+        nodeId: context.nodeId,
+      });
 
-    case "combat":
-    case "meta":
+    case 'combat':
+      return buildCombatNode(node, {
+        playerId: context.playerId,
+        nodeId: context.nodeId,
+      });
+
+    case 'meta':
       throw new Error(`Builder for type "${node.type}" not implemented yet`);
 
     default:
@@ -91,7 +109,7 @@ export async function renderNode(
   nextNodeId?: string
 ): Promise<BuilderResult> {
   const defaultContext: ChoiceBuilderContext = {
-    playerId: "",
+    playerId: '',
     nodeId: node.id,
     party: null,
   };

@@ -3,19 +3,17 @@ import {
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
-} from "discord.js";
-import { buildCanvas } from "./canvas-builder.js";
+} from 'discord.js';
+import { buildCanvas } from './canvas-builder.js';
 
 export async function storySceneBuilder(nodeId: string, storyData: any) {
   const node = storyData.nodes[nodeId];
 
   const imageUrl = node.imageUrl || node.public_embed?.image;
-  const cutsceneImage = imageUrl
-    ? await buildCanvas(imageUrl)
-    : null;
+  const cutsceneImage = imageUrl ? await buildCanvas(imageUrl) : null;
 
   const title = node.public_embed?.title || node.title;
-  const description = node.public_embed?.description || node.content || "";
+  const description = node.public_embed?.description || node.content || '';
   const color = node.public_embed?.color ?? 0x0e1015;
 
   const cutsceneEmbed = new EmbedBuilder()
@@ -23,7 +21,7 @@ export async function storySceneBuilder(nodeId: string, storyData: any) {
     .setTitle(title)
     .setDescription(description)
     .setFooter({
-      text: node.public_embed?.footer || "Your choices decide your trait",
+      text: node.public_embed?.footer || 'Your choices decide your trait',
     });
 
   if (cutsceneImage) {
@@ -48,4 +46,3 @@ export async function storySceneBuilder(nodeId: string, storyData: any) {
 
   return [cutsceneEmbed, null, cutsceneImage];
 }
-

@@ -1,21 +1,21 @@
-import { SlashCommandBuilder } from "discord.js";
-import { partyInviteButton } from "../../components/buttons/party-invite.js";
-import { getPartyByOwner } from "../../quickstart/party-session.js";
-import { MessageFlags } from "discord.js";
+import { SlashCommandBuilder } from 'discord.js';
+import { partyInviteButton } from '../../components/buttons/party-invite.js';
+import { getPartyByOwner } from '../../quickstart/party-session.js';
+import { MessageFlags } from 'discord.js';
 
 export const data = new SlashCommandBuilder()
-  .setName("party-invite")
-  .setDescription("Invite a user to your party")
+  .setName('party-invite')
+  .setDescription('Invite a user to your party')
   .addUserOption((option) =>
     option
-      .setName("user")
-      .setDescription("The user to invite")
+      .setName('user')
+      .setDescription('The user to invite')
       .setRequired(true)
   );
 
 export async function execute(interaction: any) {
   if (!interaction.isChatInputCommand()) return;
-  const user = interaction.options.getUser("user");
+  const user = interaction.options.getUser('user');
   if (!user) return;
 
   const party = await getPartyByOwner(interaction.user.id);
