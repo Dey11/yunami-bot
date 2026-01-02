@@ -9,6 +9,7 @@ import {
 
 const PROGRESS_UPDATE_INTERVAL_MS = 3000;
 const PROGRESS_BAR_LENGTH = 10;
+const DEBOUNCE_MS = 2000;
 
 let progressInterval: NodeJS.Timeout | null = null;
 
@@ -34,8 +35,17 @@ async function updateAllProgressBars(): Promise<void> {
 
     for (const session of sessions.values()) {
         for (const [timerId, timer] of session.activeTimers.entries()) {
+            if (timer.nodeId !== session.currentNodeId) {
+                continue;
+            }
+
             const activeMessage = getActiveMessage(session.odId);
             if (!activeMessage) continue;
+
+            const timeSinceLastUpdate = Date.now() - activeMessage.lastUpdated;
+            if (timeSinceLastUpdate < DEBOUNCE_MS) {
+                continue;
+            }
 
             const remaining = getTimerRemaining(session.odId, timerId);
             if (remaining <= 0) continue;

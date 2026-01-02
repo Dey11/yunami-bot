@@ -1,5 +1,5 @@
 {
-  "id": "engine_showcase",
+  "id": "engine-showcase",
   "title": "Engine Showcase Story",
   "description": "A comprehensive test story showcasing all engine features.",
   "firstNodeId": "intro",
@@ -11,11 +11,156 @@
       "title": "Welcome",
       "public_embed": {
         "title": "🎮 Engine Showcase",
-        "description": "This story demonstrates all the new engine features:\n\n• **Choices** with costs and confirmations\n• **Timed voting** with progress bar\n• **DM deliveries** for private info\n• **Outcome resolution** based on votes",
+        "description": "This story demonstrates all the engine features:\n\n• **Choices** with costs\n• **Timed voting** with progress bar\n• **Sequence puzzles**\n• **Social interactions** with reputation\n• **DM deliveries** for private info",
         "color": 5793266,
         "fields": [
           { "name": "Your Mission", "value": "Navigate through various scenarios to test each feature." }
         ]
+      },
+      "type_specific": {
+        "extra_data": { "nextNodeId": "sequence_demo" }
+      }
+    },
+    "sequence_demo": {
+      "id": "sequence_demo",
+      "schema_version": 1,
+      "type": "sequence",
+      "title": "Sequence Puzzle",
+      "public_embed": {
+        "title": "🔢 The Lock",
+        "description": "A mysterious lock blocks your path. Press the symbols in the correct order to proceed.\n\n**Hint:** The order is hidden in plain sight — 🔵 then 🔴 then 🟢",
+        "color": 10181046,
+        "fields": [
+          { "name": "Instructions", "value": "Click buttons in order, then Submit." }
+        ]
+      },
+      "type_specific": {
+        "sequence": {
+          "steps": [
+            { "id": "red", "label": "Red", "emoji": "🔴" },
+            { "id": "blue", "label": "Blue", "emoji": "🔵" },
+            { "id": "green", "label": "Green", "emoji": "🟢" }
+          ],
+          "correct_order": ["blue", "red", "green"],
+          "max_attempts": 3,
+          "on_success": "sequence_success",
+          "on_failure": "sequence_fail"
+        }
+      }
+    },
+    "sequence_success": {
+      "id": "sequence_success",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Lock Opened",
+      "public_embed": {
+        "title": "✅ Lock Opened!",
+        "description": "The lock clicks open. Well done!",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": { "nextNodeId": "social_demo" }
+      }
+    },
+    "sequence_fail": {
+      "id": "sequence_fail",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Lock Jammed",
+      "public_embed": {
+        "title": "❌ Lock Jammed!",
+        "description": "Too many wrong attempts. The lock is now stuck.",
+        "color": 15158332
+      },
+      "type_specific": {
+        "extra_data": { "nextNodeId": "social_demo" }
+      }
+    },
+    "social_demo": {
+      "id": "social_demo",
+      "schema_version": 1,
+      "type": "social",
+      "title": "Social Encounter",
+      "public_embed": {
+        "title": "💬 The Guard",
+        "description": "A suspicious guard blocks the gate. How will you get past?"
+      },
+      "type_specific": {
+        "social": {
+          "npc_name": "Gate Guard",
+          "reputation_stat": "guard_trust",
+          "approaches": [
+            {
+              "id": "bribe",
+              "label": "Offer Bribe",
+              "emoji": "💰",
+              "style": 1,
+              "success_chance": 80,
+              "reputation_change": 5,
+              "on_success": "guard_pass",
+              "on_failure": "guard_angry"
+            },
+            {
+              "id": "intimidate",
+              "label": "Intimidate",
+              "emoji": "😠",
+              "style": 4,
+              "success_chance": 40,
+              "reputation_change": -10,
+              "on_success": "guard_pass",
+              "on_failure": "guard_angry"
+            },
+            {
+              "id": "persuade",
+              "label": "Persuade",
+              "emoji": "🗣️",
+              "style": 3,
+              "success_chance": 60,
+              "reputation_change": 10,
+              "on_success": "guard_pass",
+              "on_failure": "guard_skeptical"
+            }
+          ]
+        }
+      }
+    },
+    "guard_pass": {
+      "id": "guard_pass",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Guard Passed",
+      "public_embed": {
+        "title": "✅ Access Granted!",
+        "description": "The guard steps aside and lets you through.",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": { "nextNodeId": "choice_demo" }
+      }
+    },
+    "guard_angry": {
+      "id": "guard_angry",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Guard Angry",
+      "public_embed": {
+        "title": "😡 Guard Angered!",
+        "description": "The guard scowls but eventually relents. You've made an enemy.",
+        "color": 15158332
+      },
+      "type_specific": {
+        "extra_data": { "nextNodeId": "choice_demo" }
+      }
+    },
+    "guard_skeptical": {
+      "id": "guard_skeptical",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Guard Skeptical",
+      "public_embed": {
+        "title": "🤔 Guard Unconvinced",
+        "description": "The guard doesn't believe you, but lets you pass with a warning.",
+        "color": 16776960
       },
       "type_specific": {
         "extra_data": { "nextNodeId": "choice_demo" }
@@ -28,7 +173,7 @@
       "title": "Choice Demo",
       "public_embed": {
         "title": "💰 The Merchant",
-        "description": "A traveling merchant offers you various goods. Each has a different cost.",
+        "description": "A traveling merchant offers you various goods.",
         "color": 15844367,
         "fields": [
           { "name": "Your Credits", "value": "You have 10 credits to spend." }
@@ -39,25 +184,25 @@
         "choices": [
           {
             "id": "buy_potion",
-            "label": "Buy Health Potion",
+            "label": "Buy Potion (3)",
             "emoji": "🧪",
             "style": 1,
             "cost": { "credits": 3 },
             "ephemeral_confirmation": true,
-            "nextNodeId": "bought_potion"
+            "nextNodeId": "bought_item"
           },
           {
             "id": "buy_sword",
-            "label": "Buy Sword",
+            "label": "Buy Sword (7)",
             "emoji": "⚔️",
             "style": 4,
             "cost": { "credits": 7 },
             "ephemeral_confirmation": true,
-            "nextNodeId": "bought_sword"
+            "nextNodeId": "bought_item"
           },
           {
-            "id": "skip_merchant",
-            "label": "Keep Walking",
+            "id": "skip",
+            "label": "Skip",
             "emoji": "🚶",
             "style": 2,
             "nextNodeId": "vote_demo"
@@ -68,29 +213,15 @@
         "disable_after_click": true
       }
     },
-    "bought_potion": {
-      "id": "bought_potion",
+    "bought_item": {
+      "id": "bought_item",
       "schema_version": 1,
       "type": "narrative",
-      "title": "Potion Purchased",
+      "title": "Item Purchased",
       "public_embed": {
-        "title": "🧪 Health Potion Acquired!",
-        "description": "The merchant hands you a glowing red vial. You feel prepared for danger.",
+        "title": "✅ Purchase Complete!",
+        "description": "You acquired the item. On to the next test!",
         "color": 3066993
-      },
-      "type_specific": {
-        "extra_data": { "nextNodeId": "vote_demo" }
-      }
-    },
-    "bought_sword": {
-      "id": "bought_sword",
-      "schema_version": 1,
-      "type": "narrative",
-      "title": "Sword Purchased",
-      "public_embed": {
-        "title": "⚔️ Legendary Sword Acquired!",
-        "description": "The blade gleams in the light. This cost most of your credits, but it's worth it!",
-        "color": 15158332
       },
       "type_specific": {
         "extra_data": { "nextNodeId": "vote_demo" }
@@ -103,39 +234,27 @@
       "title": "Timed Vote",
       "public_embed": {
         "title": "🗳️ The Crossroads",
-        "description": "The path splits into three directions. Your party must decide which way to go.\n\n**Vote now!** The majority wins when time runs out.",
-        "color": 3447003,
-        "fields": [
-          { "name": "⚔️ Left Path", "value": "Leads to a known bandit camp" },
-          { "name": "🏔️ Center Path", "value": "Climbs into treacherous mountains" },
-          { "name": "🌲 Right Path", "value": "Through a mysterious forest" }
-        ]
+        "description": "Choose a path! Vote before time runs out.",
+        "color": 3447003
       },
       "type_specific": {
         "timers": {
-          "duration_seconds": 25
+          "duration_seconds": 20
         },
         "choices": [
           {
-            "id": "path_left",
-            "label": "Bandit Camp",
-            "emoji": "⚔️",
-            "style": 4,
-            "nextNodeId": "bandit_path"
-          },
-          {
-            "id": "path_center",
-            "label": "Mountains",
-            "emoji": "🏔️",
+            "id": "left",
+            "label": "Left",
+            "emoji": "⬅️",
             "style": 1,
-            "nextNodeId": "mountain_path"
+            "nextNodeId": "dm_demo"
           },
           {
-            "id": "path_right",
-            "label": "Forest",
-            "emoji": "🌲",
-            "style": 3,
-            "nextNodeId": "forest_path"
+            "id": "right",
+            "label": "Right",
+            "emoji": "➡️",
+            "style": 1,
+            "nextNodeId": "dm_demo"
           }
         ],
         "outcome_rules": {
@@ -148,58 +267,29 @@
         "disable_after_click": true
       }
     },
-    "bandit_path": {
-      "id": "bandit_path",
-      "schema_version": 1,
-      "type": "narrative",
-      "title": "Bandit Encounter",
-      "public_embed": {
-        "title": "⚔️ Ambush!",
-        "description": "The bandits were expecting you! Steel clashes as combat begins.",
-        "color": 15158332,
-        "fields": [
-          { "name": "Outcome", "value": "This path leads to combat encounters (not yet implemented)." }
-        ]
-      }
-    },
-    "mountain_path": {
-      "id": "mountain_path",
-      "schema_version": 1,
-      "type": "narrative",
-      "title": "Mountain Climb",
-      "public_embed": {
-        "title": "🏔️ The Climb",
-        "description": "The air grows thin as you ascend. The view is breathtaking, but the path is treacherous.",
-        "color": 9807270,
-        "fields": [
-          { "name": "Outcome", "value": "A challenging but rewarding path." }
-        ]
-      }
-    },
-    "forest_path": {
-      "id": "forest_path",
+    "dm_demo": {
+      "id": "dm_demo",
       "schema_version": 1,
       "type": "dm",
-      "title": "Forest Secrets",
+      "title": "Secret Intel",
       "public_embed": {
-        "title": "🌲 Whispers in the Trees",
-        "description": "The forest is alive with secrets. Some of you may receive private information...",
-        "color": 2067276,
-        "fields": [
-          { "name": "Note", "value": "In multiplayer, DMs would be sent to specific party roles." }
-        ]
+        "title": "📡 Intelligence Report",
+        "description": "The scout has received classified information...\n\nIf you are the **Scout**, check your DMs for secret intel!",
+        "color": 16750848
+      },
+      "side_effects": {
+        "spawn_dm_jobs": true
       },
       "type_specific": {
         "dm_deliveries": [
           {
             "recipient_role": "scout",
-            "content": { "text": "🔍 **Secret Intel**: You spot hidden tracks leading to treasure!" }
+            "content": {
+              "text": "🔍 **Scout Intel**\n\n**Secret Message for Scout Only**\n\nYou spot a hidden path through the forest.\n\n*This information is for your eyes only. Share it with your team wisely.*"
+            }
           }
         ],
         "extra_data": { "nextNodeId": "ending" }
-      },
-      "side_effects_on_enter": {
-        "spawn_dm_jobs": true
       }
     },
     "ending": {
@@ -209,11 +299,8 @@
       "title": "The End",
       "public_embed": {
         "title": "🎉 Showcase Complete!",
-        "description": "You've tested all the major engine features:\n\n✅ Narrative nodes\n✅ Choice nodes with costs\n✅ Timed voting with progress bar\n✅ DM delivery nodes\n✅ Outcome resolution",
-        "color": 5793266,
-        "fields": [
-          { "name": "What's Next?", "value": "More node types coming: Combat, Social, Memory, Sequence" }
-        ]
+        "description": "You've tested all engine features:\n\n✅ Narrative nodes\n✅ Choice nodes with costs\n✅ Sequence puzzles\n✅ Social interactions\n✅ Timed voting\n✅ DM deliveries (check scout's DMs!)",
+        "color": 5793266
       }
     }
   }

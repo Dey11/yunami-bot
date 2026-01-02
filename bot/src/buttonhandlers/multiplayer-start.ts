@@ -1,6 +1,7 @@
-import { storySceneBuilder } from "../quickstart/embed-builder.js";
-import { startPartyStory, getPartyByOwner } from "../quickstart/party-session.js";
+import { startPartyStory, getPartyByOwner, getPartyByPlayer } from "../quickstart/party-session.js";
 import { storyGraph } from "../quickstart/story-graph.js";
+import { loadAndRenderNode } from "../engine/dispatcher.js";
+import { setActiveMessage, setResource } from "../quickstart/runtime-graph.js";
 import { MessageFlags } from "discord.js";
 
 export const handler = {
@@ -45,21 +46,41 @@ export const handler = {
             await interaction.reply({ content: "Error: Story has no entry node.", flags: MessageFlags.Ephemeral });
             return;
         }
+
         await interaction.deferUpdate();
 
-        const [embed, components, attachment] = await storySceneBuilder(firstNodeId, storyData);
+        const firstNode = storyData.nodes[firstNodeId];
+        if (!firstNode) {
+            await interaction.editReply({ content: "Error: First node not found." });
+            return;
+        }
+
+        for (const player of party.players) {
+            setResource(player.odId, "credits", 10);
+        }
+
+        const renderResult = await loadAndRenderNode(firstNode, interaction.user.id);
+
+        if (!renderResult.allowed) {
+            await interaction.editReply({ content: `Cannot start: ${renderResult.reason}` });
+            return;
+        }
 
         const payload: any = {
             content: `Multiplayer Story Started: ${storyData.title}`,
-            embeds: [embed],
-            files: attachment ? [attachment] : [],
-            components: []
+            embeds: [renderResult.result!.embed],
+            components: renderResult.result!.components ?? [],
         };
 
-        if (components) {
-            payload.components = [components];
+        if (renderResult.result!.attachment) {
+            payload.files = [renderResult.result!.attachment];
         }
 
-        await interaction.editReply(payload);
+        const response = await interaction.editReply(payload);
+        
+        for (const player of party.players) {
+            setActiveMessage(player.odId, interaction.channelId, response.id);
+        }
     }
 };
+

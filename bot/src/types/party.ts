@@ -6,6 +6,7 @@ export type PartyPlayer = {
   joinedAt: Date;
   isReady: boolean;
   playerSession?: string;
+  role?: string;
 };
 
 export type MultiplayerSession = {

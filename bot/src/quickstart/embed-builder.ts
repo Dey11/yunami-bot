@@ -9,27 +9,32 @@ import { buildCanvas } from "./canvas-builder.js";
 export async function storySceneBuilder(nodeId: string, storyData: any) {
   const node = storyData.nodes[nodeId];
 
-
-  const cutsceneImage = node.imageUrl
-    ? await buildCanvas(node.imageUrl)
+  const imageUrl = node.imageUrl || node.public_embed?.image;
+  const cutsceneImage = imageUrl
+    ? await buildCanvas(imageUrl)
     : null;
 
-  const cutsceneEmbed = new EmbedBuilder()
-    .setColor(0x0e1015)
-    .setTitle(node.title)
-    .setDescription(node.content)
-    .setFooter({
-      text: "Your choices decide your trait",
-    });
+  const title = node.public_embed?.title || node.title;
+  const description = node.public_embed?.description || node.content || "";
+  const color = node.public_embed?.color ?? 0x0e1015;
 
+  const cutsceneEmbed = new EmbedBuilder()
+    .setColor(color)
+    .setTitle(title)
+    .setDescription(description)
+    .setFooter({
+      text: node.public_embed?.footer || "Your choices decide your trait",
+    });
 
   if (cutsceneImage) {
     cutsceneEmbed.setImage(`attachment://${cutsceneImage.name}`);
   }
 
   const choicesButton = new ActionRowBuilder<ButtonBuilder>();
-  if (node.choices && node.choices.length > 0) {
-    for (const choice of node.choices) {
+  const choices = node.choices || node.type_specific?.choices || [];
+
+  if (choices.length > 0) {
+    for (const choice of choices) {
       choicesButton.addComponents(
         new ButtonBuilder()
           .setCustomId(choice.id)
@@ -43,3 +48,4 @@ export async function storySceneBuilder(nodeId: string, storyData: any) {
 
   return [cutsceneEmbed, null, cutsceneImage];
 }
+

@@ -15,7 +15,9 @@ export type PlayerSession = {
     { startTime: number; duration: number; nodeId: string }
   >;
   partyRole?: string;
-  activeMessage?: { channelId: string; messageId: string };
+  activeMessage?: { channelId: string; messageId: string; lastUpdated: number };
+  sequenceSelections: Map<string, string[]>;
+  sequenceAttempts: Map<string, number>;
 };
 
 const sessions = new Map<string, PlayerSession>();
@@ -45,6 +47,8 @@ export function initSession(
     activeTimers: new Map(),
     partyRole: undefined,
     activeMessage: undefined,
+    sequenceSelections: new Map(),
+    sequenceAttempts: new Map(),
   };
   sessions.set(odId, session);
   return session;
@@ -253,13 +257,13 @@ export function setActiveMessage(
 ): void {
   const session = sessions.get(odId);
   if (session) {
-    session.activeMessage = { channelId, messageId };
+    session.activeMessage = { channelId, messageId, lastUpdated: Date.now() };
   }
 }
 
 export function getActiveMessage(
   odId: string
-): { channelId: string; messageId: string } | undefined {
+): { channelId: string; messageId: string; lastUpdated: number } | undefined {
   const session = sessions.get(odId);
   return session?.activeMessage;
 }
@@ -271,3 +275,41 @@ export function clearActiveMessage(odId: string): void {
   }
 }
 
+export function getSequenceSelection(odId: string, nodeId: string): string[] | undefined {
+  const session = sessions.get(odId);
+  return session?.sequenceSelections.get(nodeId);
+}
+
+export function setSequenceSelection(odId: string, nodeId: string, selection: string[]): void {
+  const session = sessions.get(odId);
+  if (session) {
+    session.sequenceSelections.set(nodeId, selection);
+  }
+}
+
+export function clearSequenceSelection(odId: string, nodeId: string): void {
+  const session = sessions.get(odId);
+  if (session) {
+    session.sequenceSelections.delete(nodeId);
+  }
+}
+
+export function getSequenceAttempts(odId: string, nodeId: string): number {
+  const session = sessions.get(odId);
+  return session?.sequenceAttempts.get(nodeId) ?? 3;
+}
+
+export function setSequenceAttempts(odId: string, nodeId: string, attempts: number): void {
+  const session = sessions.get(odId);
+  if (session) {
+    session.sequenceAttempts.set(nodeId, attempts);
+  }
+}
+
+export function decrementSequenceAttempts(odId: string, nodeId: string): void {
+  const session = sessions.get(odId);
+  if (session) {
+    const current = session.sequenceAttempts.get(nodeId) ?? 3;
+    session.sequenceAttempts.set(nodeId, Math.max(0, current - 1));
+  }
+}

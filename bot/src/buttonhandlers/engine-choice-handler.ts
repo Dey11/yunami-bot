@@ -9,6 +9,7 @@ import {
     setActiveMessage,
     getVote,
     recordVote,
+    isTimerExpired,
 } from "../quickstart/runtime-graph.js";
 import { getPartyByPlayer } from "../quickstart/party-session.js";
 import { renderNodeWithContext } from "../engine/dispatcher.js";
@@ -62,6 +63,15 @@ export const handler = {
         const isTimedNode = currentNode.type === "timed";
 
         if (isTimedNode) {
+            const timerId = `${nodeId}:timer`;
+            if (isTimerExpired(odId, timerId)) {
+                await interaction.reply({
+                    content: "⏱️ Time's up! Voting has ended.",
+                    flags: MessageFlags.Ephemeral,
+                });
+                return;
+            }
+
             const existingVote = getVote(odId, nodeId);
             if (existingVote) {
                 await interaction.reply({

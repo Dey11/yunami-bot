@@ -84,65 +84,65 @@ async function defaultExpiryHandler(
     markTimedOut(nodeId, partyId);
 
     const currentNode = session.storyData?.nodes?.[nodeId];
-    if (!currentNode) {
-        recordChoice(session.odId, `timeout:${nodeId}`, null);
-        return;
-    }
-
-    const inputs = getNodeInputs(nodeId, partyId);
-    if (!inputs) {
-        recordChoice(session.odId, `timeout:${nodeId}`, null);
-        return;
-    }
-
-    const result = evaluateOutcome(currentNode, inputs, party);
-    recordChoice(session.odId, `timeout:${nodeId}`, result.nextNodeId);
-    clearNodeInputs(nodeId, partyId);
-
-    if (!result.nextNodeId) {
-        return;
-    }
-
-    const nextNode = session.storyData?.nodes?.[result.nextNodeId];
-    if (!nextNode) {
-        return;
-    }
-
     const activeMessage = getActiveMessage(session.odId);
+
     if (!activeMessage) {
+        recordChoice(session.odId, `timeout:${nodeId}`, null);
         return;
     }
+
+    let nextNodeId: string | null = null;
+    let message = "⏱️ **Time's up!** No decision was made.";
+
+    if (currentNode) {
+        const inputs = getNodeInputs(nodeId, partyId);
+        if (inputs && inputs.playerInputs.size > 0) {
+            const result = evaluateOutcome(currentNode, inputs, party);
+            nextNodeId = result.nextNodeId;
+            message = result.message ? `⏱️ **Time's up!** ${result.message}` : "⏱️ **Time's up!**";
+            clearNodeInputs(nodeId, partyId);
+        }
+    }
+
+    recordChoice(session.odId, `timeout:${nodeId}`, nextNodeId);
 
     try {
         const channel = await client.channels.fetch(activeMessage.channelId);
-        if (!channel || !channel.isTextBased()) {
-            return;
+        if (!channel || !channel.isTextBased()) return;
+
+        const msg = await (channel as TextChannel).messages.fetch(activeMessage.messageId);
+        if (!msg) return;
+
+        if (nextNodeId) {
+            const nextNode = session.storyData?.nodes?.[nextNodeId];
+            if (nextNode) {
+                const context = {
+                    playerId: session.odId,
+                    nodeId: nextNode.id,
+                    party,
+                };
+
+                const renderResult = await renderNodeWithContext(nextNode, context);
+
+                const payload: any = {
+                    content: message,
+                    embeds: [renderResult.embed],
+                    components: renderResult.components ?? [],
+                };
+
+                if (renderResult.attachment) {
+                    payload.files = [renderResult.attachment];
+                }
+
+                await msg.edit(payload);
+                return;
+            }
         }
 
-        const message = await (channel as TextChannel).messages.fetch(activeMessage.messageId);
-        if (!message) {
-            return;
-        }
-
-        const context = {
-            playerId: session.odId,
-            nodeId: nextNode.id,
-            party,
-        };
-
-        const renderResult = await renderNodeWithContext(nextNode, context);
-
-        const payload: any = {
-            content: result.message ? `⏱️ **Time's up!** ${result.message}` : "⏱️ **Time's up!**",
-            embeds: [renderResult.embed],
-            components: renderResult.components ?? [],
-        };
-
-        if (renderResult.attachment) {
-            payload.files = [renderResult.attachment];
-        }
-
-        await message.edit(payload);
+        await msg.edit({
+            content: message,
+            components: [],
+        });
     } catch (error) {
         console.error(`Failed to update message on timer expiry:`, error);
     }

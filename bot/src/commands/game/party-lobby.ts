@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } from "discord.js";
 import { getPartyByPlayer } from "../../quickstart/party-session.js";
+import { buildRoleSelectionRow } from "../../buttonhandlers/party-role-handler.js";
 
 export const data = new SlashCommandBuilder()
     .setName("party-lobby")
@@ -19,18 +20,18 @@ export async function execute(interaction: any) {
 
     const embed = new EmbedBuilder()
         .setTitle(`Party Lobby: ${party.name}`)
-        .setDescription("Waiting for all players to be ready...")
+        .setDescription("Select your role and ready up!")
         .setColor(0x00b3b3)
         .addFields(
             party.players.map((p) => ({
                 name: p.username,
-                value: p.isReady ? "✅ Ready" : "⬜ Not Ready",
+                value: `${p.role ? getRoleDisplay(p.role) : "⬜ No role"} | ${p.isReady ? "✅ Ready" : "⏳ Not Ready"}`,
                 inline: true,
             }))
         )
         .setFooter({ text: `Players: ${party.players.length}/${party.maxSize}` });
 
-    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    const readyRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
             .setCustomId("party_toggle_ready:true")
             .setLabel("Ready Up")
@@ -45,8 +46,21 @@ export async function execute(interaction: any) {
             .setStyle(ButtonStyle.Primary)
     );
 
+    const roleRow = buildRoleSelectionRow(party.id);
+
     await interaction.reply({
         embeds: [embed],
-        components: [row],
+        components: [roleRow, readyRow],
     });
 }
+
+function getRoleDisplay(role: string): string {
+    const roles: Record<string, string> = {
+        scout: "🔍 Scout",
+        leader: "👑 Leader",
+        healer: "💚 Healer",
+        warrior: "⚔️ Warrior",
+    };
+    return roles[role] || role;
+}
+

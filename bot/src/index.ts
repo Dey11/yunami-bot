@@ -84,8 +84,6 @@ async function initializeBot() {
   await loadButtonHandlers();
   await client.login(process.env.DISCORD_TOKEN);
   startTimerManager();
-  const { startProgressUpdater } = await import("./engine/timer-progress.js");
-  startProgressUpdater();
 }
 
 initializeBot();
