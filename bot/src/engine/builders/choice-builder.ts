@@ -10,6 +10,7 @@ import {
   getResource,
   getPartyRole,
   isChoiceLocked,
+  getSession,
 } from '../../quickstart/runtime-graph.js';
 import { getPartyByPlayer } from '../../quickstart/party-session.js';
 import type {
@@ -55,7 +56,8 @@ export async function buildChoiceNode(
 
   let attachment = null;
   if (publicEmbed?.image) {
-    attachment = await buildCanvas(publicEmbed.image);
+    const subtitle = publicEmbed?.caption || publicEmbed?.title || node.title;
+    attachment = await buildCanvas(publicEmbed.image, subtitle);
     embed.setImage(`attachment://${attachment.name}`);
   }
 
@@ -177,7 +179,7 @@ function buildRoleReservedAction(
 ): ActionRowBuilder<ButtonBuilder> | null {
   const party = context.party ?? getPartyByPlayer(context.playerId);
 
-  if (!partyHasRole(party, action.requires_team_role)) {
+  if (!partyHasRole(party, action.requires_team_role, context.playerId)) {
     return null;
   }
 
@@ -191,9 +193,13 @@ function buildRoleReservedAction(
 
 function partyHasRole(
   party: MultiplayerSession | null | undefined,
-  role: string
+  role: string,
+  playerId: string
 ): boolean {
   if (!party || party.status !== 'active') {
+    if (getSession(playerId)) {
+      return true;
+    }
     return false;
   }
 

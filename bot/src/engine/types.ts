@@ -13,6 +13,7 @@ export interface PublicEmbed {
   title?: string;
   description?: string;
   image?: string;
+  caption?: string;
   footer?: string;
   color?: number;
   fields?: Array<{ name: string; value: string; inline?: boolean }>;

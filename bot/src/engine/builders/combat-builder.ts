@@ -87,7 +87,8 @@ export async function buildCombatNode(
   let attachment = null;
   const imagePath = publicEmbed?.image || combat?.enemies?.[0]?.image;
   if (imagePath) {
-    attachment = await buildCanvas(imagePath);
+    const subtitle = publicEmbed?.caption || publicEmbed?.title || node.title;
+    attachment = await buildCanvas(imagePath, subtitle);
     embed.setImage(`attachment://${attachment.name}`);
   }
 
