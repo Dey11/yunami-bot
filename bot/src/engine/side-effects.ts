@@ -65,8 +65,7 @@ function findPlayersWithRole(
   const recipients: string[] = [];
 
   if (!party || party.status !== 'active') {
-    const session = getSession(currentPlayerId);
-    if (session && getPartyRole(currentPlayerId) === role) {
+    if (getSession(currentPlayerId)) {
       recipients.push(currentPlayerId);
     }
     return recipients;
