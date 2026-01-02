@@ -97,6 +97,16 @@ export interface SocialConfig {
     timer_seconds?: number;
 }
 
+export interface MemoryConfig {
+    question: string;
+    correct_answers: string[];
+    case_sensitive?: boolean;
+    hints?: string[];
+    max_attempts?: number;
+    on_success?: string;
+    on_failure?: string;
+}
+
 export interface TypeSpecific {
     timers?: Timer;
     choices?: Choice[];
@@ -106,6 +116,7 @@ export interface TypeSpecific {
     outcome_rules?: OutcomeRules;
     sequence?: SequenceConfig;
     social?: SocialConfig;
+    memory?: MemoryConfig;
     extra_data?: Record<string, any>;
 }
 
