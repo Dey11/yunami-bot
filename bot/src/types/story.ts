@@ -1,10 +1,15 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const storyChoiceSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
   emoji: z.string().optional(),
-  style: z.union([z.enum(["Primary", "Secondary", "Success", "Danger"]), z.number().int()]).optional(),
+  style: z
+    .union([
+      z.enum(['Primary', 'Secondary', 'Success', 'Danger']),
+      z.number().int(),
+    ])
+    .optional(),
   nextNodeId: z.string().min(1),
 });
 
@@ -32,7 +37,9 @@ export const storyEpisodeSchema = z.object({
   sharedScenes: z.record(storyNodeSchema).optional(),
 });
 
-export const storyCollectionSchema = z.object({episodes: z.array(storyEpisodeSchema)});
+export const storyCollectionSchema = z.object({
+  episodes: z.array(storyEpisodeSchema),
+});
 export type StoryChoice = z.infer<typeof storyChoiceSchema>;
 export type StoryCheckpoint = z.infer<typeof storyCheckpointSchema>;
 export type StoryNode = z.infer<typeof storyNodeSchema>;

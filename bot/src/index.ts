@@ -1,18 +1,18 @@
-import { Client, GatewayIntentBits, Collection } from "discord.js";
-import dotenv from "dotenv";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
-import { startTimerManager } from "./engine/timer-manager.js";
+import { Client, GatewayIntentBits, Collection } from 'discord.js';
+import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { startTimerManager } from './engine/timer-manager.js';
 
 dotenv.config();
 
-process.on("unhandledRejection", (error) => {
-  console.error("Unhandled rejection:", error);
+process.on('unhandledRejection', (error) => {
+  console.error('Unhandled rejection:', error);
 });
 
-process.on("uncaughtException", (error) => {
-  console.error("Uncaught exception:", error);
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught exception:', error);
 });
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,19 +25,19 @@ client.commands = new Collection();
 client.buttonHandlers = new Collection();
 
 async function loadCommands() {
-  const foldersPath = path.join(__dirname, "commands");
+  const foldersPath = path.join(__dirname, 'commands');
   const commandFolders = fs.readdirSync(foldersPath);
 
   for (const folder of commandFolders) {
     const commandsPath = path.join(foldersPath, folder);
     const commandFiles = fs
       .readdirSync(commandsPath)
-      .filter((file) => file.endsWith(".js"));
+      .filter((file) => file.endsWith('.js'));
 
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
       const command = await import(`file://${filePath}`);
-      if ("data" in command && "execute" in command) {
+      if ('data' in command && 'execute' in command) {
         client.commands.set(command.data.name, command);
       } else {
         console.log(
@@ -49,10 +49,10 @@ async function loadCommands() {
 }
 
 async function loadEvents() {
-  const eventsPath = path.join(__dirname, "events");
+  const eventsPath = path.join(__dirname, 'events');
   const eventFiles = fs
     .readdirSync(eventsPath)
-    .filter((file) => file.endsWith(".js"));
+    .filter((file) => file.endsWith('.js'));
 
   for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
@@ -61,7 +61,7 @@ async function loadEvents() {
 }
 
 async function loadButtonHandlers() {
-  const buttonHandlersPath = path.join(__dirname, "buttonhandlers");
+  const buttonHandlersPath = path.join(__dirname, 'buttonhandlers');
 
   function loadHandlersRecursive(dir: string) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -71,7 +71,7 @@ async function loadButtonHandlers() {
 
       if (entry.isDirectory()) {
         loadHandlersRecursive(fullPath);
-      } else if (entry.isFile() && entry.name.endsWith(".js")) {
+      } else if (entry.isFile() && entry.name.endsWith('.js')) {
         (async () => {
           const module = await import(`file://${fullPath}`);
           if (module.handler) {
@@ -83,7 +83,9 @@ async function loadButtonHandlers() {
           }
           if (module.modalHandler) {
             const modalHandler = module.modalHandler;
-            const ids = Array.isArray(modalHandler.id) ? modalHandler.id : [modalHandler.id];
+            const ids = Array.isArray(modalHandler.id)
+              ? modalHandler.id
+              : [modalHandler.id];
             for (const id of ids) {
               client.buttonHandlers.set(id, modalHandler);
             }
@@ -105,5 +107,3 @@ async function initializeBot() {
 }
 
 initializeBot();
-
-

@@ -61,11 +61,7 @@
               "emoji": "🟢"
             }
           ],
-          "correct_order": [
-            "blue",
-            "red",
-            "green"
-          ],
+          "correct_order": ["blue", "red", "green"],
           "max_attempts": 3,
           "on_success": "sequence_success",
           "on_failure": "sequence_fail"
@@ -356,16 +352,9 @@
       "type_specific": {
         "memory": {
           "question": "What color symbol came FIRST in the lock puzzle?",
-          "correct_answers": [
-            "blue",
-            "🔵",
-            "the blue one"
-          ],
+          "correct_answers": ["blue", "🔵", "the blue one"],
           "case_sensitive": false,
-          "hints": [
-            "Think about the order hint...",
-            "It rhymes with 'glue'"
-          ],
+          "hints": ["Think about the order hint...", "It rhymes with 'glue'"],
           "max_attempts": 3,
           "on_success": "memory_success",
           "on_failure": "memory_fail"
@@ -384,7 +373,7 @@
       },
       "type_specific": {
         "extra_data": {
-          "nextNodeId": "ending"
+          "nextNodeId": "combat_demo"
         }
       }
     },
@@ -400,6 +389,115 @@
       },
       "type_specific": {
         "extra_data": {
+          "nextNodeId": "combat_demo"
+        }
+      }
+    },
+    "combat_demo": {
+      "id": "combat_demo",
+      "schema_version": 1,
+      "type": "combat",
+      "title": "Combat Encounter",
+      "public_embed": {
+        "title": "Combat Test",
+        "description": "A shadow creature blocks your path! Prepare for battle.",
+        "color": 15158332,
+        "fields": [
+          {
+            "name": "Objective",
+            "value": "Defeat the enemy or flee to safety."
+          }
+        ]
+      },
+      "type_specific": {
+        "combat": {
+          "enemies": [
+            {
+              "id": "shadow",
+              "name": "Shadow Creature",
+              "hp": 25,
+              "max_hp": 25,
+              "damage_range": [3, 7]
+            }
+          ],
+          "player_hp": 40,
+          "player_max_hp": 40,
+          "threat_level": 5,
+          "actions": [
+            {
+              "id": "attack",
+              "label": "Attack",
+              "style": 4,
+              "damage_range": [5, 12]
+            },
+            {
+              "id": "defend",
+              "label": "Defend",
+              "style": 1,
+              "defense_bonus": 5
+            },
+            {
+              "id": "dodge",
+              "label": "Dodge",
+              "style": 2,
+              "dodge_chance": 50
+            },
+            {
+              "id": "flee",
+              "label": "Flee",
+              "style": 2
+            }
+          ],
+          "on_victory": "combat_victory",
+          "on_defeat": "combat_defeat",
+          "on_flee": "combat_fled"
+        }
+      }
+    },
+    "combat_victory": {
+      "id": "combat_victory",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Victory",
+      "public_embed": {
+        "title": "Victory!",
+        "description": "The shadow creature dissolves into mist. You have proven your combat prowess!",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "ending"
+        }
+      }
+    },
+    "combat_defeat": {
+      "id": "combat_defeat",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Defeated",
+      "public_embed": {
+        "title": "Defeated!",
+        "description": "The shadow creature overwhelmed you... but you awaken to continue your journey.",
+        "color": 15158332
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "ending"
+        }
+      }
+    },
+    "combat_fled": {
+      "id": "combat_fled",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Escaped",
+      "public_embed": {
+        "title": "Escaped!",
+        "description": "You managed to escape the shadow creature. Sometimes discretion is the better part of valor.",
+        "color": 16776960
+      },
+      "type_specific": {
+        "extra_data": {
           "nextNodeId": "ending"
         }
       }
@@ -411,7 +509,7 @@
       "title": "The End",
       "public_embed": {
         "title": "🎉 Showcase Complete!",
-        "description": "You've tested all engine features:\n\n✅ Narrative nodes\n✅ Choice nodes with costs\n✅ Sequence puzzles\n✅ Social interactions\n✅ Timed voting\n✅ DM deliveries\n✅ Memory challenges",
+        "description": "You've tested all engine features:\n\nNarrative nodes\nChoice nodes with costs\nSequence puzzles\nSocial interactions\nTimed voting\nDM deliveries\nMemory challenges\nCombat encounters",
         "color": 5793266
       }
     }

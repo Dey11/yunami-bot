@@ -1,6 +1,5 @@
-
 export const handler = {
-  id: "cancel",
+  id: 'cancel',
   async execute(interaction: any) {
     console.log(interaction.customId);
     await interaction.deferUpdate();

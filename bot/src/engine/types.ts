@@ -1,160 +1,199 @@
 export type NodeType =
-    | "narrative"
-    | "choice"
-    | "timed"
-    | "dm"
-    | "memory"
-    | "sequence"
-    | "combat"
-    | "social"
-    | "meta";
+  | 'narrative'
+  | 'choice'
+  | 'timed'
+  | 'dm'
+  | 'memory'
+  | 'sequence'
+  | 'combat'
+  | 'social'
+  | 'meta';
 
 export interface PublicEmbed {
-    title?: string;
-    description?: string;
-    image?: string;
-    footer?: string;
-    color?: number;
-    fields?: Array<{ name: string; value: string; inline?: boolean }>;
+  title?: string;
+  description?: string;
+  image?: string;
+  footer?: string;
+  color?: number;
+  fields?: Array<{ name: string; value: string; inline?: boolean }>;
 }
 
 export interface Choice {
-    id: string;
-    label: string;
-    emoji?: string;
-    style?: number;
-    cost?: Record<string, number>;
-    ephemeral_confirmation?: boolean;
-    nextNodeId?: string | null;
+  id: string;
+  label: string;
+  emoji?: string;
+  style?: number;
+  cost?: Record<string, number>;
+  ephemeral_confirmation?: boolean;
+  nextNodeId?: string | null;
 }
 
 export interface SelectOption {
-    id: string;
-    label: string;
-    emoji?: string;
+  id: string;
+  label: string;
+  emoji?: string;
 }
 
 export interface SelectMenu {
-    id: string;
-    placeholder?: string;
-    min?: number;
-    max?: number;
-    options: SelectOption[];
+  id: string;
+  placeholder?: string;
+  min?: number;
+  max?: number;
+  options: SelectOption[];
 }
 
 export interface RoleReservedAction {
-    id: string;
-    label: string;
-    requires_team_role: string;
-    visible_to_all?: boolean;
+  id: string;
+  label: string;
+  requires_team_role: string;
+  visible_to_all?: boolean;
 }
 
 export interface DMDelivery {
-    recipient_role: string;
-    content: { text: string };
+  recipient_role: string;
+  content: { text: string };
 }
 
 export interface Timer {
-    duration_seconds: number;
+  duration_seconds: number;
 }
 
 export interface OutcomeRules {
-    on_all_inputs_or_timeout?: { compute: string };
+  on_all_inputs_or_timeout?: { compute: string };
 }
 
 export interface SequenceStep {
-    id: string;
-    label: string;
-    emoji?: string;
+  id: string;
+  label: string;
+  emoji?: string;
 }
 
 export interface SequenceConfig {
-    steps: SequenceStep[];
-    correct_order: string[];
-    max_attempts?: number;
-    on_success?: string;
-    on_failure?: string;
+  steps: SequenceStep[];
+  correct_order: string[];
+  max_attempts?: number;
+  on_success?: string;
+  on_failure?: string;
 }
 
 export interface SocialApproach {
-    id: string;
-    label: string;
-    emoji?: string;
-    style?: number;
-    reputation_required?: number;
-    reputation_change?: number;
-    success_chance?: number;
-    on_success?: string;
-    on_failure?: string;
+  id: string;
+  label: string;
+  emoji?: string;
+  style?: number;
+  reputation_required?: number;
+  reputation_change?: number;
+  success_chance?: number;
+  on_success?: string;
+  on_failure?: string;
 }
 
 export interface SocialConfig {
-    npc_name: string;
-    npc_image?: string;
-    current_standing?: string;
-    approaches: SocialApproach[];
-    reputation_stat?: string;
-    timer_seconds?: number;
+  npc_name: string;
+  npc_image?: string;
+  current_standing?: string;
+  approaches: SocialApproach[];
+  reputation_stat?: string;
+  timer_seconds?: number;
 }
 
 export interface MemoryConfig {
-    question: string;
-    correct_answers: string[];
-    case_sensitive?: boolean;
-    hints?: string[];
-    max_attempts?: number;
-    on_success?: string;
-    on_failure?: string;
+  question: string;
+  correct_answers: string[];
+  case_sensitive?: boolean;
+  hints?: string[];
+  max_attempts?: number;
+  on_success?: string;
+  on_failure?: string;
+}
+
+export interface CombatAction {
+  id: string;
+  label: string;
+  emoji?: string;
+  style?: number;
+  damage_range?: [number, number];
+  defense_bonus?: number;
+  dodge_chance?: number;
+  cost?: Record<string, number>;
+}
+
+export interface CombatEnemy {
+  id: string;
+  name: string;
+  hp: number;
+  max_hp: number;
+  damage_range: [number, number];
+  image?: string;
+}
+
+export interface CombatState {
+  player_hp: number;
+  enemies: { id: string; hp: number }[];
+  defending: boolean;
+  turn: number;
+}
+
+export interface CombatConfig {
+  enemies: CombatEnemy[];
+  player_hp: number;
+  player_max_hp: number;
+  actions: CombatAction[];
+  threat_level?: number;
+  on_victory?: string;
+  on_defeat?: string;
+  on_flee?: string;
 }
 
 export interface TypeSpecific {
-    timers?: Timer;
-    choices?: Choice[];
-    selects?: SelectMenu[];
-    role_reserved_action?: RoleReservedAction;
-    dm_deliveries?: DMDelivery[];
-    outcome_rules?: OutcomeRules;
-    sequence?: SequenceConfig;
-    social?: SocialConfig;
-    memory?: MemoryConfig;
-    extra_data?: Record<string, any>;
+  timers?: Timer;
+  choices?: Choice[];
+  selects?: SelectMenu[];
+  role_reserved_action?: RoleReservedAction;
+  dm_deliveries?: DMDelivery[];
+  outcome_rules?: OutcomeRules;
+  sequence?: SequenceConfig;
+  social?: SocialConfig;
+  memory?: MemoryConfig;
+  combat?: CombatConfig;
+  extra_data?: Record<string, any>;
 }
 
 export interface Preconditions {
-    required_flags?: string[];
-    required_items?: string[];
-    min_player_count?: number;
-    max_player_count?: number;
+  required_flags?: string[];
+  required_items?: string[];
+  min_player_count?: number;
+  max_player_count?: number;
 }
 
 export interface SideEffectsOnEnter {
-    run_script?: string;
-    spawn_dm_jobs?: boolean;
+  run_script?: string;
+  spawn_dm_jobs?: boolean;
 }
 
 export interface UIHints {
-    disable_after_click?: boolean;
-    hide_choices_when_locked?: boolean;
-    edit_existing_embed?: boolean;
+  disable_after_click?: boolean;
+  hide_choices_when_locked?: boolean;
+  edit_existing_embed?: boolean;
 }
 
 export interface StoryNode {
-    id: string;
-    schema_version: number;
-    type: NodeType;
-    title?: string;
-    tags?: string[];
-    author_note?: string;
-    public_embed?: PublicEmbed;
-    type_specific?: TypeSpecific;
-    preconditions?: Preconditions;
-    side_effects_on_enter?: SideEffectsOnEnter;
-    ui_hints?: UIHints;
+  id: string;
+  schema_version: number;
+  type: NodeType;
+  title?: string;
+  tags?: string[];
+  author_note?: string;
+  public_embed?: PublicEmbed;
+  type_specific?: TypeSpecific;
+  preconditions?: Preconditions;
+  side_effects_on_enter?: SideEffectsOnEnter;
+  ui_hints?: UIHints;
 }
 
 export interface BuilderResult {
-    embed: any;
-    components: any[] | null;
-    attachment?: any;
-    timer?: Timer;
+  embed: any;
+  components: any[] | null;
+  attachment?: any;
+  timer?: Timer;
 }

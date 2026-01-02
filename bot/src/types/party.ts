@@ -1,4 +1,4 @@
-export type PartyStatus = "waiting" | "active" | "ended" | "cancelled";
+export type PartyStatus = 'waiting' | 'active' | 'ended' | 'cancelled';
 
 export type PartyPlayer = {
   odId: string;

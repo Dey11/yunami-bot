@@ -20,6 +20,15 @@ export type PlayerSession = {
   sequenceAttempts: Map<string, number>;
   memoryAttempts: Map<string, number>;
   memoryHintIndex: Map<string, number>;
+  combatStates: Map<
+    string,
+    {
+      player_hp: number;
+      enemies: { id: string; hp: number }[];
+      defending: boolean;
+      turn: number;
+    }
+  >;
 };
 
 const sessions = new Map<string, PlayerSession>();
@@ -53,6 +62,7 @@ export function initSession(
     sequenceAttempts: new Map(),
     memoryAttempts: new Map(),
     memoryHintIndex: new Map(),
+    combatStates: new Map(),
   };
   sessions.set(odId, session);
   return session;
@@ -279,12 +289,19 @@ export function clearActiveMessage(odId: string): void {
   }
 }
 
-export function getSequenceSelection(odId: string, nodeId: string): string[] | undefined {
+export function getSequenceSelection(
+  odId: string,
+  nodeId: string
+): string[] | undefined {
   const session = sessions.get(odId);
   return session?.sequenceSelections.get(nodeId);
 }
 
-export function setSequenceSelection(odId: string, nodeId: string, selection: string[]): void {
+export function setSequenceSelection(
+  odId: string,
+  nodeId: string,
+  selection: string[]
+): void {
   const session = sessions.get(odId);
   if (session) {
     session.sequenceSelections.set(nodeId, selection);
@@ -303,7 +320,11 @@ export function getSequenceAttempts(odId: string, nodeId: string): number {
   return session?.sequenceAttempts.get(nodeId) ?? 3;
 }
 
-export function setSequenceAttempts(odId: string, nodeId: string, attempts: number): void {
+export function setSequenceAttempts(
+  odId: string,
+  nodeId: string,
+  attempts: number
+): void {
   const session = sessions.get(odId);
   if (session) {
     session.sequenceAttempts.set(nodeId, attempts);
@@ -323,7 +344,11 @@ export function getMemoryAttempts(odId: string, nodeId: string): number {
   return session?.memoryAttempts.get(nodeId) ?? 3;
 }
 
-export function setMemoryAttempts(odId: string, nodeId: string, attempts: number): void {
+export function setMemoryAttempts(
+  odId: string,
+  nodeId: string,
+  attempts: number
+): void {
   const session = sessions.get(odId);
   if (session) {
     session.memoryAttempts.set(nodeId, attempts);
@@ -356,5 +381,43 @@ export function clearMemoryState(odId: string, nodeId: string): void {
   if (session) {
     session.memoryAttempts.delete(nodeId);
     session.memoryHintIndex.delete(nodeId);
+  }
+}
+
+export function getCombatState(
+  odId: string,
+  nodeId: string
+):
+  | {
+      player_hp: number;
+      enemies: { id: string; hp: number }[];
+      defending: boolean;
+      turn: number;
+    }
+  | undefined {
+  const session = sessions.get(odId);
+  return session?.combatStates.get(nodeId);
+}
+
+export function setCombatState(
+  odId: string,
+  nodeId: string,
+  state: {
+    player_hp: number;
+    enemies: { id: string; hp: number }[];
+    defending: boolean;
+    turn: number;
+  }
+): void {
+  const session = sessions.get(odId);
+  if (session) {
+    session.combatStates.set(nodeId, state);
+  }
+}
+
+export function clearCombatState(odId: string, nodeId: string): void {
+  const session = sessions.get(odId);
+  if (session) {
+    session.combatStates.delete(nodeId);
   }
 }
