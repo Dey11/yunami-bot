@@ -7,6 +7,14 @@ import { startTimerManager } from "./engine/timer-manager.js";
 
 dotenv.config();
 
+process.on("unhandledRejection", (error) => {
+  console.error("Unhandled rejection:", error);
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught exception:", error);
+});
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -65,10 +73,20 @@ async function loadButtonHandlers() {
         loadHandlersRecursive(fullPath);
       } else if (entry.isFile() && entry.name.endsWith(".js")) {
         (async () => {
-          const { handler } = await import(`file://${fullPath}`);
-          const ids = Array.isArray(handler.id) ? handler.id : [handler.id];
-          for (const id of ids) {
-            client.buttonHandlers.set(id, handler);
+          const module = await import(`file://${fullPath}`);
+          if (module.handler) {
+            const handler = module.handler;
+            const ids = Array.isArray(handler.id) ? handler.id : [handler.id];
+            for (const id of ids) {
+              client.buttonHandlers.set(id, handler);
+            }
+          }
+          if (module.modalHandler) {
+            const modalHandler = module.modalHandler;
+            const ids = Array.isArray(modalHandler.id) ? modalHandler.id : [modalHandler.id];
+            for (const id of ids) {
+              client.buttonHandlers.set(id, modalHandler);
+            }
           }
         })();
       }

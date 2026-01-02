@@ -18,6 +18,8 @@ export type PlayerSession = {
   activeMessage?: { channelId: string; messageId: string; lastUpdated: number };
   sequenceSelections: Map<string, string[]>;
   sequenceAttempts: Map<string, number>;
+  memoryAttempts: Map<string, number>;
+  memoryHintIndex: Map<string, number>;
 };
 
 const sessions = new Map<string, PlayerSession>();
@@ -49,6 +51,8 @@ export function initSession(
     activeMessage: undefined,
     sequenceSelections: new Map(),
     sequenceAttempts: new Map(),
+    memoryAttempts: new Map(),
+    memoryHintIndex: new Map(),
   };
   sessions.set(odId, session);
   return session;
@@ -311,5 +315,46 @@ export function decrementSequenceAttempts(odId: string, nodeId: string): void {
   if (session) {
     const current = session.sequenceAttempts.get(nodeId) ?? 3;
     session.sequenceAttempts.set(nodeId, Math.max(0, current - 1));
+  }
+}
+
+export function getMemoryAttempts(odId: string, nodeId: string): number {
+  const session = sessions.get(odId);
+  return session?.memoryAttempts.get(nodeId) ?? 3;
+}
+
+export function setMemoryAttempts(odId: string, nodeId: string, attempts: number): void {
+  const session = sessions.get(odId);
+  if (session) {
+    session.memoryAttempts.set(nodeId, attempts);
+  }
+}
+
+export function decrementMemoryAttempts(odId: string, nodeId: string): void {
+  const session = sessions.get(odId);
+  if (session) {
+    const current = session.memoryAttempts.get(nodeId) ?? 3;
+    session.memoryAttempts.set(nodeId, Math.max(0, current - 1));
+  }
+}
+
+export function getMemoryHintIndex(odId: string, nodeId: string): number {
+  const session = sessions.get(odId);
+  return session?.memoryHintIndex.get(nodeId) ?? 0;
+}
+
+export function incrementMemoryHintIndex(odId: string, nodeId: string): void {
+  const session = sessions.get(odId);
+  if (session) {
+    const current = session.memoryHintIndex.get(nodeId) ?? 0;
+    session.memoryHintIndex.set(nodeId, current + 1);
+  }
+}
+
+export function clearMemoryState(odId: string, nodeId: string): void {
+  const session = sessions.get(odId);
+  if (session) {
+    session.memoryAttempts.delete(nodeId);
+    session.memoryHintIndex.delete(nodeId);
   }
 }
