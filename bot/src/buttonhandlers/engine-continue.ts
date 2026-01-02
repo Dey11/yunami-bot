@@ -1,6 +1,7 @@
 import { MessageFlags } from "discord.js";
-import { getSession, recordChoice } from "../quickstart/runtime-graph.js";
-import { renderNode } from "../engine/dispatcher.js";
+import { getSession, recordChoice, setActiveMessage } from "../quickstart/runtime-graph.js";
+import { getPartyByPlayer } from "../quickstart/party-session.js";
+import { renderNodeWithContext } from "../engine/dispatcher.js";
 
 export const handler = {
     id: /^engine:continue:(.+)$/,
@@ -35,12 +36,20 @@ export const handler = {
         recordChoice(userId, `continue_${nextNodeId}`, nextNodeId);
         await interaction.deferUpdate();
 
-        const furtherNextId = nextNode.type_specific?.extra_data?.nextNodeId;
-        const result = await renderNode(nextNode, furtherNextId);
+        const party = getPartyByPlayer(userId);
+        const context = {
+            playerId: userId,
+            nodeId: nextNode.id,
+            party,
+        };
+
+        const result = await renderNodeWithContext(nextNode, context);
 
         const payload: any = { embeds: [result.embed], components: result.components ?? [] };
         if (result.attachment) payload.files = [result.attachment];
 
         await interaction.editReply(payload);
+        setActiveMessage(userId, interaction.message.channelId, interaction.message.id);
     },
 };
+

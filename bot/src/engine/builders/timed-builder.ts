@@ -35,10 +35,11 @@ export async function buildTimedNode(
     if (publicEmbed?.description) embed.setDescription(publicEmbed.description);
 
     if (timer?.duration_seconds) {
-        const progressBar = buildProgressBar(timer.duration_seconds, timer.duration_seconds);
-        embed.setFooter({ text: `⏱️ ${progressBar} ${timer.duration_seconds}s` });
+        const expiryTime = Math.floor(Date.now() / 1000) + timer.duration_seconds;
+        embed.setFooter({ text: `⏱️ Expires: ` });
+        embed.setDescription((publicEmbed?.description || "") + `\n\n⏱️ Time remaining: <t:${expiryTime}:R>`);
 
-        startTimer(context.playerId, `timer:${context.nodeId}`, context.nodeId, timer.duration_seconds);
+        startTimer(context.playerId, `${context.nodeId}:timer`, context.nodeId, timer.duration_seconds);
     } else if (publicEmbed?.footer) {
         embed.setFooter({ text: publicEmbed.footer });
     }

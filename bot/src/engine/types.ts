@@ -62,6 +62,41 @@ export interface OutcomeRules {
     on_all_inputs_or_timeout?: { compute: string };
 }
 
+export interface SequenceStep {
+    id: string;
+    label: string;
+    emoji?: string;
+}
+
+export interface SequenceConfig {
+    steps: SequenceStep[];
+    correct_order: string[];
+    max_attempts?: number;
+    on_success?: string;
+    on_failure?: string;
+}
+
+export interface SocialApproach {
+    id: string;
+    label: string;
+    emoji?: string;
+    style?: number;
+    reputation_required?: number;
+    reputation_change?: number;
+    success_chance?: number;
+    on_success?: string;
+    on_failure?: string;
+}
+
+export interface SocialConfig {
+    npc_name: string;
+    npc_image?: string;
+    current_standing?: string;
+    approaches: SocialApproach[];
+    reputation_stat?: string;
+    timer_seconds?: number;
+}
+
 export interface TypeSpecific {
     timers?: Timer;
     choices?: Choice[];
@@ -69,6 +104,8 @@ export interface TypeSpecific {
     role_reserved_action?: RoleReservedAction;
     dm_deliveries?: DMDelivery[];
     outcome_rules?: OutcomeRules;
+    sequence?: SequenceConfig;
+    social?: SocialConfig;
     extra_data?: Record<string, any>;
 }
 

@@ -146,6 +146,21 @@ export function setPlayerReady(
   return true;
 }
 
+export function setPlayerRole(
+  partyId: string,
+  playerId: string,
+  role: string
+): boolean {
+  const party = partySessions.get(partyId);
+  if (!party) return false;
+
+  const player = party.players.find((p) => p.odId === playerId);
+  if (!player) return false;
+
+  player.role = role;
+  return true;
+}
+
 export function areAllPlayersReady(partyId: string): boolean {
   const party = partySessions.get(partyId);
   if (!party || party.players.length < party.maxSize) return false;

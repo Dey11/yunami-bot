@@ -34,11 +34,13 @@ export async function buildNarrativeNode(
     }
 
     let components: any[] | null = null;
-    if (nextNodeId) {
+    const resolvedNextId = nextNodeId ?? node.type_specific?.extra_data?.nextNodeId;
+    
+    if (resolvedNextId) {
         components = [
             new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
-                    .setCustomId(`engine:continue:${nextNodeId}`)
+                    .setCustomId(`engine:continue:${resolvedNextId}`)
                     .setLabel("Continue")
                     .setEmoji("▶️")
                     .setStyle(ButtonStyle.Primary)
