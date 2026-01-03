@@ -33,7 +33,10 @@
         "description": "Your eyes open slowly.\n\nYou're lying on cold stone. The sky above is wrong. Purple clouds drift past broken moons.\n\nYou don't remember how you got here. You don't remember *anything*.\n\nBut something glowing waits ahead.",
         "color": 5793266,
         "fields": [
-          { "name": "🗺️ Location", "value": "The Threshold, a place between worlds" }
+          {
+            "name": "🗺️ Location",
+            "value": "The Threshold, a place between worlds"
+          }
         ]
       },
       "type_specific": {
@@ -91,9 +94,7 @@
         "title": "🔮 The Symbols Light Up",
         "description": "The symbols around the portal start glowing in a pattern!\n\nYou see: 🌙 Moon → ⭐ Star → ☀️ Sun\n\nCan you repeat it?",
         "color": 10181046,
-        "fields": [
-          { "name": "💡 Hint", "value": "Night comes before day..." }
-        ]
+        "fields": [{ "name": "💡 Hint", "value": "Night comes before day..." }]
       },
       "type_specific": {
         "sequence": {
@@ -225,13 +226,23 @@
         "description": "When you touch the sword, images flash through your mind. Warriors. Battles. Protection.\n\nA question pops into your head...",
         "color": 10494192,
         "fields": [
-          { "name": "❓ Question", "value": "What do you call someone who protects others?" }
+          {
+            "name": "❓ Question",
+            "value": "What do you call someone who protects others?"
+          }
         ]
       },
       "type_specific": {
         "memory": {
           "question": "What do you call someone who protects others?",
-          "correct_answers": ["guardian", "guardians", "protector", "protectors", "defender", "knight"],
+          "correct_answers": [
+            "guardian",
+            "guardians",
+            "protector",
+            "protectors",
+            "defender",
+            "knight"
+          ],
           "case_sensitive": false,
           "hints": ["Rhymes with 'warden'...", "Think superhero, but medieval"],
           "max_attempts": 3,
@@ -443,9 +454,27 @@
           "player_max_hp": 30,
           "threat_level": 5,
           "actions": [
-            { "id": "attack", "label": "Attack", "emoji": "👊", "style": 4, "damage_range": [4, 8] },
-            { "id": "defend", "label": "Block", "emoji": "🛡️", "style": 1, "defense_bonus": 4 },
-            { "id": "dodge", "label": "Dodge", "emoji": "💨", "style": 2, "dodge_chance": 40 }
+            {
+              "id": "attack",
+              "label": "Attack",
+              "emoji": "👊",
+              "style": 4,
+              "damage_range": [4, 8]
+            },
+            {
+              "id": "defend",
+              "label": "Block",
+              "emoji": "🛡️",
+              "style": 1,
+              "defense_bonus": 4
+            },
+            {
+              "id": "dodge",
+              "label": "Dodge",
+              "emoji": "💨",
+              "style": 2,
+              "dodge_chance": 40
+            }
           ],
           "on_victory": "shadow_victory",
           "on_defeat": "shadow_defeat"

@@ -7,40 +7,50 @@ import type {
 
 const evaluations = new Map<string, PrologueEvaluation>();
 
-const PERSONALITY_TYPES: Record<string, { name: string; description: string; requiredTraits: string[] }> = {
+const PERSONALITY_TYPES: Record<
+  string,
+  { name: string; description: string; requiredTraits: string[] }
+> = {
   strategist: {
     name: 'The Strategist',
-    description: 'You approach problems with calculated precision, weighing options before acting.',
+    description:
+      'You approach problems with calculated precision, weighing options before acting.',
     requiredTraits: ['cautious', 'observant', 'analytical'],
   },
   berserker: {
     name: 'The Berserker',
-    description: 'You charge headfirst into danger, relying on instinct and raw power.',
+    description:
+      'You charge headfirst into danger, relying on instinct and raw power.',
     requiredTraits: ['aggressive', 'brave', 'impulsive'],
   },
   diplomat: {
     name: 'The Diplomat',
-    description: 'Words are your weapon. You resolve conflicts through charm and persuasion.',
+    description:
+      'Words are your weapon. You resolve conflicts through charm and persuasion.',
     requiredTraits: ['charismatic', 'empathetic', 'peaceful'],
   },
   shadow: {
     name: 'The Shadow',
-    description: 'You move unseen, striking from darkness when opportunity presents itself.',
+    description:
+      'You move unseen, striking from darkness when opportunity presents itself.',
     requiredTraits: ['stealthy', 'patient', 'cunning'],
   },
   guardian: {
     name: 'The Guardian',
-    description: 'Protection comes naturally. You stand between danger and those who cannot defend themselves.',
+    description:
+      'Protection comes naturally. You stand between danger and those who cannot defend themselves.',
     requiredTraits: ['protective', 'selfless', 'brave'],
   },
   seeker: {
     name: 'The Seeker',
-    description: 'Knowledge drives you. Every mystery is a puzzle waiting to be solved.',
+    description:
+      'Knowledge drives you. Every mystery is a puzzle waiting to be solved.',
     requiredTraits: ['curious', 'observant', 'analytical'],
   },
   wildcard: {
     name: 'The Wildcard',
-    description: 'Unpredictable and adaptable, you thrive in chaos where others falter.',
+    description:
+      'Unpredictable and adaptable, you thrive in chaos where others falter.',
     requiredTraits: ['impulsive', 'adaptable', 'creative'],
   },
 };
@@ -86,7 +96,9 @@ export function initPrologueEvaluation(odId: string): void {
   });
 }
 
-export function getPrologueEvaluation(odId: string): PrologueEvaluation | undefined {
+export function getPrologueEvaluation(
+  odId: string
+): PrologueEvaluation | undefined {
   return evaluations.get(odId);
 }
 
@@ -103,7 +115,8 @@ export function recordPrologueChoice(
   if (traitMappings && traitMappings[choiceId]) {
     const traits = traitMappings[choiceId];
     for (const [trait, value] of Object.entries(traits)) {
-      evaluation.traitVector[trait] = (evaluation.traitVector[trait] || 0) + value;
+      evaluation.traitVector[trait] =
+        (evaluation.traitVector[trait] || 0) + value;
     }
   }
 }
@@ -120,12 +133,15 @@ export function recordPuzzlePerformance(
   evaluation.puzzlePerformance.set(nodeId, { timeTaken, attempts });
 
   if (attempts === 1) {
-    evaluation.traitVector['analytical'] = (evaluation.traitVector['analytical'] || 0) + 2;
+    evaluation.traitVector['analytical'] =
+      (evaluation.traitVector['analytical'] || 0) + 2;
   }
   if (timeTaken < 10000) {
-    evaluation.traitVector['quick'] = (evaluation.traitVector['quick'] || 0) + 1;
+    evaluation.traitVector['quick'] =
+      (evaluation.traitVector['quick'] || 0) + 1;
   } else if (timeTaken > 30000) {
-    evaluation.traitVector['patient'] = (evaluation.traitVector['patient'] || 0) + 1;
+    evaluation.traitVector['patient'] =
+      (evaluation.traitVector['patient'] || 0) + 1;
   }
 }
 
@@ -148,8 +164,14 @@ function getDominantTraits(traitVector: TraitVector): string[] {
   return sortedTraits.slice(0, 3).map(([trait]) => trait);
 }
 
-function matchPersonalityType(dominantTraits: string[]): { name: string; description: string } {
-  let bestMatch = { name: 'The Wanderer', description: 'Your path is yours alone to define.' };
+function matchPersonalityType(dominantTraits: string[]): {
+  name: string;
+  description: string;
+} {
+  let bestMatch = {
+    name: 'The Wanderer',
+    description: 'Your path is yours alone to define.',
+  };
   let bestScore = 0;
 
   for (const [_, personality] of Object.entries(PERSONALITY_TYPES)) {
@@ -161,14 +183,19 @@ function matchPersonalityType(dominantTraits: string[]): { name: string; descrip
     }
     if (score > bestScore) {
       bestScore = score;
-      bestMatch = { name: personality.name, description: personality.description };
+      bestMatch = {
+        name: personality.name,
+        description: personality.description,
+      };
     }
   }
 
   return bestMatch;
 }
 
-function calculateBaseStats(traitVector: TraitVector): PrologueResult['baseStats'] {
+function calculateBaseStats(
+  traitVector: TraitVector
+): PrologueResult['baseStats'] {
   const stats: PrologueResult['baseStats'] = {
     str: 10,
     dex: 10,
