@@ -14,7 +14,11 @@ import {
 import { getPartyByPlayer } from '../quickstart/party-session.js';
 import { renderNodeWithContext } from '../engine/dispatcher.js';
 import { recordPlayerInput } from '../engine/outcome-engine.js';
-import type { Choice } from '../engine/types.js';
+import type { Choice, TraitMapping } from '../engine/types.js';
+import {
+  recordPrologueChoice,
+  isPrologueActive,
+} from '../engine/prologue-evaluator.js';
 
 export const handler = {
   id: /^choice:(.+):(.+)$/,
@@ -117,6 +121,11 @@ export const handler = {
 
     lockChoice(odId, nodeId, choiceId);
     recordChoice(odId, choiceId, choice.nextNodeId ?? null);
+
+    if (isPrologueActive(odId)) {
+      const traitMappings: TraitMapping = session.storyData.traitMappings || {};
+      recordPrologueChoice(odId, choiceId, traitMappings);
+    }
 
     if (isTimedNode) {
       recordVote(odId, nodeId, choiceId);
