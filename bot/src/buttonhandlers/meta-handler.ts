@@ -1,8 +1,5 @@
 import { MessageFlags, EmbedBuilder } from 'discord.js';
-import {
-  getSession,
-  endSession,
-} from '../quickstart/runtime-graph.js';
+import { getSession, endSession } from '../quickstart/runtime-graph.js';
 import {
   finalizePrologueProfile,
   clearPrologueEvaluation,
@@ -57,7 +54,7 @@ export const handler = {
       const embed = new EmbedBuilder()
         .setTitle(result.personalityType)
         .setDescription(result.personalityDescription)
-        .setColor(0x5865F2)
+        .setColor(0x5865f2)
         .addFields(
           {
             name: 'Stats',
@@ -66,14 +63,17 @@ export const handler = {
           },
           {
             name: 'Traits',
-            value: result.dominantTraits.length > 0
-              ? result.dominantTraits.join(', ')
-              : 'Balanced',
+            value:
+              result.dominantTraits.length > 0
+                ? result.dominantTraits.join(', ')
+                : 'Balanced',
             inline: true,
           },
           {
             name: 'Starting Items',
-            value: result.startingInventory.map(i => i.replace(/_/g, ' ')).join(', '),
+            value: result.startingInventory
+              .map((i) => i.replace(/_/g, ' '))
+              .join(', '),
             inline: true,
           }
         )
