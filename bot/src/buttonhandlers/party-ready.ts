@@ -5,49 +5,84 @@ import {
   EmbedBuilder,
   MessageFlags,
 } from 'discord.js';
-import {
-  getPartyByPlayer,
-  setPlayerReady,
-} from '../quickstart/party-session.js';
+import * as api from '../api/client.js';
 
 export const handler = {
   id: [/^party_toggle_ready:(true|false)$/, 'refresh_lobby'],
   async execute(interaction: any) {
-    const party = getPartyByPlayer(interaction.user.id);
+    const discordId = interaction.user.id;
 
-    if (!party) {
+    // Get user to find their current party
+    const userResponse = await api.getUser(discordId);
+    if (userResponse.error) {
       await interaction.reply({
-        content: 'You are not in a party.',
+        content: 'Failed to get user data.',
         flags: MessageFlags.Ephemeral,
       });
       return;
     }
 
-    if (interaction.customId !== 'refresh_lobby') {
-      const isReady = interaction.customId.split(':')[1] === 'true';
-      const player = party.players.find((p) => p.odId === interaction.user.id);
+    // For now, we need to track partyId somehow
+    // The party info should come from the interaction context or stored state
+    // This is a limitation - we need partyId from somewhere
 
-      if (player && player.isReady === isReady) {
-        // If status is unchanged, just acknowledge and do nothing to save rate limits
-        await interaction.deferUpdate();
-        return;
-      }
-
-      setPlayerReady(party.id, interaction.user.id, isReady);
+    // Try to extract partyId from the message embed or use a stored value
+    // For now, let's assume the bot stores it in the embed footer or we query for it
+    
+    // Fallback: Check if user has party info in message
+    const message = interaction.message;
+    const embed = message?.embeds?.[0];
+    const footerText = embed?.footer?.text || '';
+    const partyIdMatch = footerText.match(/Party ID: (\w+)/);
+    
+    if (!partyIdMatch) {
+      await interaction.reply({
+        content: 'Could not find party information. Please rejoin the party.',
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
     }
 
-    const embed = new EmbedBuilder()
-      .setTitle(`Party Lobby: ${party.name}`)
-      .setDescription('Waiting for all players to be ready...')
+    const partyId = partyIdMatch[1];
+
+    if (interaction.customId !== 'refresh_lobby') {
+      const isReady = interaction.customId.split(':')[1] === 'true';
+      
+      // Update ready status via API
+      const readyResult = await api.setReady(discordId, partyId, isReady);
+      if (readyResult.error) {
+        await interaction.reply({
+          content: `Failed to update ready status: ${readyResult.error}`,
+          flags: MessageFlags.Ephemeral,
+        });
+        return;
+      }
+    }
+
+    // Fetch current party state
+    const partyResponse = await api.getParty(discordId, partyId);
+    if (partyResponse.error || !partyResponse.data?.party) {
+      await interaction.reply({
+        content: 'Party not found.',
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
+    const party = partyResponse.data.party;
+
+    const partyEmbed = new EmbedBuilder()
+      .setTitle(`Party Lobby`)
+      .setDescription(`Invite Code: **${party.code}**\nWaiting for all players to be ready...`)
       .setColor(0x00b3b3)
       .addFields(
-        party.players.map((p) => ({
-          name: p.username,
-          value: p.isReady ? '✅ Ready' : '⬜ Not Ready',
+        party.members.map((m: any) => ({
+          name: m.user.username,
+          value: m.isReady ? '✅ Ready' : '⬜ Not Ready',
           inline: true,
         }))
       )
-      .setFooter({ text: `Players: ${party.players.length}/${party.maxSize}` });
+      .setFooter({ text: `Players: ${party.members.length}/4 | Party ID: ${party.id}` });
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
@@ -65,7 +100,7 @@ export const handler = {
     );
 
     await interaction.update({
-      embeds: [embed],
+      embeds: [partyEmbed],
       components: [row],
     });
   },

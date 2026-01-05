@@ -53,24 +53,40 @@ The entire experience must be delivered using only:
 
 ---
 
-## 4. High-Level Architecture
+## 4. Architecture
 
-At its core, the system is:
+### 4.1 Split Architecture: Bot & Server
 
-- A **story graph engine**
-- Where each **node (scene)** describes:
+The system is divided into two distinct services:
 
-  - what players see
-  - what actions are available
-  - what happens automatically
-  - how outcomes are resolved
+1.  **Discord Bot (`bot/`)**
 
-The engine:
+    - **Role:** Frontend / UI Layer
+    - **Responsibility:** Renders embeds, handles Discord interactions (buttons, commands), and communicates with the User.
+    - **Logic:** Minimal. Relies on the backend for all game state and logic.
+    - **Tech:** TypeScript, Discord.js, Bun.
 
-- Runs one node at a time per session
-- Collects player inputs
-- Resolves outcomes deterministically
-- Transitions to the next node
+2.  **Backend Server (`server/`)**
+    - **Role:** Game Engine & Source of Truth
+    - **Responsibility:**
+      - Manages **User Profiles** and **Parties** via PostgreSQL (Prisma).
+      - Stores and serves **Story Content** (JSON graphs).
+      - Calculates **Roles** and **Outcomes**.
+      - Persists **Story State** (UserProgress) and **Minigame State**.
+    - **Tech:** TypeScript, Express, Prisma, Bun, PostgreSQL.
+
+### 4.2 The Engine Flow
+
+1.  **Bot** receives user input (e.g., choice button click).
+2.  **Bot** sends input to **Server** API.
+3.  **Server** updates state, calculates outcome, and returns the next node data.
+4.  **Bot** renders the new node as a Discord Embed.
+
+This separation ensures:
+
+- **Security:** Game logic is hidden from the client.
+- **Persistence:** Progress is saved reliably in a database.
+- **Scalability:** The backend can support multiple bot shards or other frontends.
 
 ---
 

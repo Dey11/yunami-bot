@@ -2,15 +2,15 @@ import { Router, type Request, type Response } from "express";
 import { authMiddleware } from "../middleware/auth";
 import * as progressService from "../services/progress.service";
 import * as userService from "../services/user.service";
+import * as storyService from "../services/story.service";
+import * as roleService from "../services/role.service";
 
 const router = Router();
 
 // All prologue routes require authentication
 router.use(authMiddleware);
 
-// The starting node for prologue - this should match your bot's prologue.json
-const PROLOGUE_STORY_ID = "prologue";
-const PROLOGUE_START_NODE = "prologue-start"; // Adjust based on actual data
+const PROLOGUE_STORY_ID = "prologue_1"; // Matches the story ID in prologue.json
 
 /**
  * POST /prologue/start
@@ -43,11 +43,18 @@ router.post("/start", async (req: Request, res: Response) => {
       return;
     }
 
+    // Get start node from story
+    const startNodeId = storyService.getEntryNodeId(PROLOGUE_STORY_ID);
+    if (!startNodeId) {
+      res.status(500).json({ error: "Prologue story not found" });
+      return;
+    }
+
     // Create new progress
     const progress = await progressService.getOrCreateProgress(
       user.id,
       PROLOGUE_STORY_ID,
-      PROLOGUE_START_NODE
+      startNodeId
     );
 
     res.status(201).json({
@@ -116,18 +123,12 @@ router.post("/choice", async (req: Request, res: Response) => {
 
 /**
  * POST /prologue/complete
- * Finalize prologue and assign role based on choices.
- * Body: { role: string } - The calculated role from the bot's engine
+ * Finalize prologue and calculate role based on choices made.
+ * No body required - role is calculated server-side from choices.
  */
 router.post("/complete", async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
-    const { role } = req.body;
-
-    if (!role) {
-      res.status(400).json({ error: "role is required" });
-      return;
-    }
 
     const existing = await progressService.getProgress(
       user.id,
@@ -147,11 +148,20 @@ router.post("/complete", async (req: Request, res: Response) => {
       return;
     }
 
+    // Calculate role from choices made during prologue
+    const state = existing.state as Record<string, any>;
+    const choices = state?.choices || [];
+    const calculatedRole = roleService.calculateRole(choices);
+    const roleDescription = roleService.getRoleDescription(calculatedRole);
+
     // Mark prologue as completed
     await progressService.completeProgress(user.id, PROLOGUE_STORY_ID);
 
-    // Assign role to user
-    const updatedUser = await userService.updateUserRole(user.id, role);
+    // Assign calculated role to user
+    const updatedUser = await userService.updateUserRole(
+      user.id,
+      calculatedRole
+    );
 
     res.json({
       message: "Prologue completed",
@@ -160,6 +170,7 @@ router.post("/complete", async (req: Request, res: Response) => {
         username: updatedUser.username,
         role: updatedUser.role,
       },
+      roleDescription,
     });
   } catch (error) {
     console.error("Error completing prologue:", error);

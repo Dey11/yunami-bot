@@ -5,6 +5,8 @@ import {
   partyRoutes,
   prologueRoutes,
   storyRoutes,
+  storiesRoutes,
+  minigameRoutes,
 } from "./routes";
 import { errorHandler } from "./middleware/error";
 
@@ -25,6 +27,8 @@ app.use("/user", userRoutes);
 app.use("/party", partyRoutes);
 app.use("/prologue", prologueRoutes);
 app.use("/story", storyRoutes);
+app.use("/stories", storiesRoutes);
+app.use("/minigame", minigameRoutes);
 
 // Error handler
 app.use(errorHandler);

@@ -1,0 +1,129 @@
+{
+  "id": "story1",
+  "title": "Spiritbound Academy",
+  "description": "A curse-scarred academy, a broken shrine, and the first step beyond the portal.",
+  "firstNodeId": "shrine_awaken",
+  "nodes": {
+    "shrine_awaken": {
+      "id": "shrine_awaken",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Awakening at the Shrine",
+      "public_embed": {
+        "title": "Awakening at the Shrine",
+        "description": "Cold stone under your palms. A broken shrine. A blue portal flickers like a heartbeat. In the distance, bells from Spiritbound Academy echo through fog.",
+        "footer": "Chapter 1",
+        "color": 1752220
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "portal_sigil"
+        }
+      },
+      "choices": []
+    },
+    "portal_sigil": {
+      "id": "portal_sigil",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "The Sigil Answers",
+      "public_embed": {
+        "title": "The Sigil Answers",
+        "description": "The sigil warms under your fingertips. The portal reacts — not to power, but to intent. A whisper: 'Choose what you are willing to lose.'",
+        "footer": "The portal beckons...",
+        "color": 10181046
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "academy_gate"
+        }
+      },
+      "choices": []
+    },
+    "academy_gate": {
+      "id": "academy_gate",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Spiritbound Academy Gate",
+      "public_embed": {
+        "title": "Spiritbound Academy Gate",
+        "description": "Students in ink-black robes watch from behind iron bars. A caretaker with hollow eyes offers you a lantern — and a warning about the Mirror Hall.",
+        "footer": "Something watches from within...",
+        "color": 3447003,
+        "fields": [
+          {
+            "name": "Warning",
+            "value": "The caretaker speaks of mirrors that show truths best left unseen."
+          }
+        ]
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "mirror_hall"
+        }
+      },
+      "choices": []
+    },
+    "mirror_hall": {
+      "id": "mirror_hall",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "The Mirror Hall",
+      "public_embed": {
+        "title": "The Mirror Hall",
+        "description": "Mirrors line the corridor, each reflecting a version of you that made different choices. One mirror bleeds shadow — a spirit is trapped inside.",
+        "footer": "A choice must be made...",
+        "color": 9807270,
+        "fields": [
+          {
+            "name": "The Spirit",
+            "value": "It reaches toward you, desperate, pleading."
+          }
+        ]
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "spirit_pact"
+        }
+      },
+      "choices": []
+    },
+    "spirit_pact": {
+      "id": "spirit_pact",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "A Pact in Candlelight",
+      "public_embed": {
+        "title": "A Pact in Candlelight",
+        "description": "The spirit bows. It offers a pact: protection now, but a debt later. The academy watches. So does the portal.",
+        "footer": "The pact seals your fate...",
+        "color": 15844367
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "ending_bound"
+        }
+      },
+      "choices": []
+    },
+    "ending_bound": {
+      "id": "ending_bound",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Ending: The Spiritbound",
+      "public_embed": {
+        "title": "Ending: The Spiritbound",
+        "description": "The pact seals with a warm sting. The spirit stands beside you. The caretaker smiles — not kindly, but knowingly. The story continues in your cards.",
+        "footer": "Story Complete",
+        "color": 5763719,
+        "fields": [
+          {
+            "name": "Outcome",
+            "value": "You are bound to the spirit. A debt unpaid."
+          }
+        ]
+      },
+      "choices": []
+    }
+  }
+}
