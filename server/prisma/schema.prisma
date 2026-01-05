@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==================== MODELS ====================
+
+model User {
+  id        String   @id @default(cuid())
+  discordId String   @unique
+  username  String
+  role      String? // Assigned after prologue completion (e.g., "leader", "scout")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  progress    UserProgress[]
+  partyMember PartyMember[]
+}
+
+model UserProgress {
+  id            String   @id @default(cuid())
+  userId        String
+  storyId       String // e.g., "prologue", "the-haunted-manor"
+  currentNodeId String
+  state         Json     @default("{}") // Choices made, flags, etc.
+  status        String   @default("active") // active | completed
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, storyId])
+  @@index([userId])
+}
+
+model Party {
+  id        String   @id @default(cuid())
+  code      String   @unique // Invite code (short, e.g., "ABC123")
+  leaderId  String
+  storyId   String? // The story this party is playing, if started
+  status    String   @default("forming") // forming | active | completed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members PartyMember[]
+}
+
+model PartyMember {
+  id       String   @id @default(cuid())
+  partyId  String
+  userId   String
+  isReady  Boolean  @default(false)
+  joinedAt DateTime @default(now())
+
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([partyId, userId])
+  @@index([partyId])
+  @@index([userId])
+}
