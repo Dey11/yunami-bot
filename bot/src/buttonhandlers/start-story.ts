@@ -1,28 +1,46 @@
 import { MessageFlags } from 'discord.js';
 import { storySceneBuilder } from '../quickstart/embed-builder.js';
 import { initSession } from '../quickstart/runtime-graph.js';
-import { storyGraph } from '../quickstart/story-graph.js';
 import { renderNode } from '../engine/dispatcher.js';
+import * as api from '../api/client.js';
 
 export const handler = {
   id: /^start:.+/,
   async execute(interaction: any) {
-    const odId = interaction.user.id;
+    const discordId = interaction.user.id;
     const storyId = interaction.customId.split(':')[1];
-    const storyData = storyGraph.getStory(storyId);
 
-    if (!storyData) {
-      await interaction.reply({
-        content: 'Story not found.',
-        flags: MessageFlags.Ephemeral,
+    await interaction.deferUpdate();
+
+    // Start story via backend API
+    const { data, error } = await api.startStory(discordId, storyId);
+
+    if (error) {
+      await interaction.editReply({
+        content: `Failed to start story: ${error}`,
+        components: [],
       });
       return;
     }
 
-    initSession(odId, storyData.id, storyData.firstNodeId, storyData);
-    await interaction.deferUpdate();
+    // Fetch story data from backend
+    const storyResponse = await api.getStory(discordId, storyId);
+    if (storyResponse.error || !storyResponse.data?.story) {
+      await interaction.editReply({
+        content: 'Story not found.',
+        components: [],
+      });
+      return;
+    }
 
-    const firstNode = storyData.nodes[storyData.firstNodeId];
+    const storyData = storyResponse.data.story;
+    const progress = data?.progress;
+    const currentNodeId = progress?.currentNodeId || storyData.firstNodeId;
+
+    // Initialize local session for rendering (still needed for now)
+    initSession(discordId, storyData.id, currentNodeId, storyData);
+
+    const firstNode = storyData.nodes[currentNodeId];
 
     if (firstNode.type) {
       const nextNodeId = firstNode.type_specific?.extra_data?.nextNodeId;
@@ -35,7 +53,7 @@ export const handler = {
       await interaction.editReply(payload);
     } else {
       const [cutsceneEmbed, choicesButton, cutsceneImage] =
-        await storySceneBuilder(storyData.firstNodeId, storyData);
+        await storySceneBuilder(currentNodeId, storyData);
       const payload: any = {
         embeds: [cutsceneEmbed],
         components: choicesButton ? [choicesButton] : [],

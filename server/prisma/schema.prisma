@@ -66,3 +66,19 @@ model PartyMember {
   @@index([partyId])
   @@index([userId])
 }
+
+// Minigame/Combat state persistence
+model MinigameState {
+  id        String   @id @default(cuid())
+  userId    String
+  storyId   String
+  nodeId    String
+  type      String // combat | memory | sequence | social
+  state     Json     @default("{}")
+  status    String   @default("active") // active | completed | failed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, storyId, nodeId])
+  @@index([userId])
+}
