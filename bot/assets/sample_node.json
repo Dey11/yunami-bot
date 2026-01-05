@@ -1,0 +1,97 @@
+{
+  "id": "node-alley-01",
+  "schema_version": 1,
+  "type": "choice",
+  "title": "Alleyway Encounter",
+  "tags": ["combat", "social", "chapter-1"],
+
+  "public_embed": {
+    "title": "A Narrow Alley — Night",
+    "description": "Two figures argue in hushed voices. The air feels tense.",
+    "image": "alley_scene.jpg",
+    "footer": "Decide quickly • 4 players present",
+    "fields": [
+      { "name": "Situation", "value": "Unstable • Someone might strike first" }
+    ]
+  },
+
+  "type_specific": {
+    "timers": {
+      "duration_seconds": 20
+    },
+
+    "choices": [
+      {
+        "id": "bribe",
+        "label": "Offer money to calm them down",
+        "cost": { "credits": 5 },
+        "ephemeral_confirmation": true
+      },
+      {
+        "id": "intervene",
+        "label": "Step between them",
+        "ephemeral_confirmation": true
+      },
+      {
+        "id": "observe",
+        "label": "Stay back and observe"
+      }
+    ],
+
+    "selects": [
+      {
+        "id": "approach_plan",
+        "placeholder": "If intervening, choose approach",
+        "min": 1,
+        "max": 1,
+        "options": [
+          { "id": "calm", "label": "Speak calmly" },
+          { "id": "firm", "label": "Assert authority" }
+        ]
+      }
+    ],
+
+    "role_reserved_action": {
+      "id": "leader_command",
+      "label": "Issue a clear command (Leader advantage)",
+      "requires_team_role": "leader",
+      "visible_to_all": true
+    },
+
+    "dm_deliveries": [
+      {
+        "recipient_role": "scout",
+        "content": {
+          "text": "You notice one of them keeps glancing at a concealed blade."
+        }
+      }
+    ],
+
+    "outcome_rules": {
+      "on_all_inputs_or_timeout": {
+        "compute": "rule_set"
+      }
+    },
+
+    "extra_data": {
+      "boss_options": [
+        { "id": "figureA", "power_estimate": 6 },
+        { "id": "figureB", "power_estimate": 4 }
+      ]
+    }
+  },
+
+  "preconditions": {
+    "min_player_count": 1,
+    "max_player_count": 4
+  },
+
+  "side_effects_on_enter": {
+    "spawn_dm_jobs": true
+  },
+
+  "ui_hints": {
+    "disable_after_click": true,
+    "edit_existing_embed": true
+  }
+}
