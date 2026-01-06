@@ -14,6 +14,7 @@ import {
 import { getPartyByPlayer } from '../quickstart/party-session.js';
 import { renderNodeWithContext } from '../engine/dispatcher.js';
 import { recordPlayerInput } from '../engine/outcome-engine.js';
+import { isPlayerInSoloArc, getPlayerArc, updateArcNode } from '../engine/arc-manager.js';
 import type { Choice } from '../engine/types.js';
 import * as api from '../api/client.js';
 
@@ -169,7 +170,12 @@ export const handler = {
     }
 
     const party = getPartyByPlayer(discordId);
-    recordPlayerInput(nodeId, discordId, { choiceId }, party?.id);
+    const partyId = party?.id;
+    
+    // Check if player is in a solo arc (no voting needed)
+    const inSoloArc = isPlayerInSoloArc(partyId, discordId);
+    
+    recordPlayerInput(nodeId, discordId, { choiceId }, partyId);
 
     // Check if this is the final node (no nextNodeId)
     if (!choice.nextNodeId || choice.nextNodeId === null) {
@@ -212,7 +218,9 @@ export const handler = {
       return;
     }
 
-    if (!isTimedNode && choice.nextNodeId) {
+    // For solo arc OR non-timed nodes: process choice immediately
+    // Solo arc players don't need to wait for voting
+    if ((inSoloArc || !isTimedNode) && choice.nextNodeId) {
       // Update local session to next node
       session.currentNodeId = choice.nextNodeId;
 
