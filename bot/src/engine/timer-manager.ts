@@ -17,30 +17,23 @@ import {
 import { renderNodeWithContext } from './dispatcher.js';
 import { client } from '../index.js';
 import { TextChannel } from 'discord.js';
-
 type TimerCallback = (
   session: PlayerSession,
   nodeId: string,
   timerId: string
 ) => Promise<void>;
-
 let timerInterval: NodeJS.Timeout | null = null;
 let onTimerExpiredCallback: TimerCallback | null = null;
-
 const CHECK_INTERVAL_MS = 1000;
-
 export function startTimerManager(onExpired?: TimerCallback): void {
   if (timerInterval) {
     return;
   }
-
   onTimerExpiredCallback = onExpired ?? defaultExpiryHandler;
-
   timerInterval = setInterval(() => {
     checkAllTimers();
   }, CHECK_INTERVAL_MS);
 }
-
 export function stopTimerManager(): void {
   if (timerInterval) {
     clearInterval(timerInterval);
@@ -48,10 +41,8 @@ export function stopTimerManager(): void {
   }
   onTimerExpiredCallback = null;
 }
-
 function checkAllTimers(): void {
   const sessions = getSessionsMap();
-
   for (const session of sessions.values()) {
     for (const [timerId, timer] of session.activeTimers.entries()) {
       if (isTimerExpired(session.odId, timerId)) {
@@ -60,14 +51,12 @@ function checkAllTimers(): void {
     }
   }
 }
-
 async function handleExpiredTimer(
   session: PlayerSession,
   nodeId: string,
   timerId: string
 ): Promise<void> {
   clearTimer(session.odId, timerId);
-
   if (onTimerExpiredCallback) {
     try {
       await onTimerExpiredCallback(session, nodeId, timerId);
@@ -76,7 +65,6 @@ async function handleExpiredTimer(
     }
   }
 }
-
 async function defaultExpiryHandler(
   session: PlayerSession,
   nodeId: string,
@@ -84,20 +72,15 @@ async function defaultExpiryHandler(
 ): Promise<void> {
   const party = getPartyByPlayer(session.odId);
   const partyId = party?.id;
-
   markTimedOut(nodeId, partyId);
-
   const currentNode = session.storyData?.nodes?.[nodeId];
   const activeMessage = getActiveMessage(session.odId);
-
   if (!activeMessage) {
     recordChoice(session.odId, `timeout:${nodeId}`, null);
     return;
   }
-
   let nextNodeId: string | null = null;
   let message = "⏱️ **Time's up!** No decision was made.";
-
   if (currentNode) {
     const inputs = getNodeInputs(nodeId, partyId);
     if (inputs && inputs.playerInputs.size > 0) {
@@ -109,18 +92,14 @@ async function defaultExpiryHandler(
       clearNodeInputs(nodeId, partyId);
     }
   }
-
   recordChoice(session.odId, `timeout:${nodeId}`, nextNodeId);
-
   try {
     const channel = await client.channels.fetch(activeMessage.channelId);
     if (!channel || !channel.isTextBased()) return;
-
     const msg = await (channel as TextChannel).messages.fetch(
       activeMessage.messageId
     );
     if (!msg) return;
-
     if (nextNodeId) {
       const nextNode = session.storyData?.nodes?.[nextNodeId];
       if (nextNode) {
@@ -129,24 +108,19 @@ async function defaultExpiryHandler(
           nodeId: nextNode.id,
           party,
         };
-
         const renderResult = await renderNodeWithContext(nextNode, context);
-
         const payload: any = {
           content: message,
           embeds: [renderResult.embed],
           components: renderResult.components ?? [],
         };
-
         if (renderResult.attachment) {
           payload.files = [renderResult.attachment];
         }
-
         await msg.edit(payload);
         return;
       }
     }
-
     await msg.edit({
       content: message,
       components: [],

@@ -5,7 +5,6 @@ export function partyInviteButton(leaderId: string, invitedUserId: string) {
       .setCustomId(`accept_party_invite:${leaderId}:${invitedUserId}`)
       .setLabel('Accept')
       .setStyle(ButtonStyle.Success),
-
     new ButtonBuilder()
       .setCustomId(`reject_party_invite:${leaderId}:${invitedUserId}`)
       .setLabel('Reject')

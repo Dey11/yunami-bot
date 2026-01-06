@@ -3,14 +3,13 @@ import { storySceneBuilder } from '../quickstart/embed-builder.js';
 import { initSession } from '../quickstart/runtime-graph.js';
 import { storyGraph } from '../quickstart/story-graph.js';
 import { renderNode } from '../engine/dispatcher.js';
-
+import * as api from '../api/client.js';
 export const handler = {
   id: /^start:.+/,
   async execute(interaction: any) {
     const odId = interaction.user.id;
     const storyId = interaction.customId.split(':')[1];
     const storyData = storyGraph.getStory(storyId);
-
     if (!storyData) {
       await interaction.reply({
         content: 'Story not found.',
@@ -18,12 +17,19 @@ export const handler = {
       });
       return;
     }
-
-    initSession(odId, storyData.id, storyData.firstNodeId, storyData);
     await interaction.deferUpdate();
-
-    const firstNode = storyData.nodes[storyData.firstNodeId];
-
+    const { data: apiData, error } = await api.startStory(odId, storyId);
+    if (error) {
+       console.error('Failed to start story session on API:', error);
+       await interaction.editReply({
+        content: `Unable to sync story progress: ${error}`,
+        components: [],
+      });
+      return;
+    }
+    const startNodeId = apiData?.progress?.currentNodeId || storyData.firstNodeId;
+    initSession(odId, storyData.id, startNodeId, storyData);
+    const firstNode = storyData.nodes[startNodeId];
     if (firstNode.type) {
       const nextNodeId = firstNode.type_specific?.extra_data?.nextNodeId;
       const result = await renderNode(firstNode, nextNodeId);
@@ -35,7 +41,7 @@ export const handler = {
       await interaction.editReply(payload);
     } else {
       const [cutsceneEmbed, choicesButton, cutsceneImage] =
-        await storySceneBuilder(storyData.firstNodeId, storyData);
+        await storySceneBuilder(startNodeId, storyData);
       const payload: any = {
         embeds: [cutsceneEmbed],
         components: choicesButton ? [choicesButton] : [],

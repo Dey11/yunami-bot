@@ -5,13 +5,11 @@ import {
   getPartyRole,
 } from '../quickstart/runtime-graph.js';
 import { getPartyByPlayer } from '../quickstart/party-session.js';
-
 export const handler = {
   id: /^role:(.+):(.+)$/,
   async execute(interaction: any) {
     const odId = interaction.user.id;
     const session = getSession(odId);
-
     if (!session) {
       await interaction.reply({
         content: 'No active session. Please start a new story.',
@@ -19,10 +17,8 @@ export const handler = {
       });
       return;
     }
-
     const [, nodeId, actionId] =
       interaction.customId.match(/^role:(.+):(.+)$/) || [];
-
     if (!nodeId || !actionId) {
       await interaction.reply({
         content: 'Invalid action format.',
@@ -30,7 +26,6 @@ export const handler = {
       });
       return;
     }
-
     const currentNode = session.storyData.nodes?.[nodeId];
     if (!currentNode) {
       await interaction.reply({
@@ -39,7 +34,6 @@ export const handler = {
       });
       return;
     }
-
     const roleAction = currentNode.type_specific?.role_reserved_action;
     if (!roleAction || roleAction.id !== actionId) {
       await interaction.reply({
@@ -48,10 +42,8 @@ export const handler = {
       });
       return;
     }
-
     const party = getPartyByPlayer(odId);
     const requiredRole = roleAction.requires_team_role;
-
     let hasRequiredRole = false;
     if (party && party.status === 'active') {
       for (const player of party.players) {
@@ -61,7 +53,6 @@ export const handler = {
         }
       }
     }
-
     if (!hasRequiredRole) {
       await interaction.reply({
         content: `This action requires a **${requiredRole}** in the party.`,
@@ -69,9 +60,7 @@ export const handler = {
       });
       return;
     }
-
     recordChoice(odId, `role:${actionId}`, null);
-
     await interaction.reply({
       content: `**${roleAction.label}** has been activated!`,
       flags: MessageFlags.Ephemeral,
