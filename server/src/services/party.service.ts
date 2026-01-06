@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma";
-import type { Party, PartyMember } from "../../generated/prisma";
+import type { Party, PartyMember } from "../../generated/prisma/client.ts";
 
 /**
  * Generate a short invite code.

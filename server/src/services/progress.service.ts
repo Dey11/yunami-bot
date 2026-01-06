@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma";
-import type { UserProgress } from "../../generated/prisma";
+import type { UserProgress } from "../../generated/prisma/client.ts";
 
 export interface UpsertProgressInput {
   userId: string;
