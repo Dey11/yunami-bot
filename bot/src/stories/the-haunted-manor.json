@@ -437,9 +437,17 @@
       "type_specific": {
         "memory": {
           "question": "What shape represents the soul according to the inscription?",
-          "correct_answers": ["triangle", "Triangle", "the triangle", "a triangle"],
+          "correct_answers": [
+            "triangle",
+            "Triangle",
+            "the triangle",
+            "a triangle"
+          ],
           "case_sensitive": false,
-          "hints": ["It has three sides...", "It points upward like a soul ascending"],
+          "hints": [
+            "It has three sides...",
+            "It points upward like a soul ascending"
+          ],
           "max_attempts": 3,
           "on_success": "ritual_success",
           "on_failure": "ritual_fail"

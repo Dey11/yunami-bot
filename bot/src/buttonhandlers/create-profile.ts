@@ -1,6 +1,7 @@
-import { storySceneBuilder } from '../quickstart/embed-builder.js';
-import { initSession } from '../quickstart/runtime-graph.js';
+import { initSession, setActiveMessage } from '../quickstart/runtime-graph.js';
 import { storyGraph } from '../quickstart/story-graph.js';
+import { renderNode } from '../engine/dispatcher.js';
+import { initPrologueEvaluation } from '../engine/prologue-evaluator.js';
 
 export const handler = {
   id: 'createProfile',
@@ -15,19 +16,28 @@ export const handler = {
         }
 
         initSession(odId, data.id, data.firstNodeId, data);
-        await interaction.deferUpdate();
-        const [cutsceneEmbed, choicesButton, cutsceneImage] =
-          await storySceneBuilder('intro_gate', data);
+        initPrologueEvaluation(odId);
 
-        const payload: any = {
-          embeds: [cutsceneEmbed],
-          components: [choicesButton],
-        };
-        if (cutsceneImage) {
-          payload.files = [cutsceneImage];
+        await interaction.deferUpdate();
+
+        const firstNode = data.nodes[data.firstNodeId];
+        if (!firstNode) {
+          console.error('First node not found:', data.firstNodeId);
+          return;
         }
 
-        await interaction.editReply(payload);
+        const nextNodeId = firstNode.type_specific?.extra_data?.nextNodeId;
+        const result = await renderNode(firstNode, nextNodeId);
+        const payload: any = {
+          embeds: [result.embed],
+          components: result.components ?? [],
+        };
+        if (result.attachment) {
+          payload.files = [result.attachment];
+        }
+
+        const reply = await interaction.editReply(payload);
+        setActiveMessage(odId, reply.channelId, reply.id);
         return;
       }
     } catch (error) {
