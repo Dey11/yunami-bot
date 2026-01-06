@@ -4,7 +4,6 @@ import {
   ButtonBuilder,
   ButtonStyle,
 } from 'discord.js';
-
 export const storyBeg = new EmbedBuilder()
   .setColor(0x0e1015)
   .setTitle('Spiritbound Academy')
@@ -21,13 +20,11 @@ export const storyBeg = new EmbedBuilder()
   .setThumbnail(
     'https://a.storyblok.com/f/178900/960x540/9a75be9716/solo-leveling-episode-23.jpg/m/filters:quality(95)format(webp)/https://a.storyblok.com/f/178900/960x540/9a75be9716/solo-leveling-episode-23.jpg'
   );
-
 export const spStartButtons = new ActionRowBuilder().addComponents(
   new ButtonBuilder()
     .setCustomId('cancel')
     .setLabel('Cancel')
     .setStyle(ButtonStyle.Danger),
-
   new ButtonBuilder()
     .setCustomId('confirm')
     .setLabel('Confirm')

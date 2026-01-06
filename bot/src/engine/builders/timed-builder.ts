@@ -23,13 +23,11 @@ import type {
   RoleReservedAction,
 } from '../types.js';
 import type { MultiplayerSession } from '../../types/party.js';
-
 export interface TimedBuilderContext {
   playerId: string;
   nodeId: string;
   party?: MultiplayerSession | null;
 }
-
 export async function buildTimedNode(
   node: StoryNode,
   context: TimedBuilderContext
@@ -38,14 +36,10 @@ export async function buildTimedNode(
   const typeSpecific = node.type_specific;
   const uiHints = node.ui_hints;
   const timer = typeSpecific?.timers;
-
   const embed = new EmbedBuilder().setColor(publicEmbed?.color ?? 0x0e1015);
-
   if (publicEmbed?.title) embed.setTitle(publicEmbed.title);
   else if (node.title) embed.setTitle(node.title);
-
   if (publicEmbed?.description) embed.setDescription(publicEmbed.description);
-
   if (timer?.duration_seconds) {
     const expiryTime = Math.floor(Date.now() / 1000) + timer.duration_seconds;
     embed.setFooter({ text: `⏱️ Expires: ` });
@@ -53,7 +47,6 @@ export async function buildTimedNode(
       (publicEmbed?.description || '') +
         `\n\n⏱️ Time remaining: <t:${expiryTime}:R>`
     );
-
     startTimer(
       context.playerId,
       `${context.nodeId}:timer`,
@@ -63,7 +56,6 @@ export async function buildTimedNode(
   } else if (publicEmbed?.footer) {
     embed.setFooter({ text: publicEmbed.footer });
   }
-
   if (publicEmbed?.fields?.length) {
     for (const field of publicEmbed.fields) {
       embed.addFields({
@@ -73,18 +65,15 @@ export async function buildTimedNode(
       });
     }
   }
-
   let attachment = null;
   if (publicEmbed?.image) {
     const subtitle = publicEmbed?.caption || publicEmbed?.title || node.title;
     attachment = await buildCanvas(publicEmbed.image, subtitle);
     embed.setImage(`attachment://${attachment.name}`);
   }
-
   const components: ActionRowBuilder<
     ButtonBuilder | StringSelectMenuBuilder
   >[] = [];
-
   if (typeSpecific?.choices?.length) {
     const buttonRows = buildChoiceButtons(
       typeSpecific.choices,
@@ -93,12 +82,10 @@ export async function buildTimedNode(
     );
     components.push(...buttonRows);
   }
-
   if (typeSpecific?.selects?.length) {
     const selectRows = buildSelectMenus(typeSpecific.selects, node.id);
     components.push(...selectRows);
   }
-
   if (typeSpecific?.role_reserved_action) {
     const roleButton = buildRoleReservedAction(
       typeSpecific.role_reserved_action,
@@ -109,7 +96,6 @@ export async function buildTimedNode(
       components.push(roleButton);
     }
   }
-
   return {
     embed,
     components: components.length > 0 ? components : null,
@@ -117,7 +103,6 @@ export async function buildTimedNode(
     timer: typeSpecific?.timers,
   };
 }
-
 function buildChoiceButtons(
   choices: Choice[],
   context: TimedBuilderContext,
@@ -126,91 +111,72 @@ function buildChoiceButtons(
   const rows: ActionRowBuilder<ButtonBuilder>[] = [];
   let currentRow = new ActionRowBuilder<ButtonBuilder>();
   let buttonCount = 0;
-
   for (const choice of choices) {
     if (buttonCount >= 5) {
       rows.push(currentRow);
       currentRow = new ActionRowBuilder<ButtonBuilder>();
       buttonCount = 0;
     }
-
     const isLocked =
       disableAfterClick &&
       isChoiceLocked(context.playerId, context.nodeId, choice.id);
     const canAfford = checkCost(choice.cost, context.playerId);
-
     const button = new ButtonBuilder()
       .setCustomId(`choice:${context.nodeId}:${choice.id}`)
       .setLabel(choice.label)
       .setStyle(mapButtonStyle(choice.style))
       .setDisabled(isLocked || !canAfford);
-
     if (choice.emoji) {
       button.setEmoji(choice.emoji);
     }
-
     currentRow.addComponents(button);
     buttonCount++;
   }
-
   if (buttonCount > 0) {
     rows.push(currentRow);
   }
-
   return rows;
 }
-
 function buildSelectMenus(
   selects: SelectMenu[],
   nodeId: string
 ): ActionRowBuilder<StringSelectMenuBuilder>[] {
   const rows: ActionRowBuilder<StringSelectMenuBuilder>[] = [];
-
   for (const select of selects) {
     const menu = new StringSelectMenuBuilder()
       .setCustomId(`select:${nodeId}:${select.id}`)
       .setMinValues(select.min ?? 1)
       .setMaxValues(select.max ?? 1);
-
     if (select.placeholder) {
       menu.setPlaceholder(select.placeholder);
     }
-
     const options = select.options.map((opt) => ({
       label: opt.label,
       value: opt.id,
       emoji: opt.emoji,
     }));
-
     menu.addOptions(options);
-
     rows.push(
       new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(menu)
     );
   }
-
   return rows;
 }
-
 function buildRoleReservedAction(
   action: RoleReservedAction,
   context: TimedBuilderContext,
   nodeId: string
 ): ActionRowBuilder<ButtonBuilder> | null {
   const party = context.party ?? getPartyByPlayer(context.playerId);
-
   if (!partyHasRole(party, action.requires_team_role, context.playerId)) {
     return null;
   }
-
   const button = new ButtonBuilder()
     .setCustomId(`role:${nodeId}:${action.id}`)
     .setLabel(action.label)
     .setStyle(ButtonStyle.Success);
-
   return new ActionRowBuilder<ButtonBuilder>().addComponents(button);
 }
-
 function partyHasRole(
   party: MultiplayerSession | null | undefined,
   role: string,
@@ -222,32 +188,26 @@ function partyHasRole(
     }
     return false;
   }
-
   for (const player of party.players) {
     const playerRole = getPartyRole(player.odId);
     if (playerRole === role) {
       return true;
     }
   }
-
   return false;
 }
-
 function checkCost(
   cost: Record<string, number> | undefined,
   playerId: string
 ): boolean {
   if (!cost) return true;
-
   for (const [resource, amount] of Object.entries(cost)) {
     if (getResource(playerId, resource) < amount) {
       return false;
     }
   }
-
   return true;
 }
-
 function mapButtonStyle(style?: number): ButtonStyle {
   switch (style) {
     case 1:

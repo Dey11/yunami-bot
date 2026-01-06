@@ -1,25 +1,18 @@
 import prisma from "../lib/prisma";
 import type { Party, PartyMember } from "../../generated/prisma/client.ts";
-
-/**
- * Generate a short invite code.
- */
 function generateInviteCode(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Avoid confusing chars
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; 
   let code = "";
   for (let i = 0; i < 6; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return code;
 }
-
 export interface CreatePartyInput {
   leaderId: string;
 }
-
 export async function createParty(input: CreatePartyInput): Promise<Party> {
   const code = generateInviteCode();
-
   return prisma.party.create({
     data: {
       code,
@@ -28,7 +21,7 @@ export async function createParty(input: CreatePartyInput): Promise<Party> {
       members: {
         create: {
           userId: input.leaderId,
-          isReady: true, // Leader is ready by default
+          isReady: true, 
         },
       },
     },
@@ -39,7 +32,6 @@ export async function createParty(input: CreatePartyInput): Promise<Party> {
     },
   });
 }
-
 export async function getPartyById(id: string): Promise<Party | null> {
   return prisma.party.findUnique({
     where: { id },
@@ -50,7 +42,6 @@ export async function getPartyById(id: string): Promise<Party | null> {
     },
   });
 }
-
 export async function getPartyByCode(code: string): Promise<Party | null> {
   return prisma.party.findUnique({
     where: { code },
@@ -61,7 +52,6 @@ export async function getPartyByCode(code: string): Promise<Party | null> {
     },
   });
 }
-
 export async function joinParty(
   partyId: string,
   userId: string
@@ -75,7 +65,6 @@ export async function joinParty(
     include: { user: true },
   });
 }
-
 export async function leaveParty(
   partyId: string,
   userId: string
@@ -86,7 +75,6 @@ export async function leaveParty(
     },
   });
 }
-
 export async function setReady(
   partyId: string,
   userId: string,
@@ -99,7 +87,6 @@ export async function setReady(
     data: { isReady },
   });
 }
-
 export async function updatePartyStatus(
   partyId: string,
   status: string,
@@ -118,7 +105,6 @@ export async function updatePartyStatus(
     },
   });
 }
-
 export async function getPartyForUser(userId: string): Promise<Party | null> {
   const membership = await prisma.partyMember.findFirst({
     where: { userId },
@@ -132,10 +118,8 @@ export async function getPartyForUser(userId: string): Promise<Party | null> {
       },
     },
   });
-
   return membership?.party ?? null;
 }
-
 export async function deleteParty(partyId: string): Promise<void> {
   await prisma.party.delete({
     where: { id: partyId },
