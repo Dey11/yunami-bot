@@ -3,7 +3,6 @@ import {
   invitePlayerToParty,
 } from '../../quickstart/party-session.js';
 import { MessageFlags } from 'discord.js';
-
 export const handler = {
   id: /^accept_party_invite:/,
   async execute(interaction: any) {
@@ -12,7 +11,6 @@ export const handler = {
     const parts = interaction.customId.split(':');
     const leaderId = parts[1];
     const invitedUserId = parts[2];
-
     if (!leaderId || !invitedUserId) {
       await interaction.reply({
         content: 'Something went wrong',
@@ -20,7 +18,6 @@ export const handler = {
       });
       return;
     }
-
     if (interaction.user.id !== invitedUserId) {
       await interaction.reply({
         content: 'This invite is not for you.',
@@ -29,7 +26,6 @@ export const handler = {
       return;
     }
     const party = await getPartyByOwner(leaderId);
-
     if (!party) {
       await interaction.reply({
         content: `You don't have a party yet`,
@@ -37,7 +33,6 @@ export const handler = {
       });
       return;
     }
-
     const invitedPlayer = await invitePlayerToParty(
       party.id,
       interaction.user.id,

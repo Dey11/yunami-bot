@@ -1,10 +1,3 @@
-/**
- * Arc Continue Handler
- * 
- * Handles button clicks for arc_continue (after arc split)
- * and arc_merge_refresh (checking merge status).
- */
-
 import {
   ButtonInteraction,
   EmbedBuilder,
@@ -24,23 +17,16 @@ import {
   mergeArcs,
   getPartyArcState,
 } from '../engine/arc-manager.js';
-
 export default {
   name: 'arc_continue',
   pattern: /^arc_continue:/,
-
   async execute(interaction: ButtonInteraction) {
     const customId = interaction.customId;
     const discordId = interaction.user.id;
-
-    // Handle arc_merge_refresh button
     if (customId.startsWith('arc_merge_refresh:')) {
       return handleMergeRefresh(interaction);
     }
-
-    // Handle arc_continue button (after split)
     const splitNodeId = customId.replace('arc_continue:', '');
-    
     const session = getSession(discordId);
     if (!session) {
       await interaction.reply({
@@ -49,10 +35,8 @@ export default {
       });
       return;
     }
-
     const party = getPartyByPlayer(discordId);
     const partyId = party?.id;
-
     if (!partyId) {
       await interaction.reply({
         content: '❌ No party found.',
@@ -60,8 +44,6 @@ export default {
       });
       return;
     }
-
-    // Get the player's arc
     const arcId = getPlayerArc(partyId, discordId);
     if (!arcId) {
       await interaction.reply({
@@ -70,7 +52,6 @@ export default {
       });
       return;
     }
-
     const arc = getActiveArc(partyId, arcId);
     if (!arc) {
       await interaction.reply({
@@ -79,12 +60,9 @@ export default {
       });
       return;
     }
-
-    // Get the entry node for this player's arc
     const entryNodeId = arc.arcDefinition.entry_node_id;
     const storyData = session.storyData;
     const entryNode = storyData.nodes?.[entryNodeId];
-
     if (!entryNode) {
       await interaction.reply({
         content: `❌ Entry node "${entryNodeId}" not found in story.`,
@@ -92,14 +70,9 @@ export default {
       });
       return;
     }
-
-    // Update session to track current arc node
     recordChoice(discordId, `arc_enter:${arcId}`, entryNodeId);
     updateArcNode(partyId, arcId, entryNodeId);
-
-    // Load and render the entry node
     const loadResult = await loadAndRenderNode(entryNode, discordId, undefined, party);
-
     if (!loadResult.allowed) {
       await interaction.reply({
         content: `❌ Cannot enter arc: ${loadResult.reason}`,
@@ -107,18 +80,13 @@ export default {
       });
       return;
     }
-
     const { embed, components, attachment } = loadResult.result!;
-
-    // Add arc indicator to embed footer
     const arcLabel = arc.arcDefinition.label;
     if (embed.data.footer?.text) {
       embed.setFooter({ text: `${arcLabel} | ${embed.data.footer.text}` });
     } else {
       embed.setFooter({ text: arcLabel });
     }
-
-    // Send arc content as ephemeral reply - only this player sees their arc content
     await interaction.reply({
       embeds: [embed],
       components: components ?? [],
@@ -127,15 +95,10 @@ export default {
     });
   },
 };
-
-/**
- * Handle the arc_merge_refresh button - check if all arcs are ready to merge.
- */
 async function handleMergeRefresh(interaction: ButtonInteraction) {
   const customId = interaction.customId;
   const mergeNodeId = customId.replace('arc_merge_refresh:', '');
   const discordId = interaction.user.id;
-
   const session = getSession(discordId);
   if (!session) {
     await interaction.reply({
@@ -144,10 +107,8 @@ async function handleMergeRefresh(interaction: ButtonInteraction) {
     });
     return;
   }
-
   const party = getPartyByPlayer(discordId);
   const partyId = party?.id;
-
   if (!partyId) {
     await interaction.reply({
       content: '❌ No party found.',
@@ -155,16 +116,10 @@ async function handleMergeRefresh(interaction: ButtonInteraction) {
     });
     return;
   }
-
-  // Check if all arcs are at merge
   if (areAllArcsAtMerge(partyId)) {
-    // All arcs ready - complete the merge
     mergeArcs(partyId);
-
-    // Get the merge node and render it
     const storyData = session.storyData;
     const mergeNode = storyData.nodes?.[mergeNodeId];
-
     if (!mergeNode) {
       await interaction.reply({
         content: '❌ Merge node not found.',
@@ -172,9 +127,7 @@ async function handleMergeRefresh(interaction: ButtonInteraction) {
       });
       return;
     }
-
     const nextNodeId = mergeNode.type_specific?.extra_data?.nextNodeId;
-
     const embed = new EmbedBuilder()
       .setColor(mergeNode.public_embed?.color ?? 0x2ecc71)
       .setTitle(mergeNode.public_embed?.title || '🤝 The Group Reunites')
@@ -182,7 +135,6 @@ async function handleMergeRefresh(interaction: ButtonInteraction) {
         mergeNode.public_embed?.description ||
           'All teams have returned. Your journey continues together.'
       );
-
     let components: any[] = [];
     if (nextNodeId) {
       components = [
@@ -195,33 +147,26 @@ async function handleMergeRefresh(interaction: ButtonInteraction) {
         ),
       ];
     }
-
     await interaction.update({
       embeds: [embed],
       components,
     });
   } else {
-    // Not all arcs ready - show updated waiting status
     const arcsNotAtMerge = getArcsNotAtMerge(partyId);
     const arcState = getPartyArcState(partyId);
-
     let description = 'Your team is still waiting...\n\n';
     description += '**Teams still in progress:**\n';
-
     for (const arcId of arcsNotAtMerge) {
       const arc = getActiveArc(partyId, arcId);
       if (arc) {
         description += `• ${arc.arcDefinition.label}\n`;
       }
     }
-
     description += '\n*Waiting for all teams to reach the reunion point...*';
-
     const embed = new EmbedBuilder()
       .setColor(0xf39c12)
       .setTitle('⏳ Still Waiting')
       .setDescription(description);
-
     await interaction.update({
       embeds: [embed],
     });

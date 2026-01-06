@@ -1,5 +1,4 @@
 import { MessageFlags } from 'discord.js';
-
 export const handler = {
   id: ['previous', 'next', 'exit'],
   async execute(interaction: any) {
