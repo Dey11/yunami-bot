@@ -2,6 +2,7 @@ import type { StoryNode } from './types.js';
 import type { MultiplayerSession } from '../types/party.js';
 import { getSession, getPartyRole } from '../quickstart/runtime-graph.js';
 import { getPartyByPlayer } from '../quickstart/party-session.js';
+import { getPlayerArc, getArcPlayers } from './arc-manager.js';
 import { client } from '../index.js';
 
 export async function executeSideEffects(
@@ -42,9 +43,13 @@ async function sendDMDeliveries(
     return;
   }
 
+  // Get arc context for the triggering player
+  const arcContext = node.type_specific?.arc_context;
+  const arcId = arcContext?.arc_id;
+
   for (const delivery of dmDeliveries) {
     const recipientRole = delivery.recipient_role;
-    const recipients = findPlayersWithRole(recipientRole, playerId, party);
+    const recipients = findPlayersWithRole(recipientRole, playerId, party, arcId);
 
     for (const recipientId of recipients) {
       try {
@@ -57,24 +62,42 @@ async function sendDMDeliveries(
   }
 }
 
+/**
+ * Find players with a specific role.
+ * If arcId is provided, only search within that arc's players.
+ */
 function findPlayersWithRole(
   role: string,
   currentPlayerId: string,
-  party?: MultiplayerSession | null
+  party?: MultiplayerSession | null,
+  arcId?: string
 ): string[] {
   const recipients: string[] = [];
 
   if (!party || party.status !== 'active') {
-    if (getSession(currentPlayerId)) {
+    // Solo player
+    const playerRole = getPartyRole(currentPlayerId);
+    if (playerRole === role) {
       recipients.push(currentPlayerId);
     }
     return recipients;
   }
 
-  for (const player of party.players) {
-    const playerRole = getPartyRole(player.odId);
+  // Determine which players to search
+  let playerPool: string[];
+  
+  if (arcId) {
+    // Arc-scoped: only search within the arc
+    playerPool = getArcPlayers(party.id, arcId);
+  } else {
+    // Party-wide: search all party members
+    playerPool = party.players.map(p => p.odId);
+  }
+
+  for (const playerId of playerPool) {
+    const playerRole = getPartyRole(playerId);
     if (playerRole === role) {
-      recipients.push(player.odId);
+      recipients.push(playerId);
     }
   }
 
