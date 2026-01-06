@@ -2,6 +2,7 @@ import type { StoryNode, Preconditions } from './types.js';
 import type { MultiplayerSession } from '../types/party.js';
 import { getSession } from '../quickstart/runtime-graph.js';
 import { getPartyByPlayer } from '../quickstart/party-session.js';
+import { getPlayerArc } from './arc-manager.js';
 
 export interface PreconditionResult {
   allowed: boolean;
@@ -53,6 +54,58 @@ export function checkPreconditions(
     );
     if (!itemsResult.allowed) {
       return itemsResult;
+    }
+  }
+
+  // Arc-based preconditions
+  if (preconditions.required_arc || preconditions.excluded_arcs) {
+    const arcResult = checkArcConditions(preconditions, playerId, party);
+    if (!arcResult.allowed) {
+      return arcResult;
+    }
+  }
+
+  return { allowed: true };
+}
+
+/**
+ * Check arc-related preconditions.
+ */
+function checkArcConditions(
+  preconditions: Preconditions,
+  playerId: string,
+  party?: MultiplayerSession | null
+): PreconditionResult {
+  if (!party) {
+    party = getPartyByPlayer(playerId);
+  }
+
+  const partyId = party?.id;
+  const playerArc = partyId ? getPlayerArc(partyId, playerId) : undefined;
+
+  // Check required_arc
+  if (preconditions.required_arc) {
+    if (!playerArc) {
+      return {
+        allowed: false,
+        reason: `Requires arc "${preconditions.required_arc}" but player is not in any arc`,
+      };
+    }
+    if (playerArc !== preconditions.required_arc) {
+      return {
+        allowed: false,
+        reason: `Requires arc "${preconditions.required_arc}" but player is in "${playerArc}"`,
+      };
+    }
+  }
+
+  // Check excluded_arcs
+  if (preconditions.excluded_arcs && preconditions.excluded_arcs.length > 0) {
+    if (playerArc && preconditions.excluded_arcs.includes(playerArc)) {
+      return {
+        allowed: false,
+        reason: `Arc "${playerArc}" is excluded from this node`,
+      };
     }
   }
 

@@ -20,6 +20,7 @@ import {
   isPrologueActive,
   finalizePrologueProfile,
 } from '../engine/prologue-evaluator.js';
+import { isPlayerInSoloArc, getPlayerArc, updateArcNode } from '../engine/arc-manager.js';
 import * as api from '../api/client.js';
 
 export const handler = {
@@ -136,9 +137,69 @@ export const handler = {
     }
 
     const party = getPartyByPlayer(odId);
-    recordPlayerInput(nodeId, odId, { choiceId }, party?.id);
+    const partyId = party?.id;
+    
+    // Check if player is in a solo arc (no voting needed)
+    const inSoloArc = isPlayerInSoloArc(partyId, odId);
+    
+    recordPlayerInput(nodeId, odId, { choiceId }, partyId);
 
-    if (!isTimedNode && choice.nextNodeId) {
+    // Check if this is the final node (no nextNodeId)
+    if (!choice.nextNodeId || choice.nextNodeId === null) {
+      // Check if this is the prologue story
+      if (session.storyId === 'prologue_1') {
+        // Finalize the prologue profile first
+        const prologueResult = finalizePrologueProfile(odId);
+        
+        if (prologueResult) {
+          const completeResult = await api.completePrologue(odId, {
+            baseStats: prologueResult.baseStats,
+            personalityType: prologueResult.personalityType,
+            startingInventory: prologueResult.startingInventory,
+            dominantTraits: prologueResult.dominantTraits,
+            personalityDescription: prologueResult.personalityDescription
+          });
+          
+          if (completeResult.data) {
+            const { user, roleDescription } = completeResult.data;
+            const embed = {
+              title: '🎭 Prologue Complete!',
+              description: `Your journey has shaped who you are.\n\n**Your Role: ${user.role?.toUpperCase()}**\n\n${roleDescription}`,
+              color: 0x00b3b3,
+              footer: { text: 'You can now join multiplayer parties!' },
+            };
+            
+            if (choice.ephemeral_confirmation) {
+              await interaction.message.edit({ embeds: [embed], components: [] });
+            } else {
+              await interaction.editReply({ embeds: [embed], components: [] });
+            }
+          }
+        }
+      } else {
+        // End regular story
+        await api.endStory(odId, session.storyId);
+        
+        const embed = {
+          title: '📖 Story Complete!',
+          description: 'Your journey has come to an end... for now.',
+          color: 0x00b3b3,
+        };
+        
+        if (choice.ephemeral_confirmation) {
+          await interaction.message.edit({ embeds: [embed], components: [] });
+        } else {
+          await interaction.editReply({ embeds: [embed], components: [] });
+        }
+      }
+      return;
+    }
+
+    // For solo arc OR non-timed nodes: process choice immediately
+    // Solo arc players don't need to wait for voting
+    if ((inSoloArc || !isTimedNode) && choice.nextNodeId) {
+      // Update local session to next node
+      session.currentNodeId = choice.nextNodeId;
       const nextNode = session.storyData.nodes?.[choice.nextNodeId];
       if (nextNode) {
         const context = {
