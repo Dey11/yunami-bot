@@ -43,4 +43,3 @@ export async function buildCanvas(imagePath: string, subtitle?: string) {
     name: 'Background.jpg',
   });
 }
-
