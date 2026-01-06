@@ -198,3 +198,31 @@ export interface BuilderResult {
   attachment?: any;
   timer?: Timer;
 }
+
+export type TraitVector = Record<string, number>;
+
+export interface TraitMapping {
+  [choiceId: string]: Record<string, number>;
+}
+
+export interface PrologueEvaluation {
+  traitVector: TraitVector;
+  puzzlePerformance: Map<string, { timeTaken: number; attempts: number }>;
+  totalChoices: number;
+  startTime: number;
+}
+
+export interface PrologueResult {
+  baseStats: {
+    str: number;
+    dex: number;
+    int: number;
+    cha: number;
+    wis: number;
+    con: number;
+  };
+  personalityType: string;
+  personalityDescription: string;
+  dominantTraits: string[];
+  startingInventory: string[];
+}

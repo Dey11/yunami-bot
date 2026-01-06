@@ -13,7 +13,7 @@ export const registerEmbed = new EmbedBuilder()
     {
       name: 'How to Register',
       value:
-        '1. Use `/profile create` to create your character.\n' +
+        '1. Click on "Create Profile" to create your character.\n' +
         '2. Use `/party create` to start a party.\n' +
         '3. Invite friends with `/party invite @user`.\n' +
         '4. Once 2–4 players join, start a run with `/story start`.',

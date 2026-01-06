@@ -45,4 +45,4 @@ export async function storySceneBuilder(nodeId: string, storyData: any) {
   }
 
   return [cutsceneEmbed, null, cutsceneImage];
-}
+};
