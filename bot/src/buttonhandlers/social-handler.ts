@@ -9,13 +9,11 @@ import {
 import { getPartyByPlayer } from '../quickstart/party-session.js';
 import { renderNodeWithContext } from '../engine/dispatcher.js';
 import type { SocialApproach } from '../engine/types.js';
-
 export const handler = {
   id: /^social:(.+):(.+)$/,
   async execute(interaction: any) {
     const odId = interaction.user.id;
     const session = getSession(odId);
-
     if (!session) {
       await interaction.reply({
         content: 'No active session. Please start a new story.',
@@ -23,7 +21,6 @@ export const handler = {
       });
       return;
     }
-
     const match = interaction.customId.match(/^social:(.+):(.+)$/);
     if (!match) {
       await interaction.reply({
@@ -32,9 +29,7 @@ export const handler = {
       });
       return;
     }
-
     const [, nodeId, approachId] = match;
-
     const currentNode = session.storyData.nodes?.[nodeId];
     if (!currentNode || currentNode.type !== 'social') {
       await interaction.reply({
@@ -43,7 +38,6 @@ export const handler = {
       });
       return;
     }
-
     const social = currentNode.type_specific?.social;
     if (!social) {
       await interaction.reply({
@@ -52,7 +46,6 @@ export const handler = {
       });
       return;
     }
-
     const approach = social.approaches.find(
       (a: SocialApproach) => a.id === approachId
     );
@@ -63,10 +56,8 @@ export const handler = {
       });
       return;
     }
-
     const reputationStat = social.reputation_stat || 'reputation';
     const currentRep = getResource(odId, reputationStat);
-
     if (
       approach.reputation_required !== undefined &&
       currentRep < approach.reputation_required
@@ -77,19 +68,14 @@ export const handler = {
       });
       return;
     }
-
     await interaction.deferUpdate();
-
     const successChance = approach.success_chance ?? 100;
     const roll = Math.random() * 100;
     const isSuccess = roll < successChance;
-
     if (approach.reputation_change) {
       modifyResource(odId, reputationStat, approach.reputation_change);
     }
-
     const nextNodeId = isSuccess ? approach.on_success : approach.on_failure;
-
     if (nextNodeId) {
       const nextNode = session.storyData.nodes?.[nextNodeId];
       if (nextNode) {
@@ -98,27 +84,22 @@ export const handler = {
           `social:${approachId}:${isSuccess ? 'success' : 'failure'}`,
           nextNodeId
         );
-
         const party = getPartyByPlayer(odId);
         const result = await renderNodeWithContext(nextNode, {
           playerId: odId,
           nodeId: nextNode.id,
           party,
         });
-
         const outcomeEmoji = isSuccess ? '✅' : '❌';
         const outcomeText = isSuccess ? 'succeeded' : 'failed';
-
         const payload: any = {
           content: `${outcomeEmoji} Your **${approach.label}** approach ${outcomeText}!`,
           embeds: [result.embed],
           components: result.components ?? [],
         };
-
         if (result.attachment) {
           payload.files = [result.attachment];
         }
-
         await interaction.editReply(payload);
         setActiveMessage(
           odId,
@@ -128,14 +109,12 @@ export const handler = {
         return;
       }
     }
-
     const outcomeEmoji = isSuccess ? '✅' : '❌';
     const outcomeText = isSuccess ? 'succeeded' : 'failed';
     const repChange = approach.reputation_change;
     const repText = repChange
       ? ` (${repChange > 0 ? '+' : ''}${repChange} reputation)`
       : '';
-
     await interaction.followUp({
       content: `${outcomeEmoji} Your **${approach.label}** approach ${outcomeText}!${repText}`,
       flags: MessageFlags.Ephemeral,

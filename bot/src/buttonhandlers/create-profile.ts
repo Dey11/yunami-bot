@@ -1,45 +1,56 @@
 import { initSession, setActiveMessage } from '../quickstart/runtime-graph.js';
 import { storyGraph } from '../quickstart/story-graph.js';
 import { renderNode } from '../engine/dispatcher.js';
-import { initPrologueEvaluation } from '../engine/prologue-evaluator.js';
-
+import { initPrologueEvaluation, restoreFromChoices } from '../engine/prologue-evaluator.js';
+import * as api from '../api/client.js';
 export const handler = {
   id: 'createProfile',
   async execute(interaction: any) {
     const odId = interaction.user.id;
     try {
-      if (interaction.customId === 'createProfile') {
-        const data = storyGraph.getStory('prologue_1');
-        if (!data) {
-          console.error('Prologue not found');
-          return;
-        }
-
-        initSession(odId, data.id, data.firstNodeId, data);
-        initPrologueEvaluation(odId);
-
-        await interaction.deferUpdate();
-
-        const firstNode = data.nodes[data.firstNodeId];
-        if (!firstNode) {
-          console.error('First node not found:', data.firstNodeId);
-          return;
-        }
-
-        const nextNodeId = firstNode.type_specific?.extra_data?.nextNodeId;
-        const result = await renderNode(firstNode, nextNodeId);
-        const payload: any = {
-          embeds: [result.embed],
-          components: result.components ?? [],
-        };
-        if (result.attachment) {
-          payload.files = [result.attachment];
-        }
-
-        const reply = await interaction.editReply(payload);
-        setActiveMessage(odId, reply.channelId, reply.id);
+      const data = storyGraph.getStory('prologue_1');
+      if (!data) {
+        console.error('Prologue not found');
+        await interaction.reply({ content: 'Prologue story not found.', ephemeral: true });
         return;
       }
+      await interaction.deferUpdate();
+      const response = await api.startPrologue(odId);
+      if (response.error) {
+         if (response.error.includes('already completed')) {
+           await interaction.editReply({ 
+             content: 'You already have a profile! Use `/profile` to view it.' 
+           });
+           return;
+         }
+         console.error('API Error:', response.error);
+         await interaction.editReply({ content: 'Failed to start prologue. Please try again.' });
+         return;
+      }
+      const progress = response.data?.progress;
+      const startNodeId = progress?.currentNodeId || data.firstNodeId;
+      initSession(odId, data.id, startNodeId, data);
+      if (progress?.state?.choices) {
+          restoreFromChoices(odId, progress.state.choices, data.traitMappings || {});
+      } else {
+          initPrologueEvaluation(odId);
+      }
+      const currentNode = data.nodes[startNodeId];
+      if (!currentNode) {
+        console.error('Node not found:', startNodeId);
+        await interaction.editReply({ content: `Error: Node "${startNodeId}" not found in prologue.` });
+        return;
+      }
+      const result = await renderNode(currentNode);
+      const payload: any = {
+        embeds: [result.embed],
+        components: result.components ?? [],
+      };
+      if (result.attachment) {
+        payload.files = [result.attachment];
+      }
+      const reply = await interaction.editReply(payload);
+      setActiveMessage(odId, reply.channelId, reply.id);
     } catch (error) {
       console.error(error);
     }

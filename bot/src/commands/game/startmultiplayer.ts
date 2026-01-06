@@ -11,16 +11,12 @@ import {
   areAllPlayersReady,
 } from '../../quickstart/party-session.js';
 import { storyGraph } from '../../quickstart/story-graph.js';
-
 export const data = new SlashCommandBuilder()
   .setName('startmultiplayer')
   .setDescription('Start a multiplayer story session with your party.');
-
 export async function execute(interaction: any) {
   if (!interaction.isChatInputCommand()) return;
-
   const party = await getPartyByOwner(interaction.user.id);
-
   if (!party) {
     await interaction.reply({
       content:
@@ -29,7 +25,6 @@ export async function execute(interaction: any) {
     });
     return;
   }
-
   if (!areAllPlayersReady(party.id)) {
     await interaction.reply({
       content:
@@ -38,18 +33,14 @@ export async function execute(interaction: any) {
     });
     return;
   }
-
   const episodes = storyGraph
     .listEpisodes()
     .filter((ep: any) => ep.id !== 'prologue_1');
-
   const embed = new EmbedBuilder()
     .setTitle('Choose Multiplayer Story')
     .setDescription('Select a story to play with your team:')
     .setColor(0x00b3b3);
-
   const row = new ActionRowBuilder<ButtonBuilder>();
-
   episodes.forEach((ep: any) => {
     row.addComponents(
       new ButtonBuilder()
@@ -58,7 +49,6 @@ export async function execute(interaction: any) {
         .setStyle(ButtonStyle.Primary)
     );
   });
-
   await interaction.reply({
     embeds: [embed],
     components: [row],

@@ -1,4 +1,4 @@
-# Yunami 🎮
+g# Yunami 🎮
 
 An interactive storytelling Discord bot with multiplayer adventures, real-time voting, and dynamic narratives.
 

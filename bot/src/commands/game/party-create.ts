@@ -4,7 +4,6 @@ import {
   getPartyByPlayer,
 } from '../../quickstart/party-session.js';
 import { MessageFlags } from 'discord.js';
-
 export const data = new SlashCommandBuilder()
   .setName('party-create')
   .setDescription('Create a party')
@@ -22,12 +21,10 @@ export const data = new SlashCommandBuilder()
       .setMinValue(2)
       .setMaxValue(4)
   );
-
 export async function execute(interaction: any) {
   if (!interaction.isChatInputCommand()) return;
   const name = interaction.options.getString('name');
   const size = interaction.options.getInteger('size');
-
   const existingParty = getPartyByPlayer(interaction.user.id);
   if (existingParty) {
     await interaction.reply({
@@ -36,7 +33,6 @@ export async function execute(interaction: any) {
     });
     return;
   }
-
   const party = createParty(
     interaction.user.id,
     interaction.user.username,

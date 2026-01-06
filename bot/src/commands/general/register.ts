@@ -1,14 +1,11 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { registerButtons } from '../../components/buttons/register-buttons.js';
-
 export const data = new SlashCommandBuilder()
   .setName('register')
   .setDescription('Register your account with Yunami.');
-
 export async function execute(interaction: any) {
   if (!interaction.isChatInputCommand()) return;
   const botUser = interaction.client.user;
-
   const embed = new EmbedBuilder()
     .setColor(0x5865f2)
     .setTitle('Yunami Registration')
@@ -25,7 +22,6 @@ export async function execute(interaction: any) {
           '• Progress through branching stories with your party.\n' +
           '• Earn rewards, unlock routes, and build your team.',
       },
-
       {
         name: 'Gameplay Basics',
         value:

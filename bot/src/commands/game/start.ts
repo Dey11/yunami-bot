@@ -3,12 +3,10 @@ import { storyBeg } from '../../components/design/story1.js';
 import { listButtons } from '../../components/buttons/list-buttons.js';
 import { storyGraph } from '../../quickstart/story-graph.js';
 import { buildStartButtons } from '../../components/buttons/start-buttons.js';
-
 const episodes = storyGraph
   .listEpisodes()
   .filter((ep: any) => ep.id !== 'prologue_1');
 const storyThumbnail = storyBeg.toJSON().thumbnail?.url;
-
 export const data = new SlashCommandBuilder()
   .setName('startsingleplayer')
   .setDescription('View or start a single‑player story.')
@@ -20,10 +18,8 @@ export const data = new SlashCommandBuilder()
       .setMinValue(1)
       .setMaxValue(Math.max(1, episodes.length))
   );
-
 export async function execute(interaction: any) {
   const storyNumber = interaction.options.getInteger('story');
-
   if (storyNumber) {
     const selectedEpisode = episodes[storyNumber - 1];
     if (!selectedEpisode) {
@@ -33,27 +29,22 @@ export async function execute(interaction: any) {
       });
       return;
     }
-
     const heroEmbed = EmbedBuilder.from(storyBeg)
       .setTitle(selectedEpisode.title)
       .setDescription(
         selectedEpisode.description || 'No description available.'
       );
-
     const startButtons = buildStartButtons(selectedEpisode.id);
-
     await interaction.reply({
       embeds: [heroEmbed],
       components: [startButtons],
     });
     return;
   }
-
   const storyFields = episodes.map((episode, index) => ({
     name: `Story ${index + 1}: ${episode.title}`,
     value: episode.description || 'No description available.',
   }));
-
   const storiesEmbed = new EmbedBuilder()
     .setColor(0x00b3b3)
     .setAuthor({
@@ -76,11 +67,9 @@ export async function execute(interaction: any) {
         value: `Page 1 | Stories: ${episodes.length}`,
       }
     );
-
   if (storyThumbnail) {
     storiesEmbed.setThumbnail(storyThumbnail);
   }
-
   await interaction.reply({
     embeds: [storiesEmbed],
     components: [listButtons],
