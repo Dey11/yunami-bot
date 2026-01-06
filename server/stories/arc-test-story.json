@@ -1,0 +1,345 @@
+{
+  "id": "arc-test-story",
+  "title": "The Parallel Paths",
+  "description": "A test story demonstrating the parallel arc system with solo and group arcs.",
+  "min_party_size": 2,
+  "max_party_size": 4,
+  "supports_solo": false,
+  "firstNodeId": "intro",
+  "nodes": {
+    "intro": {
+      "id": "intro",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "The Beginning",
+      "tags": ["intro", "all-players"],
+
+      "public_embed": {
+        "title": "A Narrow Alley — Night",
+        "description": "Your team stands before the ancient manor gates. The iron bars creak ominously as you push them open.\n\nThe path ahead splits into two routes.",
+        "image": "manor_gates.jpg",
+        "footer": "All players present",
+        "fields": [
+          { "name": "Situation", "value": "The group must split up to investigate" }
+        ]
+      },
+
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "group_splits"
+        }
+      },
+
+      "preconditions": {
+        "min_player_count": 2,
+        "max_player_count": 4
+      },
+
+      "ui_hints": {
+        "disable_after_click": true
+      }
+    },
+
+    "group_splits": {
+      "id": "group_splits",
+      "schema_version": 1,
+      "type": "arc_split",
+      "title": "The Group Divides",
+      "tags": ["arc-split", "chapter-1"],
+
+      "public_embed": {
+        "title": "Time to Split Up",
+        "description": "The path ahead forks. Your group must divide to cover more ground.",
+        "image": "fork_path.jpg",
+        "footer": "Teams will be assigned based on roles",
+        "fields": [
+          { "name": "Scout Mission", "value": "Scout the basement alone" },
+          { "name": "Main Team", "value": "Explore the east wing together" }
+        ]
+      },
+
+      "type_specific": {
+        "arc_split": {
+          "split_mode": "role_based",
+          "merge_node_id": "reunion",
+          "arcs": [
+            {
+              "id": "solo_scout",
+              "label": "Scout Mission",
+              "description": "Scout the basement alone",
+              "player_count": 1,
+              "entry_node_id": "scout_start",
+              "required_roles": ["scout"]
+            },
+            {
+              "id": "main_team",
+              "label": "Main Team",
+              "description": "Explore the east wing together",
+              "player_count": "remaining",
+              "entry_node_id": "team_start"
+            }
+          ]
+        }
+      },
+
+      "preconditions": {
+        "min_player_count": 2
+      },
+
+      "ui_hints": {
+        "disable_after_click": true
+      }
+    },
+
+    "scout_start": {
+      "id": "scout_start",
+      "schema_version": 1,
+      "type": "choice",
+      "title": "Scout Solo",
+      "tags": ["solo-arc", "scout"],
+
+      "public_embed": {
+        "title": "Alone in the Dark",
+        "description": "You descend into the basement alone. The air is thick with dust.",
+        "image": "basement_dark.jpg",
+        "footer": "Solo Arc • Scout Mission",
+        "fields": [
+          { "name": "Situation", "value": "Two paths ahead — choose wisely" }
+        ]
+      },
+
+      "type_specific": {
+        "arc_context": {
+          "arc_id": "solo_scout"
+        },
+
+        "choices": [
+          {
+            "id": "sneak_deeper",
+            "label": "Sneak into the passage",
+            "ephemeral_confirmation": true,
+            "nextNodeId": "scout_passage"
+          },
+          {
+            "id": "examine_door",
+            "label": "Examine the marked door",
+            "ephemeral_confirmation": true,
+            "nextNodeId": "scout_door"
+          }
+        ]
+      },
+
+      "preconditions": {
+        "required_arc": "solo_scout"
+      },
+
+      "ui_hints": {
+        "disable_after_click": true
+      }
+    },
+
+    "scout_passage": {
+      "id": "scout_passage",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "The Secret Passage",
+      "tags": ["solo-arc", "scout"],
+
+      "public_embed": {
+        "title": "Through the Shadows",
+        "description": "You slip through the narrow passage silently. At the end, you discover a hidden chamber filled with ancient artifacts.",
+        "image": "hidden_chamber.jpg",
+        "footer": "Solo Arc • Scout Mission"
+      },
+
+      "type_specific": {
+        "arc_context": {
+          "arc_id": "solo_scout"
+        },
+        "extra_data": {
+          "nextNodeId": "reunion"
+        }
+      },
+
+      "preconditions": {
+        "required_arc": "solo_scout"
+      }
+    },
+
+    "scout_door": {
+      "id": "scout_door",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "The Marked Door",
+      "tags": ["solo-arc", "scout"],
+
+      "public_embed": {
+        "title": "Ancient Symbols",
+        "description": "You examine the symbols on the door. They appear to be some kind of warning. You carefully memorize the patterns.",
+        "image": "marked_door.jpg",
+        "footer": "Solo Arc • Scout Mission"
+      },
+
+      "type_specific": {
+        "arc_context": {
+          "arc_id": "solo_scout"
+        },
+        "extra_data": {
+          "nextNodeId": "reunion"
+        }
+      },
+
+      "preconditions": {
+        "required_arc": "solo_scout"
+      }
+    },
+
+    "team_start": {
+      "id": "team_start",
+      "schema_version": 1,
+      "type": "timed",
+      "title": "Team Decision",
+      "tags": ["group-arc", "main-team", "vote"],
+
+      "public_embed": {
+        "title": "East Wing Entrance",
+        "description": "Your team enters the dusty east wing together. Two doors await.",
+        "image": "east_wing.jpg",
+        "footer": "Group Arc • Vote as a team!",
+        "fields": [
+          { "name": "Left Door", "value": "Heavy wooden door" },
+          { "name": "Right Door", "value": "Rotting door" }
+        ]
+      },
+
+      "type_specific": {
+        "arc_context": {
+          "arc_id": "main_team"
+        },
+
+        "timers": {
+          "duration_seconds": 30
+        },
+
+        "choices": [
+          {
+            "id": "left_door",
+            "label": "Heavy wooden door",
+            "nextNodeId": "team_library"
+          },
+          {
+            "id": "right_door",
+            "label": "Rotting door",
+            "nextNodeId": "team_gallery"
+          }
+        ],
+
+        "outcome_rules": {
+          "on_all_inputs_or_timeout": {
+            "compute": "majority"
+          }
+        }
+      },
+
+      "preconditions": {
+        "required_arc": "main_team"
+      },
+
+      "ui_hints": {
+        "disable_after_click": true
+      }
+    },
+
+    "team_library": {
+      "id": "team_library",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "The Library",
+      "tags": ["group-arc", "main-team"],
+
+      "public_embed": {
+        "title": "The Ancient Library",
+        "description": "Your team enters a vast library. Dusty tomes line the shelves from floor to ceiling.",
+        "image": "library.jpg",
+        "footer": "Group Arc • Main Team"
+      },
+
+      "type_specific": {
+        "arc_context": {
+          "arc_id": "main_team"
+        },
+        "extra_data": {
+          "nextNodeId": "reunion"
+        }
+      },
+
+      "preconditions": {
+        "required_arc": "main_team"
+      }
+    },
+
+    "team_gallery": {
+      "id": "team_gallery",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "The Gallery",
+      "tags": ["group-arc", "main-team"],
+
+      "public_embed": {
+        "title": "Portrait Gallery",
+        "description": "Your team finds themselves in a gallery filled with portraits. The eyes seem to follow you.",
+        "image": "gallery.jpg",
+        "footer": "Group Arc • Main Team"
+      },
+
+      "type_specific": {
+        "arc_context": {
+          "arc_id": "main_team"
+        },
+        "extra_data": {
+          "nextNodeId": "reunion"
+        }
+      },
+
+      "preconditions": {
+        "required_arc": "main_team"
+      }
+    },
+
+    "reunion": {
+      "id": "reunion",
+      "schema_version": 1,
+      "type": "arc_merge",
+      "title": "The Reunion",
+      "tags": ["arc-merge", "all-players"],
+
+      "public_embed": {
+        "title": "The Team Reunites",
+        "description": "After your separate investigations, the team gathers back at the main hall. Everyone shares what they learned.",
+        "image": "main_hall.jpg",
+        "footer": "All players together again"
+      },
+
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "finale"
+        }
+      }
+    },
+
+    "finale": {
+      "id": "finale",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "The Finale",
+      "tags": ["ending", "all-players"],
+
+      "public_embed": {
+        "title": "To Be Continued...",
+        "description": "With the knowledge gathered from both expeditions, your team is now prepared for the final challenge.\n\n**Parallel Arc Test Complete!**",
+        "image": "finale.jpg",
+        "footer": "Story complete"
+      }
+    }
+  }
+}

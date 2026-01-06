@@ -7,7 +7,9 @@ export type NodeType =
   | 'sequence'
   | 'combat'
   | 'social'
-  | 'meta';
+  | 'meta'
+  | 'arc_split'
+  | 'arc_merge';
 
 export interface PublicEmbed {
   title?: string;
@@ -146,6 +148,51 @@ export interface CombatConfig {
   on_flee?: string;
 }
 
+// ============ Arc System Types ============
+
+/**
+ * Arc definition within an arc_split node.
+ * Defines a parallel story path for a subset of players.
+ */
+export interface ArcDefinition {
+  /** Unique ID for this arc, e.g., "solo_scout", "main_team" */
+  id: string;
+  /** Display name for the arc */
+  label: string;
+  /** Description of what this arc is about */
+  description?: string;
+  /** Number of players for this arc, or 'remaining' for last arc */
+  player_count: number | 'remaining';
+  /** First node ID when entering this arc */
+  entry_node_id: string;
+  /** Roles required for this arc (triggers role_based assignment) */
+  required_roles?: string[];
+  /** Roles preferred but not required */
+  preferred_roles?: string[];
+}
+
+/**
+ * Configuration for arc_split nodes.
+ * Defines how players are split into parallel arcs.
+ */
+export interface ArcSplitConfig {
+  /** How to assign players to arcs */
+  split_mode: 'role_based' | 'random';
+  /** List of arc definitions */
+  arcs: ArcDefinition[];
+  /** Node ID where all arcs converge back together */
+  merge_node_id: string;
+}
+
+/**
+ * Context for nodes that exist within an arc.
+ * Indicates which arc a node belongs to.
+ */
+export interface ArcContext {
+  /** Which arc this node belongs to */
+  arc_id: string;
+}
+
 export interface TypeSpecific {
   timers?: Timer;
   choices?: Choice[];
@@ -157,6 +204,8 @@ export interface TypeSpecific {
   social?: SocialConfig;
   memory?: MemoryConfig;
   combat?: CombatConfig;
+  arc_split?: ArcSplitConfig;
+  arc_context?: ArcContext;
   extra_data?: Record<string, any>;
 }
 
@@ -165,6 +214,10 @@ export interface Preconditions {
   required_items?: string[];
   min_player_count?: number;
   max_player_count?: number;
+  /** Must be in this arc to access this node */
+  required_arc?: string;
+  /** Cannot access if in any of these arcs */
+  excluded_arcs?: string[];
 }
 
 export interface SideEffectsOnEnter {
