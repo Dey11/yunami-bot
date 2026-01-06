@@ -41,7 +41,7 @@ router.post("/start", async (req: Request, res: Response) => {
       }
 
       // Check if all members are ready
-      const allReady = party.members.every((m: any) => m.isReady);
+      const allReady = (party as any).members.every((m: any) => m.isReady);
       if (!allReady) {
         res.status(400).json({ error: "Not all party members are ready" });
         return;
@@ -51,7 +51,7 @@ router.post("/start", async (req: Request, res: Response) => {
       await partyService.updatePartyStatus(partyId, "active", storyId);
 
       // Initialize progress for all party members
-      for (const member of party.members) {
+      for (const member of (party as any).members) {
         await progressService.getOrCreateProgress(
           member.userId,
           storyId,

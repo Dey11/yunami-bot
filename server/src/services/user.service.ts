@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma";
-import type { User } from "../../generated/prisma";
+import type { User } from "../../generated/prisma/client.ts";
 
 export interface CreateUserInput {
   discordId: string;

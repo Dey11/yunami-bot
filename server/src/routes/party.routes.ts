@@ -40,6 +40,10 @@ router.post("/create", async (req: Request, res: Response) => {
 router.get("/:partyId", async (req: Request, res: Response) => {
   try {
     const { partyId } = req.params;
+    if (!partyId) {
+      res.status(400).json({ error: "partyId is required" });
+      return;
+    }
     const party = await partyService.getPartyById(partyId);
 
     if (!party) {
@@ -90,7 +94,7 @@ router.post("/join", async (req: Request, res: Response) => {
       return;
     }
 
-    if (party.members.length >= 4) {
+    if ((party as any).members.length >= 4) {
       res.status(400).json({ error: "Party is full (max 4 members)" });
       return;
     }
@@ -116,6 +120,11 @@ router.post("/:partyId/ready", async (req: Request, res: Response) => {
     const { partyId } = req.params;
     const { isReady } = req.body;
 
+    if (!partyId) {
+      res.status(400).json({ error: "partyId is required" });
+      return;
+    }
+
     if (typeof isReady !== "boolean") {
       res.status(400).json({ error: "isReady must be a boolean" });
       return;
@@ -139,6 +148,11 @@ router.delete("/:partyId/leave", async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
     const { partyId } = req.params;
+
+    if (!partyId) {
+      res.status(400).json({ error: "partyId is required" });
+      return;
+    }
 
     const party = await partyService.getPartyById(partyId);
     if (!party) {
@@ -168,6 +182,10 @@ router.delete("/:partyId/leave", async (req: Request, res: Response) => {
 router.get("/by-code/:code", async (req: Request, res: Response) => {
   try {
     const { code } = req.params;
+    if (!code) {
+      res.status(400).json({ error: "code is required" });
+      return;
+    }
     const party = await partyService.getPartyByCode(code.toUpperCase());
 
     if (!party) {
