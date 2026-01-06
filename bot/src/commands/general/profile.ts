@@ -11,6 +11,7 @@ import {
 } from '@napi-rs/canvas';
 import path from 'path';
 import { ProfileData, createProfile } from '../../types/profiledata.js';
+import * as api from '../../api/client.js';
 
 const fontsPath = path.resolve(process.cwd(), 'assets', 'fonts');
 try {
@@ -184,6 +185,7 @@ export const data = new SlashCommandBuilder()
   .setName('profile')
   .setDescription('View your profile card.');
 
+
 export async function execute(interaction: CommandInteraction) {
   await interaction.deferReply();
 
@@ -191,8 +193,49 @@ export async function execute(interaction: CommandInteraction) {
   const username = user.username;
   const avatarURL = user.displayAvatarURL({ extension: 'png', size: 512 });
 
-  // todo: fetch from db
-  const profileData = createProfile(username, avatarURL);
+  // Fetch user data from API
+  const response = await api.getUser(user.id);
+  const apiUser = response.data?.user;
+
+  let profileData: ProfileData;
+
+  if (!apiUser) {
+    await interaction.editReply({
+      content: "You don't have a profile yet! Use `/createprofile` to start your journey.",
+    });
+    return;
+  } else {
+    const baseStats = apiUser.stats?.baseStats || { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
+    
+    const maxHp = 100 + (baseStats.con || 10) * 5;
+    
+    const currentHp = apiUser.stats?.currentHp !== undefined ? apiUser.stats.currentHp : maxHp;
+
+    const def = 10 + (baseStats.dex || 10);
+
+    profileData = {
+        identity: {
+            username: apiUser.username,
+            avatarUrl: avatarURL,
+            title: apiUser.role ? apiUser.role.charAt(0).toUpperCase() + apiUser.role.slice(1) : 'Novice',
+            level: apiUser.level || 1,
+            createdAt: new Date(apiUser.createdAt),
+            lastActive: new Date(apiUser.lastActive || Date.now()),
+        },
+        stats: {
+            hp: { 
+                current: currentHp, 
+                max: maxHp 
+            },
+            def: def,
+        },
+        progression: {
+            xp: { current: apiUser.xp || 0, max: (apiUser.level || 1) * 1000 },
+            rank: apiUser.role || 'Novice',
+            serverRank: apiUser.serverRank || 0,
+        }
+    };
+  }
 
   const profilePath = path.resolve(process.cwd(), 'assets', 'profile.png');
 

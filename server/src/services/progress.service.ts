@@ -1,5 +1,6 @@
 import prisma from "../lib/prisma";
 import type { UserProgress } from "../../generated/prisma/client.ts";
+import * as storyService from "./story.service";
 
 export interface UpsertProgressInput {
   userId: string;
@@ -11,6 +12,7 @@ export interface UpsertProgressInput {
 
 /**
  * Get or create a progress record for a user in a story.
+ * Auto-heals invalid node IDs by resetting to the story's entry node.
  */
 export async function getOrCreateProgress(
   userId: string,
@@ -24,6 +26,14 @@ export async function getOrCreateProgress(
   });
 
   if (existing) {
+    const story = storyService.getStory(storyId);
+    if (story && !story.nodes[existing.currentNodeId]) {
+      const validNodeId = startNodeId || storyService.getEntryNodeId(storyId) || existing.currentNodeId;
+      return prisma.userProgress.update({
+        where: { userId_storyId: { userId, storyId } },
+        data: { currentNodeId: validNodeId },
+      });
+    }
     return existing;
   }
 

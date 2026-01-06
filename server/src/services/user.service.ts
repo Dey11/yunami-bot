@@ -38,3 +38,41 @@ export async function updateUserRole(
     data: { role },
   });
 }
+
+export async function updateUserProfile(
+  userId: string,
+  role: string,
+  stats: any,
+  inventory: string[]
+): Promise<User> {
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      role,
+      stats,
+      inventory,
+    },
+  });
+}
+
+export async function getUserWithRank(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) return null;
+
+  // Calculate rank: count users with more XP
+  const higherRankedUsers = await prisma.user.count({
+    where: {
+      xp: {
+        gt: user.xp,
+      },
+    },
+  });
+
+  return {
+    ...user,
+    serverRank: higherRankedUsers + 1,
+  };
+}

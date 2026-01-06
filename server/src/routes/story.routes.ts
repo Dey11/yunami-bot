@@ -2,6 +2,8 @@ import { Router, type Request, type Response } from "express";
 import { authMiddleware } from "../middleware/auth";
 import * as progressService from "../services/progress.service";
 import * as partyService from "../services/party.service";
+import * as storyService from "../services/story.service";
+import prisma from "../lib/prisma";
 
 const router = Router();
 
@@ -55,7 +57,7 @@ router.post("/start", async (req: Request, res: Response) => {
         await progressService.getOrCreateProgress(
           member.userId,
           storyId,
-          startNodeId || "start"
+          startNodeId || storyService.getEntryNodeId(storyId) || "start"
         );
       }
 
@@ -73,7 +75,7 @@ router.post("/start", async (req: Request, res: Response) => {
     const progress = await progressService.getOrCreateProgress(
       user.id,
       storyId,
-      startNodeId || "start"
+      startNodeId || storyService.getEntryNodeId(storyId) || "start"
     );
 
     res.status(201).json({
@@ -174,7 +176,7 @@ router.post("/choice", async (req: Request, res: Response) => {
 
 /**
  * POST /story/end
- * Mark the story as completed.
+ * Mark the story as completed and award XP.
  * Body: { storyId: string }
  */
 router.post("/end", async (req: Request, res: Response) => {
@@ -194,9 +196,29 @@ router.post("/end", async (req: Request, res: Response) => {
       return;
     }
 
+    const XP_REWARD = 100;
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        xp: { increment: XP_REWARD },
+        lastActive: new Date(),
+      },
+    });
+
+    const newLevel = Math.floor(updatedUser.xp / 1000) + 1;
+    if (newLevel > (updatedUser.level || 1)) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { level: newLevel },
+      });
+    }
+
     res.json({
       message: "Story completed",
       progress,
+      xpGained: XP_REWARD,
+      newXp: updatedUser.xp,
+      level: newLevel,
     });
   } catch (error) {
     console.error("Error ending story:", error);

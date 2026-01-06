@@ -14,6 +14,7 @@ import { buildCombatNode } from './builders/combat-builder.js';
 import { checkPreconditions } from './preconditions.js';
 import { executeSideEffects } from './side-effects.js';
 import { getPartyByPlayer } from '../quickstart/party-session.js';
+import { buildMetaNode } from './builders/meta-builder.js';
 
 export interface NodeLoadResult {
   allowed: boolean;
@@ -97,7 +98,7 @@ export async function renderNodeWithContext(
       });
 
     case 'meta':
-      throw new Error(`Builder for type "${node.type}" not implemented yet`);
+      return buildMetaNode(node);
 
     default:
       throw new Error(`Unknown node type: ${node.type}`);

@@ -17,6 +17,12 @@ model User {
   discordId String   @unique
   username  String
   role      String? // Assigned after prologue completion (e.g., "leader", "scout")
+  stats     Json?    // Base stats: { str, dex, int, ... }
+  inventory String[] // Starting inventory items
+  xp        Int      @default(0)
+  level     Int      @default(1)
+  lastActive DateTime @default(now())
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

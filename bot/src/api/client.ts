@@ -75,11 +75,21 @@ export async function submitPrologueChoice(
   });
 }
 
-export async function completePrologue(discordId: string) {
+export async function completePrologue(
+  discordId: string,
+  result: {
+    baseStats: any;
+    personalityType: string; // role
+    startingInventory: string[];
+    dominantTraits: string[];
+    personalityDescription: string;
+  }
+) {
   return request<{ message: string; user: any; roleDescription: string }>(
     "POST",
     "/prologue/complete",
-    discordId
+    discordId,
+    result
   );
 }
 

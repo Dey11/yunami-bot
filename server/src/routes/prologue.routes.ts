@@ -3,7 +3,6 @@ import { authMiddleware } from "../middleware/auth";
 import * as progressService from "../services/progress.service";
 import * as userService from "../services/user.service";
 import * as storyService from "../services/story.service";
-import * as roleService from "../services/role.service";
 
 const router = Router();
 
@@ -31,6 +30,23 @@ router.post("/start", async (req: Request, res: Response) => {
         res.status(400).json({
           error: "Prologue already completed",
           role: user.role,
+        });
+        return;
+      }
+
+      // Validate that the current node exists in the story
+      const story = storyService.getStory(PROLOGUE_STORY_ID);
+      if (story && !story.nodes[existing.currentNodeId]) {
+        const validNodeId = storyService.getEntryNodeId(PROLOGUE_STORY_ID) || existing.currentNodeId;
+        const healedProgress = await progressService.updateProgress({
+          userId: user.id,
+          storyId: PROLOGUE_STORY_ID,
+          currentNodeId: validNodeId,
+          state: existing.state as Record<string, any>,
+        });
+        res.json({
+          message: "Resuming prologue (healed)",
+          progress: healedProgress,
         });
         return;
       }
@@ -148,19 +164,23 @@ router.post("/complete", async (req: Request, res: Response) => {
       return;
     }
 
-    // Calculate role from choices made during prologue
-    const state = existing.state as Record<string, any>;
-    const choices = state?.choices || [];
-    const calculatedRole = roleService.calculateRole(choices);
-    const roleDescription = roleService.getRoleDescription(calculatedRole);
+    // Receive calculated results from the bot
+    const { baseStats, personalityType, startingInventory, personalityDescription } = req.body;
+
+    if (!baseStats || !personalityType) {
+      res.status(400).json({ error: "Missing prologue result data" });
+      return;
+    }
 
     // Mark prologue as completed
     await progressService.completeProgress(user.id, PROLOGUE_STORY_ID);
 
-    // Assign calculated role to user
-    const updatedUser = await userService.updateUserRole(
+    // Update user with role, stats, and inventory
+    const updatedUser = await userService.updateUserProfile(
       user.id,
-      calculatedRole
+      personalityType,
+      baseStats,
+      startingInventory
     );
 
     res.json({
@@ -169,8 +189,9 @@ router.post("/complete", async (req: Request, res: Response) => {
         id: updatedUser.id,
         username: updatedUser.username,
         role: updatedUser.role,
+        stats: updatedUser.stats,
       },
-      roleDescription,
+      roleDescription: personalityDescription || "Your journey begins.",
     });
   } catch (error) {
     console.error("Error completing prologue:", error);
