@@ -17,6 +17,12 @@ model User {
   discordId String   @unique
   username  String
   role      String? // Assigned after prologue completion (e.g., "leader", "scout")
+  stats     Json?    // Base stats: { str, dex, int, ... }
+  inventory String[] // Starting inventory items
+  xp        Int      @default(0)
+  level     Int      @default(1)
+  lastActive DateTime @default(now())
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -43,6 +49,8 @@ model UserProgress {
 model Party {
   id        String   @id @default(cuid())
   code      String   @unique // Invite code (short, e.g., "ABC123")
+  name      String?  // Party name
+  maxSize   Int      @default(4)
   leaderId  String
   storyId   String? // The story this party is playing, if started
   status    String   @default("forming") // forming | active | completed
@@ -53,11 +61,12 @@ model Party {
 }
 
 model PartyMember {
-  id       String   @id @default(cuid())
-  partyId  String
-  userId   String
-  isReady  Boolean  @default(false)
-  joinedAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  partyId   String
+  userId    String
+  isReady   Boolean  @default(false)
+  partyRole String?  // Party role: scout, leader, healer, warrior
+  joinedAt  DateTime @default(now())
 
   party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -82,3 +91,157 @@ model MinigameState {
   @@unique([userId, storyId, nodeId])
   @@index([userId])
 }
+
+// ==================== SESSION STATE ====================
+
+// Active game session (replaces in-memory sessions Map)
+model GameSession {
+  id            String   @id @default(cuid())
+  odId          String   @unique // Discord user ID
+  storyId       String
+  currentNodeId String
+  choices       String[] // Choice history
+  flags         Json     @default("{}")
+  checkpoints   String[]
+  inventory     String[]
+  resources     Json     @default("{}") // { gold: 10, energy: 5 }
+  partyRole     String?
+
+  // Active message tracking
+  activeChannelId String?
+  activeMessageId String?
+  activeMessageAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  choiceLocks ChoiceLock[]
+  votes       Vote[]
+  timers      Timer[]
+
+  @@index([odId])
+}
+
+// Prevent duplicate choice selection
+model ChoiceLock {
+  id        String   @id @default(cuid())
+  sessionId String
+  nodeId    String
+  choiceId  String
+  lockedAt  DateTime @default(now())
+
+  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, nodeId, choiceId])
+  @@index([sessionId])
+}
+
+// Votes for timed decision nodes
+model Vote {
+  id        String   @id @default(cuid())
+  sessionId String
+  nodeId    String
+  choiceId  String
+  votedAt   DateTime @default(now())
+
+  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, nodeId]) // One vote per node
+  @@index([sessionId])
+}
+
+// Active timers
+model Timer {
+  id        String   @id @default(cuid())
+  sessionId String
+  timerId   String   // e.g., "nodeId:timer"
+  nodeId    String
+  startedAt DateTime @default(now())
+  duration  Int      // seconds
+  expiresAt DateTime
+
+  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, timerId])
+  @@index([sessionId])
+  @@index([expiresAt])
+}
+
+// ==================== ARC STATE ====================
+
+// Arc split state for a party
+model ArcState {
+  id          String   @id @default(cuid())
+  partyId     String   @unique
+  splitNodeId String
+  mergeNodeId String
+  status      String   @default("active") // active | waiting | completed
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  arcs ActiveArc[]
+
+  @@index([partyId])
+}
+
+// Individual arc within a split
+model ActiveArc {
+  id            String   @id @default(cuid())
+  arcStateId    String
+  arcId         String   // From story definition
+  label         String
+  entryNodeId   String
+  currentNodeId String
+  status        String   @default("active") // active | waiting_at_merge | completed
+  isSoloArc     Boolean  @default(false)
+  startedAt     DateTime @default(now())
+
+  arcState ArcState    @relation(fields: [arcStateId], references: [id], onDelete: Cascade)
+  players  ArcPlayer[]
+
+  @@unique([arcStateId, arcId])
+  @@index([arcStateId])
+}
+
+// Player-to-arc assignment
+model ArcPlayer {
+  id          String   @id @default(cuid())
+  activeArcId String
+  odId        String   // Discord user ID
+  assignedAt  DateTime @default(now())
+
+  activeArc ActiveArc @relation(fields: [activeArcId], references: [id], onDelete: Cascade)
+
+  @@unique([activeArcId, odId])
+  @@index([activeArcId])
+  @@index([odId])
+}
+
+// ==================== GAME ENGINE STATE ====================
+
+// Multiplayer node votes (for voting/outcome evaluation)
+model NodeVote {
+  id        String   @id @default(cuid())
+  sessionId String
+  nodeId    String
+  playerId  String   // Discord user ID
+  choiceId  String
+  votedAt   DateTime @default(now())
+
+  @@unique([sessionId, nodeId, playerId])
+  @@index([sessionId, nodeId])
+}
+
+// Combat state persistence (per node)
+model CombatState {
+  id        String   @id @default(cuid())
+  sessionId String
+  nodeId    String
+  state     Json     // { player_hp, enemies: [{id, hp}], defending, turn }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sessionId, nodeId])
+  @@index([sessionId])
+}
+

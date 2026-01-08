@@ -1,6 +1,7 @@
 import { MessageFlags } from 'discord.js';
 import {
   getSession,
+  recordChoice,
   lockChoice,
   isChoiceLocked,
   getResource,
@@ -9,74 +10,55 @@ import {
   getVote,
   recordVote,
   isTimerExpired,
-  initSession,
 } from '../quickstart/runtime-graph.js';
 import { getPartyByPlayer } from '../quickstart/party-session.js';
 import { renderNodeWithContext } from '../engine/dispatcher.js';
-import { recordPlayerInput } from '../engine/outcome-engine.js';
-<<<<<<< HEAD
-import type { Choice, TraitMapping } from '../engine/types.js';
-import {
-  recordPrologueChoice,
-  isPrologueActive,
-} from '../engine/prologue-evaluator.js';
-=======
 import type { Choice } from '../engine/types.js';
+import { isPlayerInSoloArc, getPlayerArc, updateArcNode } from '../engine/arc-manager.js';
 import * as api from '../api/client.js';
->>>>>>> 2689533 (linking frontend with backend and doing computation in the backend)
-
 export const handler = {
   id: /^choice:(.+):(.+)$/,
   async execute(interaction: any) {
-    const discordId = interaction.user.id;
-    let session = getSession(discordId);
+    const odId = interaction.user.id;
+    const { restoreSession } = await import('../quickstart/runtime-graph.js');
+    const { mapRemotePartyToLocal, restorePartySession } = await import('../quickstart/party-session.js');
 
-    // If no local session, try to restore from backend
+    let session = getSession(odId);
     if (!session) {
-      // Get user's current story state from backend
-      const userResponse = await api.getUser(discordId);
-      if (userResponse.error || !userResponse.data?.progress?.length) {
-        await interaction.reply({
-          content: 'No active session. Please start a new story.',
-          flags: MessageFlags.Ephemeral,
-        });
-        return;
+      try {
+        const sessionRes = await api.getSession(odId);
+        if (sessionRes.data?.session) {
+            session = restoreSession(sessionRes.data.session);
+        }
+      } catch (e) {
+        console.error("Failed to restore session", e);
       }
-
-      // Find active story progress
-      const activeProgress = userResponse.data.progress.find(
-        (p: any) => p.status === 'active'
-      );
-      if (!activeProgress) {
-        await interaction.reply({
-          content: 'No active session. Please start a new story.',
-          flags: MessageFlags.Ephemeral,
-        });
-        return;
-      }
-
-      // Fetch story and restore session
-      const storyResponse = await api.getStory(discordId, activeProgress.storyId);
-      if (storyResponse.error || !storyResponse.data?.story) {
-        await interaction.reply({
-          content: 'Failed to load story data.',
-          flags: MessageFlags.Ephemeral,
-        });
-        return;
-      }
-
-      const storyData = storyResponse.data.story;
-      session = initSession(
-        discordId,
-        storyData.id,
-        activeProgress.currentNodeId,
-        storyData
-      );
     }
 
+    if (!session) {
+      await interaction.reply({
+        content: 'No active session. Please start a new story.',
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+    
+    // Ensure Party is also restored
+    let party = getPartyByPlayer(odId);
+    if (!party) {
+         try {
+             const partyRes = await api.getMyParty(odId);
+             if (partyRes.data?.party) {
+                 const restoredParty = mapRemotePartyToLocal(partyRes.data.party);
+                 restorePartySession(restoredParty);
+                 party = restoredParty as any;
+             }
+         } catch (e) {
+             console.error("Failed to restore party", e);
+         }
+    }
     const [, nodeId, choiceId] =
       interaction.customId.match(/^choice:(.+):(.+)$/) || [];
-
     if (!nodeId || !choiceId) {
       await interaction.reply({
         content: 'Invalid choice format.',
@@ -84,7 +66,6 @@ export const handler = {
       });
       return;
     }
-
     const currentNode = session.storyData.nodes?.[nodeId];
     if (!currentNode) {
       await interaction.reply({
@@ -93,10 +74,8 @@ export const handler = {
       });
       return;
     }
-
     const choices: Choice[] = currentNode.type_specific?.choices || [];
     const choice = choices.find((c: Choice) => c.id === choiceId);
-
     if (!choice) {
       await interaction.reply({
         content: 'Choice not found.',
@@ -104,20 +83,21 @@ export const handler = {
       });
       return;
     }
+    // Party already retrieved at top of function
+    const partyId = party?.id;
+    const inSoloArc = isPlayerInSoloArc(partyId, odId);
 
-    const isTimedNode = currentNode.type === 'timed';
-
+    const isTimedNode = currentNode.type === 'timed' && !inSoloArc; // Disable timed logic for solo arcs
     if (isTimedNode) {
       const timerId = `${nodeId}:timer`;
-      if (isTimerExpired(discordId, timerId)) {
+      if (isTimerExpired(odId, timerId)) {
         await interaction.reply({
           content: "⏱️ Time's up! Voting has ended.",
           flags: MessageFlags.Ephemeral,
         });
         return;
       }
-
-      const existingVote = getVote(discordId, nodeId);
+      const existingVote = getVote(odId, nodeId);
       if (existingVote) {
         await interaction.reply({
           content: 'You have already voted on this decision.',
@@ -125,27 +105,25 @@ export const handler = {
         });
         return;
       }
-    } else if (isChoiceLocked(discordId, nodeId, choiceId)) {
+    } else if (isChoiceLocked(odId, nodeId, choiceId)) {
       await interaction.reply({
         content: 'You have already made this choice.',
         flags: MessageFlags.Ephemeral,
       });
       return;
     }
-
     if (choice.cost) {
       for (const [resource, amount] of Object.entries(choice.cost)) {
-        if (getResource(discordId, resource) < amount) {
+        if (getResource(odId, resource) < amount) {
           await interaction.reply({
-            content: `Not enough ${resource}. Required: ${amount}, available: ${getResource(discordId, resource)}.`,
+            content: `Not enough ${resource}. Required: ${amount}, available: ${getResource(odId, resource)}.`,
             flags: MessageFlags.Ephemeral,
           });
           return;
         }
       }
     }
-
-    if (choice.ephemeral_confirmation || isTimedNode) {
+    if ((choice.ephemeral_confirmation || isTimedNode) && !inSoloArc) {
       await interaction.reply({
         content: `You chose: **${choice.label}**. Your vote has been recorded.`,
         flags: MessageFlags.Ephemeral,
@@ -153,44 +131,86 @@ export const handler = {
     } else {
       await interaction.deferUpdate();
     }
-
-    // Apply costs locally
     if (choice.cost) {
       for (const [resource, amount] of Object.entries(choice.cost)) {
-        modifyResource(discordId, resource, -amount);
+        modifyResource(odId, resource, -amount);
       }
     }
-
-    lockChoice(discordId, nodeId, choiceId);
-
-    // Record choice on backend
-    await api.submitChoice(
-      discordId,
-      session.storyId,
-      nodeId,
-      choiceId,
-      choice.nextNodeId ?? nodeId
-    );
-
-    if (isPrologueActive(odId)) {
-      const traitMappings: TraitMapping = session.storyData.traitMappings || {};
-      recordPrologueChoice(odId, choiceId, traitMappings);
+    lockChoice(odId, nodeId, choiceId);
+    recordChoice(odId, choiceId, choice.nextNodeId ?? null);
+    
+    // Prologue choices are tracked by server via api.submitPrologueChoice
+    if (session.storyId === 'prologue_1') { // Use storyId check instead of isPrologueActive
+      await api.submitPrologueChoice(odId, nodeId, choiceId, choice.nextNodeId ?? '');
     }
 
     if (isTimedNode) {
-      recordVote(discordId, nodeId, choiceId);
+      recordVote(odId, nodeId, choiceId);
+      // Also record on server for outcome resolution
+      await api.recordGameVote(odId, nodeId, choiceId);
     }
-
-    const party = getPartyByPlayer(discordId);
-    recordPlayerInput(nodeId, discordId, { choiceId }, party?.id);
-
-    // Check if this is the final node (no nextNodeId)
+    
+    // Early vote completion: only for 3+ player parties when all have voted
+    // For 2-player parties, always wait for timer (leader decides ties)
+    if (isTimedNode && party && party.status === 'active' && party.players.length >= 3) {
+      const { clearTimer, getActiveMessage, setActiveMessage } = await import('../quickstart/runtime-graph.js');
+      const { TextChannel } = await import('discord.js');
+      
+      const expectedPlayerIds = party.players.map(p => p.odId);
+      
+      // Check vote status from server
+      const votesRes = await api.getGameVotes(odId, nodeId);
+      const currentVoteCount = votesRes.data?.summary?.totalVotes ?? 0;
+      
+      console.log(`[EarlyVote] Node: ${nodeId}, PartyId: ${partyId}`);
+      console.log(`[EarlyVote] Party player count: ${party.players.length}`);
+      console.log(`[EarlyVote] Expected: ${expectedPlayerIds.length}, Current: ${currentVoteCount}`);
+      
+      if (currentVoteCount >= expectedPlayerIds.length) {
+        // All players have voted - resolve outcome on server
+        const resolveRes = await api.resolveOutcome(odId, nodeId, party.ownerId);
+        if (resolveRes.data) {
+          const { outcome: result, nextNode } = resolveRes.data;
+          // clearNodeInputs(nodeId, partyId); // Handled on server now
+          clearTimer(odId, `${nodeId}:timer`);
+          
+          if (result.nextNodeId) {
+            const nextNode = session.storyData.nodes?.[result.nextNodeId];
+            if (nextNode) {
+              const context = { playerId: odId, nodeId: nextNode.id, party };
+              const renderResult = await renderNodeWithContext(nextNode, context);
+              const payload: any = {
+                content: result.message ? `🗳️ ${result.message}` : undefined,
+                embeds: [renderResult.embed],
+                components: renderResult.components ?? [],
+              };
+              if (renderResult.attachment) payload.files = [renderResult.attachment];
+              
+              // Update the shared message for all players
+              const activeMsg = getActiveMessage(odId);
+              if (activeMsg) {
+                try {
+                  const channel = await interaction.client.channels.fetch(activeMsg.channelId) as typeof TextChannel.prototype;
+                  const msg = await channel.messages.fetch(activeMsg.messageId);
+                  await msg.edit(payload);
+                  // Update all players' active message
+                  for (const p of party.players) {
+                    setActiveMessage(p.odId, activeMsg.channelId, activeMsg.messageId);
+                  }
+                } catch (err) {
+                  console.warn('[EarlyVoteComplete] Failed to update shared message:', err);
+                }
+              }
+            }
+          }
+          return; // Exit early, vote completed
+        }
+      }
+    }
+    
     if (!choice.nextNodeId || choice.nextNodeId === null) {
-      // Check if this is the prologue story
       if (session.storyId === 'prologue_1') {
-        // Complete prologue and get role
-        const completeResult = await api.completePrologue(discordId);
-        
+        const completeResult = await api.completePrologue(odId);
         if (completeResult.data) {
           const { user, roleDescription } = completeResult.data;
           const embed = {
@@ -199,24 +219,22 @@ export const handler = {
             color: 0x00b3b3,
             footer: { text: 'You can now join multiplayer parties!' },
           };
-          
-          if (choice.ephemeral_confirmation) {
+          if (choice.ephemeral_confirmation && !inSoloArc) {
             await interaction.message.edit({ embeds: [embed], components: [] });
           } else {
             await interaction.editReply({ embeds: [embed], components: [] });
           }
+        } else {
+             await interaction.editReply({ content: `Failed to complete prologue: ${completeResult.error}` });
         }
       } else {
-        // End regular story
-        await api.endStory(discordId, session.storyId);
-        
+        await api.endStory(odId, session.storyId);
         const embed = {
           title: '📖 Story Complete!',
           description: 'Your journey has come to an end... for now.',
           color: 0x00b3b3,
         };
-        
-        if (choice.ephemeral_confirmation) {
+        if (choice.ephemeral_confirmation && !inSoloArc) {
           await interaction.message.edit({ embeds: [embed], components: [] });
         } else {
           await interaction.editReply({ embeds: [embed], components: [] });
@@ -224,15 +242,12 @@ export const handler = {
       }
       return;
     }
-
-    if (!isTimedNode && choice.nextNodeId) {
-      // Update local session to next node
+    if ((inSoloArc || !isTimedNode) && choice.nextNodeId) {
       session.currentNodeId = choice.nextNodeId;
-
       const nextNode = session.storyData.nodes?.[choice.nextNodeId];
       if (nextNode) {
         const context = {
-          playerId: discordId,
+          playerId: odId,
           nodeId: nextNode.id,
           party,
         };
@@ -242,20 +257,18 @@ export const handler = {
           components: result.components ?? [],
         };
         if (result.attachment) payload.files = [result.attachment];
-
-        if (choice.ephemeral_confirmation) {
+        if (choice.ephemeral_confirmation && !inSoloArc) {
           await interaction.message.edit(payload);
           setActiveMessage(
-            discordId,
+            odId,
             interaction.message.channelId,
             interaction.message.id
           );
         } else {
           const reply = await interaction.editReply(payload);
-          setActiveMessage(discordId, reply.channelId, reply.id);
+          setActiveMessage(odId, reply.channelId, reply.id);
         }
       }
     }
-  },
+  }
 };
-
