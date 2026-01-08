@@ -11,12 +11,12 @@ import { buildSequenceNode } from './builders/sequence-builder.js';
 import { buildSocialNode } from './builders/social-builder.js';
 import { buildMemoryNode } from './builders/memory-builder.js';
 import { buildCombatNode } from './builders/combat-builder.js';
+import { buildMetaNode } from './builders/meta-builder.js';
 import { buildArcSplitNode } from './builders/arc-split-builder.js';
 import { handleArcMerge } from './arc-merge-handler.js';
 import { checkPreconditions } from './preconditions.js';
 import { executeSideEffects } from './side-effects.js';
 import { getPartyByPlayer } from '../quickstart/party-session.js';
-import { buildMetaNode } from './builders/meta-builder.js';
 export interface NodeLoadResult {
   allowed: boolean;
   reason?: string;

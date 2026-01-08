@@ -34,4 +34,4 @@ export function buildMetaNode(node: StoryNode): BuilderResult {
     embed: embedBuilder,
     components: [row],
   };
-};
+}
