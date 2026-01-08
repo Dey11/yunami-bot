@@ -12,9 +12,10 @@ export function createParty(
   ownerId: string,
   ownerUsername: string,
   partyName: string,
-  maxSize: number
+  maxSize: number,
+  id?: string
 ): MultiplayerSession {
-  const partyId = generatePartyId();
+  const partyId = id || generatePartyId();
   const party: MultiplayerSession = {
     id: partyId,
     name: partyName,
@@ -25,7 +26,7 @@ export function createParty(
         odId: ownerId,
         username: ownerUsername,
         joinedAt: new Date(),
-        isReady: false,
+        isReady: true,
       },
     ],
     status: 'waiting',
@@ -38,11 +39,14 @@ export function createParty(
 export function getParty(partyId: string): MultiplayerSession | undefined {
   return partySessions.get(partyId);
 }
+export function restorePartySession(session: MultiplayerSession) {
+  partySessions.set(session.id, session);
+}
 export async function getPartyByOwner(
   ownerId: string
 ): Promise<MultiplayerSession | undefined> {
   for (const party of partySessions.values()) {
-    if (party.ownerId === ownerId && party.status === 'waiting') {
+    if (party.ownerId === ownerId && (party.status === 'waiting' || party.status === 'forming')) {
       return party;
     }
   }
@@ -71,7 +75,7 @@ export async function invitePlayerToParty(
   if (!party) {
     return { success: false, message: 'Party not found' };
   }
-  if (party.status !== 'waiting') {
+  if (party.status !== 'waiting' && party.status !== 'forming') {
     return { success: false, message: 'Party is not accepting new members' };
   }
   if (party.players.length >= party.maxSize) {
@@ -145,7 +149,7 @@ export function startPartyStory(
   if (!party) {
     return { success: false, message: 'Party not found' };
   }
-  if (party.status !== 'waiting') {
+  if (party.status !== 'waiting' && party.status !== 'forming') {
     return { success: false, message: 'Party is not in waiting state' };
   }
   if (party.players.length < 2) {
@@ -205,7 +209,7 @@ export function getPartyByInviteCode(
   inviteCode: string
 ): MultiplayerSession | undefined {
   for (const party of partySessions.values()) {
-    if (party.inviteCode === inviteCode && party.status === 'waiting') {
+    if (party.inviteCode === inviteCode && (party.status === 'waiting' || party.status === 'forming')) {
       return party;
     }
   }
@@ -224,4 +228,23 @@ export function cleanupOldParties(maxAgeMinutes: number = 60): number {
     }
   }
   return cleaned;
+}
+// Helper to map remote API party to local structure
+export function mapRemotePartyToLocal(remoteParty: any): MultiplayerSession {
+  return {
+    id: remoteParty.id,
+    name: remoteParty.name || 'Party',
+    ownerId: remoteParty.leaderId,
+    maxSize: remoteParty.maxSize || 4,
+    players: (remoteParty.members || []).map((m: any) => ({
+      odId: m.user.discordId,
+      username: m.user.username,
+      isReady: m.isReady,
+      role: m.partyRole,
+      joinedAt: new Date(m.joinedAt || Date.now())
+    })),
+    status: remoteParty.status,
+    inviteCode: remoteParty.code,
+    createdAt: new Date(remoteParty.createdAt || Date.now()),
+  };
 }

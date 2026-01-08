@@ -130,12 +130,12 @@ export function evaluateOutcome(
   const outcomeRules = node.type_specific?.outcome_rules;
   const choices = node.type_specific?.choices || [];
   if (!outcomeRules?.on_all_inputs_or_timeout) {
-    return evaluateSimpleMajority(inputs, choices);
+    return evaluateSimpleMajority(inputs, choices, party);
   }
   const ruleSet = outcomeRules.on_all_inputs_or_timeout.compute;
   switch (ruleSet) {
     case 'majority':
-      return evaluateSimpleMajority(inputs, choices);
+      return evaluateSimpleMajority(inputs, choices, party);
     case 'first':
       return evaluateFirstChoice(inputs, choices);
     case 'last':
@@ -143,18 +143,22 @@ export function evaluateOutcome(
     case 'random':
       return evaluateRandom(inputs, choices);
     default:
-      return evaluateSimpleMajority(inputs, choices);
+      return evaluateSimpleMajority(inputs, choices, party);
   }
 }
 function evaluateSimpleMajority(
   inputs: NodeInputs,
-  choices: Choice[]
+  choices: Choice[],
+  party?: MultiplayerSession | null
 ): OutcomeResult {
   const voteCounts = new Map<string, number>();
+  const playerVotes = new Map<string, string>(); // playerId -> choiceId
+  
   for (const input of inputs.playerInputs.values()) {
     if (input.choiceId) {
       const count = voteCounts.get(input.choiceId) || 0;
       voteCounts.set(input.choiceId, count + 1);
+      playerVotes.set(input.playerId, input.choiceId);
     }
   }
   if (inputs.timedOut && voteCounts.size === 0) {
@@ -163,20 +167,40 @@ function evaluateSimpleMajority(
       message: 'Time expired with no votes',
     };
   }
+  
+  // Find all choices with max votes (potential ties)
   let maxVotes = 0;
-  let winningChoiceId: string | null = null;
+  const tiedChoiceIds: string[] = [];
   for (const [choiceId, count] of voteCounts.entries()) {
     if (count > maxVotes) {
       maxVotes = count;
-      winningChoiceId = choiceId;
+      tiedChoiceIds.length = 0;
+      tiedChoiceIds.push(choiceId);
+    } else if (count === maxVotes) {
+      tiedChoiceIds.push(choiceId);
     }
   }
+  
+  let winningChoiceId: string | null = tiedChoiceIds[0] ?? null;
+  
+  // If there's a tie and we have a party, use leader's vote as tiebreaker
+  if (tiedChoiceIds.length > 1 && party) {
+    const leaderId = party.ownerId;
+    const leaderVote = playerVotes.get(leaderId);
+    if (leaderVote && tiedChoiceIds.includes(leaderVote)) {
+      winningChoiceId = leaderVote;
+      console.log(`[Vote] Tie broken by leader: ${leaderVote}`);
+    }
+  }
+  
   const winningChoice = choices.find((c) => c.id === winningChoiceId);
   const totalVotes = [...voteCounts.values()].reduce((a, b) => a + b, 0);
   return {
     nextNodeId: winningChoice?.nextNodeId ?? null,
     message:
-      totalVotes > 1 && winningChoiceId
+      tiedChoiceIds.length > 1 && winningChoiceId
+        ? `Leader decided: ${winningChoice?.label}`
+        : totalVotes > 1 && winningChoiceId
         ? `Majority chose: ${winningChoice?.label}`
         : undefined,
   };

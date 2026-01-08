@@ -6,79 +6,106 @@ import {
   MessageFlags,
 } from 'discord.js';
 import * as api from '../api/client.js';
+import { mapRemotePartyToLocal } from '../quickstart/party-session.js';
+
 export const handler = {
-  id: [/^party_toggle_ready:(true|false)$/, 'refresh_lobby'],
+  id: [/^party_ready:([\w-]+):(true|false)$/, /^party_refresh:([\w-]+)$/],
   async execute(interaction: any) {
+    await interaction.deferUpdate();
+    
     const discordId = interaction.user.id;
-    const userResponse = await api.getUser(discordId);
-    if (userResponse.error) {
-      await interaction.reply({
-        content: 'Failed to get user data.',
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
+    let partyId: string | undefined;
+    let isReady: boolean | undefined;
+    
+    if (interaction.customId.startsWith('party_refresh:')) {
+      const match = interaction.customId.match(/^party_refresh:([\w-]+)$/);
+      partyId = match?.[1];
+    } else {
+      const match = interaction.customId.match(/^party_ready:([\w-]+):(true|false)$/);
+      partyId = match?.[1];
+      isReady = match?.[2] === 'true';
     }
-    const message = interaction.message;
-    const embed = message?.embeds?.[0];
-    const footerText = embed?.footer?.text || '';
-    const partyIdMatch = footerText.match(/Party ID: (\w+)/);
-    if (!partyIdMatch) {
-      await interaction.reply({
-        content: 'Could not find party information. Please rejoin the party.',
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
+    
+    if (!partyId) {
+       await interaction.followUp({
+         content: 'Invalid interaction data.',
+         flags: MessageFlags.Ephemeral,
+       });
+       return;
     }
-    const partyId = partyIdMatch[1];
-    if (interaction.customId !== 'refresh_lobby') {
-      const isReady = interaction.customId.split(':')[1] === 'true';
+    
+    // Perform Action
+    if (isReady !== undefined) {
       const readyResult = await api.setReady(discordId, partyId, isReady);
       if (readyResult.error) {
-        await interaction.reply({
+        await interaction.followUp({
           content: `Failed to update ready status: ${readyResult.error}`,
           flags: MessageFlags.Ephemeral,
         });
-        return;
+        // We still try to refresh the UI
       }
     }
+    
+    // Refresh UI
     const partyResponse = await api.getParty(discordId, partyId);
     if (partyResponse.error || !partyResponse.data?.party) {
-      await interaction.reply({
-        content: 'Party not found.',
+      await interaction.followUp({
+        content: 'Party not found or you are no longer a member.',
         flags: MessageFlags.Ephemeral,
       });
       return;
     }
-    const party = partyResponse.data.party;
+    
+    const party = mapRemotePartyToLocal(partyResponse.data.party);
+    const maxSize = party.maxSize || 4;
+    
+    const getRoleDisplay = (role: string): string => {
+      const roles: Record<string, string> = {
+        scout: '🔍 Scout',
+        leader: '👑 Leader',
+        healer: '💚 Healer',
+        warrior: '⚔️ Warrior',
+      };
+      return roles[role] || role || '⬜ No role';
+    };
+    
     const partyEmbed = new EmbedBuilder()
-      .setTitle(`Party Lobby`)
-      .setDescription(`Invite Code: **${party.code}**\nWaiting for all players to be ready...`)
+      .setTitle(`Party Lobby: ${party.name}`)
+      .setDescription(`Waiting for all players to be ready...`)
       .setColor(0x00b3b3)
       .addFields(
-        party.members.map((m: any) => ({
-          name: m.user.username,
-          value: m.isReady ? '✅ Ready' : '⬜ Not Ready',
+        party.players.map((p) => ({
+          name: p.username,
+          value: `${p.role ? getRoleDisplay(p.role) : '⬜ No role'} | ${p.isReady ? '✅ Ready' : '⏳ Not Ready'}`,
           inline: true,
         }))
       )
-      .setFooter({ text: `Players: ${party.members.length}/4 | Party ID: ${party.id}` });
-    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      .setFooter({ text: `Players: ${party.players.length}/${maxSize}` });
+      
+    const { buildRoleSelectionRow } = await import('./party-role-handler.js');
+    const roleRow = buildRoleSelectionRow(party.id);
+    const readyRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
-        .setCustomId('party_toggle_ready:true')
+        .setCustomId(`party_ready:${party.id}:true`)
         .setLabel('Ready Up')
         .setStyle(ButtonStyle.Success),
       new ButtonBuilder()
-        .setCustomId('party_toggle_ready:false')
+        .setCustomId(`party_ready:${party.id}:false`)
         .setLabel('Not Ready')
         .setStyle(ButtonStyle.Secondary),
       new ButtonBuilder()
-        .setCustomId('refresh_lobby')
+        .setCustomId(`party_refresh:${party.id}`)
         .setLabel('Refresh')
-        .setStyle(ButtonStyle.Primary)
+        .setStyle(ButtonStyle.Primary),
+      new ButtonBuilder()
+        .setCustomId(`party_leave:${party.id}`)
+        .setLabel('Leave Party')
+        .setStyle(ButtonStyle.Danger)
     );
-    await interaction.update({
+    
+    await interaction.editReply({
       embeds: [partyEmbed],
-      components: [row],
+      components: [roleRow, readyRow],
     });
   },
 };

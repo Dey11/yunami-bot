@@ -10,12 +10,16 @@ function generateInviteCode(): string {
 }
 export interface CreatePartyInput {
   leaderId: string;
+  name?: string;
+  maxSize?: number;
 }
 export async function createParty(input: CreatePartyInput): Promise<Party> {
   const code = generateInviteCode();
   return prisma.party.create({
     data: {
       code,
+      name: input.name,
+      maxSize: input.maxSize || 4,
       leaderId: input.leaderId,
       status: "forming",
       members: {
@@ -125,3 +129,33 @@ export async function deleteParty(partyId: string): Promise<void> {
     where: { id: partyId },
   });
 }
+
+export async function setPartyRole(
+  partyId: string,
+  userId: string,
+  partyRole: string
+): Promise<PartyMember> {
+  return prisma.partyMember.update({
+    where: {
+      partyId_userId: { partyId, userId },
+    },
+    data: { partyRole },
+    include: { user: true },
+  });
+}
+
+export async function isRoleTaken(
+  partyId: string,
+  role: string,
+  excludeUserId?: string
+): Promise<boolean> {
+  const member = await prisma.partyMember.findFirst({
+    where: {
+      partyId,
+      partyRole: role,
+      ...(excludeUserId && { NOT: { userId: excludeUserId } }),
+    },
+  });
+  return !!member;
+}
+
