@@ -119,27 +119,18 @@ router.post("/complete", async (req: Request, res: Response) => {
       });
       return;
     }
-    // Calculate profile from stored choices instead of client payload
-    const currentState = (existing.state as Record<string, any>) || {};
-    const choices = (currentState.choices || []) as { choiceId: string }[];
-    
-    // Evaluate using server-side service
-    const prologueService = await import("../services/prologue.service.js");
-    const result = prologueService.calculatePrologueResult(PROLOGUE_STORY_ID, choices);
-
-    if (!result) {
-      res.status(500).json({ error: "Failed to calculate prologue result" });
+    const { baseStats, personalityType, startingInventory, personalityDescription } = req.body;
+    if (!baseStats || !personalityType) {
+      res.status(400).json({ error: "Missing prologue result data" });
       return;
     }
-
     await progressService.completeProgress(user.id, PROLOGUE_STORY_ID);
     const updatedUser = await userService.updateUserProfile(
       user.id,
-      result.personalityType,
-      result.baseStats,
-      result.startingInventory
+      personalityType,
+      baseStats,
+      startingInventory
     );
-
     res.json({
       message: "Prologue completed",
       user: {
@@ -148,10 +139,7 @@ router.post("/complete", async (req: Request, res: Response) => {
         role: updatedUser.role,
         stats: updatedUser.stats,
       },
-      roleDescription: result.personalityDescription,
-      stats: result.baseStats,
-      traits: result.dominantTraits,
-      inventory: result.startingInventory
+      roleDescription: personalityDescription || "Your journey begins.",
     });
   } catch (error) {
     console.error("Error completing prologue:", error);

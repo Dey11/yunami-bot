@@ -1,6 +1,6 @@
 import prisma from "../lib/prisma";
 import type { UserProgress } from "../../generated/prisma/client.ts";
-
+import * as storyService from "./story.service";
 export interface UpsertProgressInput {
   userId: string;
   storyId: string;
@@ -8,10 +8,6 @@ export interface UpsertProgressInput {
   state?: Record<string, any>;
   status?: string;
 }
-
-/**
- * Get or create a progress record for a user in a story.
- */
 export async function getOrCreateProgress(
   userId: string,
   storyId: string,
@@ -22,11 +18,17 @@ export async function getOrCreateProgress(
       userId_storyId: { userId, storyId },
     },
   });
-
   if (existing) {
+    const story = storyService.getStory(storyId);
+    if (story && !story.nodes[existing.currentNodeId]) {
+      const validNodeId = startNodeId || storyService.getEntryNodeId(storyId) || existing.currentNodeId;
+      return prisma.userProgress.update({
+        where: { userId_storyId: { userId, storyId } },
+        data: { currentNodeId: validNodeId },
+      });
+    }
     return existing;
   }
-
   return prisma.userProgress.create({
     data: {
       userId,
@@ -37,10 +39,6 @@ export async function getOrCreateProgress(
     },
   });
 }
-
-/**
- * Get active progress for a user in a story.
- */
 export async function getProgress(
   userId: string,
   storyId: string
@@ -51,10 +49,6 @@ export async function getProgress(
     },
   });
 }
-
-/**
- * Update progress (node, state, status).
- */
 export async function updateProgress(
   input: UpsertProgressInput
 ): Promise<UserProgress> {
@@ -76,10 +70,6 @@ export async function updateProgress(
     },
   });
 }
-
-/**
- * Mark a story as completed for a user.
- */
 export async function completeProgress(
   userId: string,
   storyId: string
@@ -93,10 +83,6 @@ export async function completeProgress(
     },
   });
 }
-
-/**
- * Get all progress for a user (all stories).
- */
 export async function getAllProgressForUser(
   userId: string
 ): Promise<UserProgress[]> {

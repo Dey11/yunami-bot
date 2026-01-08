@@ -8,13 +8,12 @@ import {
   type PlayerSession,
 } from '../quickstart/runtime-graph.js';
 import { getPartyByPlayer } from '../quickstart/party-session.js';
-// import {
-//   markTimedOut,
-//   getNodeInputs,
-//   evaluateOutcome,
-//   clearNodeInputs,
-// } from './outcome-engine.js';
-import * as api from '../api/client.js';
+import {
+  markTimedOut,
+  getNodeInputs,
+  evaluateOutcome,
+  clearNodeInputs,
+} from './outcome-engine.js';
 import { renderNodeWithContext } from './dispatcher.js';
 import { client } from '../index.js';
 import { TextChannel } from 'discord.js';
@@ -77,7 +76,7 @@ async function defaultExpiryHandler(
 ): Promise<void> {
   const party = getPartyByPlayer(session.odId);
   const partyId = party?.id;
-  // markTimedOut(nodeId, partyId); // Server handles this via timer check or resolve
+  markTimedOut(nodeId, partyId);
   const currentNode = session.storyData?.nodes?.[nodeId];
   const activeMessage = getActiveMessage(session.odId);
   if (!activeMessage) {
@@ -86,20 +85,15 @@ async function defaultExpiryHandler(
   }
   let nextNodeId: string | null = null;
   let message = "⏱️ **Time's up!** No decision was made.";
-  
   if (currentNode) {
-    // Resolve outcome on server
-    try {
-      const response = await api.resolveOutcome(session.odId, nodeId, party?.ownerId);
-      if (response.data) {
-        const { outcome, nextNode } = response.data;
-        nextNodeId = outcome.nextNodeId;
-        message = outcome.message
-          ? `⏱️ **Time's up!** ${outcome.message}`
-          : "⏱️ **Time's up!**";
-      }
-    } catch (e) {
-      console.error("Failed to resolve timeout outcome on server", e);
+    const inputs = getNodeInputs(nodeId, partyId);
+    if (inputs && inputs.playerInputs.size > 0) {
+      const result = evaluateOutcome(currentNode, inputs, party);
+      nextNodeId = result.nextNodeId;
+      message = result.message
+        ? `⏱️ **Time's up!** ${result.message}`
+        : "⏱️ **Time's up!**";
+      clearNodeInputs(nodeId, partyId);
     }
   }
   recordChoice(session.odId, `timeout:${nodeId}`, nextNodeId);

@@ -2,12 +2,11 @@ import type { StoryNode, Preconditions } from './types.js';
 import type { MultiplayerSession } from '../types/party.js';
 import { getSession } from '../quickstart/runtime-graph.js';
 import { getPartyByPlayer } from '../quickstart/party-session.js';
-
+import { getPlayerArc } from './arc-manager.js';
 export interface PreconditionResult {
   allowed: boolean;
   reason?: string;
 }
-
 export function checkPreconditions(
   node: StoryNode,
   playerId: string,
@@ -17,7 +16,6 @@ export function checkPreconditions(
   if (!preconditions) {
     return { allowed: true };
   }
-
   const session = getSession(playerId);
   if (!session) {
     return {
@@ -25,7 +23,6 @@ export function checkPreconditions(
       reason: 'No active session found',
     };
   }
-
   if (
     preconditions.min_player_count !== undefined ||
     preconditions.max_player_count !== undefined
@@ -35,7 +32,6 @@ export function checkPreconditions(
       return playerCountResult;
     }
   }
-
   if (preconditions.required_flags && preconditions.required_flags.length > 0) {
     const flagsResult = checkRequiredFlags(
       preconditions.required_flags,
@@ -45,7 +41,6 @@ export function checkPreconditions(
       return flagsResult;
     }
   }
-
   if (preconditions.required_items && preconditions.required_items.length > 0) {
     const itemsResult = checkRequiredItems(
       preconditions.required_items,
@@ -55,10 +50,48 @@ export function checkPreconditions(
       return itemsResult;
     }
   }
-
+  if (preconditions.required_arc || preconditions.excluded_arcs) {
+    const arcResult = checkArcConditions(preconditions, playerId, party);
+    if (!arcResult.allowed) {
+      return arcResult;
+    }
+  }
   return { allowed: true };
 }
-
+function checkArcConditions(
+  preconditions: Preconditions,
+  playerId: string,
+  party?: MultiplayerSession | null
+): PreconditionResult {
+  if (!party) {
+    party = getPartyByPlayer(playerId);
+  }
+  const partyId = party?.id;
+  const playerArc = partyId ? getPlayerArc(partyId, playerId) : undefined;
+  if (preconditions.required_arc) {
+    if (!playerArc) {
+      return {
+        allowed: false,
+        reason: `Requires arc "${preconditions.required_arc}" but player is not in any arc`,
+      };
+    }
+    if (playerArc !== preconditions.required_arc) {
+      return {
+        allowed: false,
+        reason: `Requires arc "${preconditions.required_arc}" but player is in "${playerArc}"`,
+      };
+    }
+  }
+  if (preconditions.excluded_arcs && preconditions.excluded_arcs.length > 0) {
+    if (playerArc && preconditions.excluded_arcs.includes(playerArc)) {
+      return {
+        allowed: false,
+        reason: `Arc "${playerArc}" is excluded from this node`,
+      };
+    }
+  }
+  return { allowed: true };
+}
 function checkPlayerCount(
   preconditions: Preconditions,
   playerId: string,
@@ -67,10 +100,8 @@ function checkPlayerCount(
   if (!party) {
     party = getPartyByPlayer(playerId);
   }
-
   const playerCount =
     party && party.status === 'active' ? party.players.length : 1;
-
   if (
     preconditions.min_player_count !== undefined &&
     playerCount < preconditions.min_player_count
@@ -80,7 +111,6 @@ function checkPlayerCount(
       reason: `Requires at least ${preconditions.min_player_count} player(s), but only ${playerCount} present`,
     };
   }
-
   if (
     preconditions.max_player_count !== undefined &&
     playerCount > preconditions.max_player_count
@@ -90,50 +120,41 @@ function checkPlayerCount(
       reason: `Allows maximum ${preconditions.max_player_count} player(s), but ${playerCount} present`,
     };
   }
-
   return { allowed: true };
 }
-
 function checkRequiredFlags(
   requiredFlags: string[],
   sessionFlags: Record<string, boolean>
 ): PreconditionResult {
   const missingFlags: string[] = [];
-
   for (const flag of requiredFlags) {
     if (!sessionFlags[flag]) {
       missingFlags.push(flag);
     }
   }
-
   if (missingFlags.length > 0) {
     return {
       allowed: false,
       reason: `Missing required flags: ${missingFlags.join(', ')}`,
     };
   }
-
   return { allowed: true };
 }
-
 function checkRequiredItems(
   requiredItems: string[],
   inventory: string[]
 ): PreconditionResult {
   const missingItems: string[] = [];
-
   for (const item of requiredItems) {
     if (!inventory.includes(item)) {
       missingItems.push(item);
     }
   }
-
   if (missingItems.length > 0) {
     return {
       allowed: false,
       reason: `Missing required items: ${missingItems.join(', ')}`,
     };
   }
-
   return { allowed: true };
 }

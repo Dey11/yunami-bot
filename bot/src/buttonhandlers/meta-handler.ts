@@ -1,6 +1,10 @@
 import { MessageFlags, EmbedBuilder } from 'discord.js';
 import { getSession, endSession } from '../quickstart/runtime-graph.js';
-// import { ... } from '../engine/prologue-evaluator.js'; // Removed
+import {
+  finalizePrologueProfile,
+  clearPrologueEvaluation,
+  isPrologueActive,
+} from '../engine/prologue-evaluator.js';
 import * as api from '../api/client.js';
 export const handler = {
   id: /^meta:(.+):(.+)$/,
@@ -19,61 +23,65 @@ export const handler = {
     }
     await interaction.deferUpdate();
     if (action === 'generate_profile') {
-      const apiResponse = await api.completePrologue(userId);
-      
-      if (apiResponse.error) {
-        // If already completed, show error nicely
+      if (!isPrologueActive(userId)) {
         await interaction.editReply({
-          content: `Failed to generate profile: ${apiResponse.error}`,
+          content: 'Prologue data not found.',
           embeds: [],
           components: [],
         });
         return;
       }
-
-      if (!apiResponse.data) {
+      const result = finalizePrologueProfile(userId);
+      if (!result) {
         await interaction.editReply({
-          content: 'No profile data returned from server.',
+          content: 'Failed to generate profile.',
+          embeds: [],
+          components: [],
         });
         return;
       }
-
-      const { stats, traits, inventory, roleDescription, user: userData } = apiResponse.data;
-
-      const statsText = Object.entries(stats || {})
+      const apiResponse = await api.completePrologue(userId, {
+        baseStats: result.baseStats,
+        personalityType: result.personalityType,
+        startingInventory: result.startingInventory,
+        dominantTraits: result.dominantTraits,
+        personalityDescription: result.personalityDescription,
+      });
+      if (apiResponse.error) {
+        console.error('Failed to save prologue results:', apiResponse.error);
+      }
+      const statsText = Object.entries(result.baseStats)
         .map(([stat, value]) => `**${stat.toUpperCase()}**: ${value}`)
         .join(' | ');
-
       const embed = new EmbedBuilder()
-        .setTitle(userData.role?.toUpperCase() || 'Unknown Role')
-        .setDescription(roleDescription)
+        .setTitle(result.personalityType)
+        .setDescription(result.personalityDescription)
         .setColor(0x5865f2)
         .addFields(
           {
             name: 'Stats',
-            value: statsText || 'None',
+            value: statsText,
             inline: false,
           },
           {
             name: 'Traits',
-            value: traits && traits.length > 0 ? traits.join(', ') : 'Balanced',
+            value:
+              result.dominantTraits.length > 0
+                ? result.dominantTraits.join(', ')
+                : 'Balanced',
             inline: true,
           },
           {
             name: 'Starting Items',
-            value: inventory
-              ? inventory.map((i: string) => i.replace(/_/g, ' ')).join(', ')
-              : 'None',
+            value: result.startingInventory
+              .map((i) => i.replace(/_/g, ' '))
+              .join(', '),
             inline: true,
           }
         )
         .setFooter({ text: 'Your journey begins now' });
-
-      // No need to clear local state or end session locally, server handles it
-      // endSession(userId); // Keeping session active might be desired? Or relying on server?
-      // For now, let's keep endSession as it was there before, but it's local.
-      endSession(userId); 
-
+      clearPrologueEvaluation(userId);
+      endSession(userId);
       await interaction.editReply({
         embeds: [embed],
         components: [],

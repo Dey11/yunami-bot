@@ -1,5 +1,4 @@
 import prisma from "../lib/prisma";
-
 export interface MinigameStateData {
   userId: string;
   storyId: string;
@@ -8,10 +7,6 @@ export interface MinigameStateData {
   state: Record<string, any>;
   status?: string;
 }
-
-/**
- * Get or create minigame state for a user at a specific node.
- */
 export async function getOrCreateMinigameState(
   data: MinigameStateData
 ): Promise<any> {
@@ -24,11 +19,9 @@ export async function getOrCreateMinigameState(
       },
     },
   });
-
   if (existing) {
     return existing;
   }
-
   return prisma.minigameState.create({
     data: {
       userId: data.userId,
@@ -40,10 +33,6 @@ export async function getOrCreateMinigameState(
     },
   });
 }
-
-/**
- * Get minigame state.
- */
 export async function getMinigameState(
   userId: string,
   storyId: string,
@@ -55,10 +44,6 @@ export async function getMinigameState(
     },
   });
 }
-
-/**
- * Update minigame state.
- */
 export async function updateMinigameState(
   userId: string,
   storyId: string,
@@ -76,10 +61,6 @@ export async function updateMinigameState(
     },
   });
 }
-
-/**
- * Complete or fail a minigame.
- */
 export async function completeMinigame(
   userId: string,
   storyId: string,
@@ -93,10 +74,6 @@ export async function completeMinigame(
     data: { status },
   });
 }
-
-/**
- * Get all minigame states for a user in a story.
- */
 export async function getMinigameStatesForStory(
   userId: string,
   storyId: string

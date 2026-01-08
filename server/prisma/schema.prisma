@@ -217,31 +217,3 @@ model ArcPlayer {
   @@index([odId])
 }
 
-// ==================== GAME ENGINE STATE ====================
-
-// Multiplayer node votes (for voting/outcome evaluation)
-model NodeVote {
-  id        String   @id @default(cuid())
-  sessionId String
-  nodeId    String
-  playerId  String   // Discord user ID
-  choiceId  String
-  votedAt   DateTime @default(now())
-
-  @@unique([sessionId, nodeId, playerId])
-  @@index([sessionId, nodeId])
-}
-
-// Combat state persistence (per node)
-model CombatState {
-  id        String   @id @default(cuid())
-  sessionId String
-  nodeId    String
-  state     Json     // { player_hp, enemies: [{id, hp}], defending, turn }
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([sessionId, nodeId])
-  @@index([sessionId])
-}
-

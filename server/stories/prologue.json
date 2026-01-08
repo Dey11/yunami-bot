@@ -1,89 +1,662 @@
 {
   "id": "prologue_1",
-  "title": "The Prologue",
-  "description": "Begin your journey at the Gate of Shattered Worlds.",
-  "firstNodeId": "intro_gate",
+  "title": "The Awakening",
+  "description": "Begin your journey and discover who you truly are.",
+  "firstNodeId": "awakening_intro",
+  "isPrologue": true,
+  "traitMappings": {
+    "inspect_portal": { "curious": 2, "observant": 1 },
+    "look_around": { "cautious": 2, "patient": 1 },
+    "rush_forward": { "impulsive": 2, "brave": 1 },
+    "take_weapon": { "aggressive": 1, "protective": 1 },
+    "leave_weapon": { "peaceful": 2, "cautious": 1 },
+    "examine_weapon": { "observant": 2, "analytical": 1 },
+    "help_stranger": { "selfless": 2, "empathetic": 1 },
+    "demand_answers": { "aggressive": 1, "charismatic": 1 },
+    "observe_first": { "cautious": 2, "analytical": 1 },
+    "fight_shadow": { "brave": 2, "aggressive": 1 },
+    "outrun_shadow": { "quick": 2, "adaptable": 1 },
+    "hide_stealth": { "stealthy": 2, "patient": 1 },
+    "face_shadow": { "brave": 3, "resilient": 1 },
+    "seek_knowledge": { "curious": 3, "analytical": 1 },
+    "protect_others": { "protective": 3, "selfless": 1 },
+    "find_my_way": { "adaptable": 2, "creative": 2 }
+  },
   "nodes": {
-    "intro_gate": {
-      "id": "intro_gate",
-      "title": "The Gate of Shattered Worlds",
-      "content": "You awaken at a broken shrine. A faint blue portal flickers before you...",
-      "imageUrl": "Background.png",
-      "choices": [
-        {
-          "id": "inspect_portal",
-          "label": "Inspect the portal",
-          "emoji": "🔍",
-          "style": 1,
-          "nextNodeId": "portal_inspect"
-        },
-        {
-          "id": "look_around",
-          "label": "Look around the shrine",
-          "emoji": "🌿",
-          "style": 2,
-          "nextNodeId": "shrine_search"
+    "awakening_intro": {
+      "id": "awakening_intro",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "The Awakening",
+      "public_embed": {
+        "title": "👁️ You Wake Up",
+        "description": "Your eyes open slowly.\n\nYou're lying on cold stone. The sky above is wrong. Purple clouds drift past broken moons.\n\nYou don't remember how you got here. You don't remember *anything*.\n\nBut something glowing waits ahead.",
+        "color": 5793266,
+        "fields": [
+          {
+            "name": "🗺️ Location",
+            "value": "The Threshold, a place between worlds"
+          }
+        ]
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "first_choice"
         }
-      ]
+      }
     },
-    "portal_inspect": {
-      "id": "portal_inspect",
-      "title": "A Call Beyond",
-      "content": "The portal hums when you get close, reacting to your presence...",
-      "imageUrl": "Background.png",
-      "choices": [
-        {
-          "id": "step_in",
-          "label": "Step into the portal",
-          "emoji": "🌀",
-          "style": 3,
-          "nextNodeId": "first_battle_intro"
-        },
-        {
-          "id": "back_off",
-          "label": "Back away",
-          "emoji": "↩️",
-          "style": 2,
-          "nextNodeId": "shrine_search"
-        }
-      ]
+    "first_choice": {
+      "id": "first_choice",
+      "schema_version": 1,
+      "type": "choice",
+      "title": "The First Step",
+      "public_embed": {
+        "title": "🚪 A Strange Portal",
+        "description": "There's a portal in front of you. It looks like a doorway made of stars.\n\nWeird symbols glow around its edges. To your left, old ruins are scattered everywhere. Maybe there's something useful there.",
+        "color": 3447003,
+        "footer": "What you do here matters 👀"
+      },
+      "type_specific": {
+        "choices": [
+          {
+            "id": "inspect_portal",
+            "label": "Check out the portal",
+            "emoji": "🔍",
+            "style": 1,
+            "nextNodeId": "portal_study"
+          },
+          {
+            "id": "look_around",
+            "label": "Search the ruins first",
+            "emoji": "🏚️",
+            "style": 2,
+            "nextNodeId": "ruins_explore"
+          },
+          {
+            "id": "rush_forward",
+            "label": "Just walk through it",
+            "emoji": "🏃",
+            "style": 4,
+            "nextNodeId": "portal_rush"
+          }
+        ]
+      },
+      "ui_hints": {
+        "disable_after_click": true
+      }
     },
-    "shrine_search": {
-      "id": "shrine_search",
-      "title": "Forgotten Offerings",
-      "content": "You find broken charms and a worn blade resting at the altar...",
-      "imageUrl": "Background.png",
-      "choices": [
-        {
-          "id": "take_blade",
-          "label": "Take the blade",
-          "emoji": "🗡️",
-          "style": 1,
-          "nextNodeId": "first_battle_intro"
-        },
-        {
-          "id": "leave_it",
-          "label": "Leave it be",
-          "emoji": "🙏",
-          "style": 2,
-          "nextNodeId": "first_battle_intro"
+    "portal_study": {
+      "id": "portal_study",
+      "schema_version": 1,
+      "type": "sequence",
+      "title": "Rune Puzzle",
+      "public_embed": {
+        "title": "🔮 The Symbols Light Up",
+        "description": "The symbols around the portal start glowing in a pattern!\n\nYou see: 🌙 Moon → ⭐ Star → ☀️ Sun\n\nCan you repeat it?",
+        "color": 10181046,
+        "fields": [{ "name": "💡 Hint", "value": "Night comes before day..." }]
+      },
+      "type_specific": {
+        "sequence": {
+          "steps": [
+            { "id": "moon", "label": "Moon", "emoji": "🌙" },
+            { "id": "star", "label": "Star", "emoji": "⭐" },
+            { "id": "sun", "label": "Sun", "emoji": "☀️" }
+          ],
+          "correct_order": ["moon", "star", "sun"],
+          "max_attempts": 3,
+          "on_success": "puzzle_success",
+          "on_failure": "puzzle_fail"
         }
-      ]
+      }
     },
-    "first_battle_intro": {
-      "id": "first_battle_intro",
-      "title": "Prologue – First Clash",
-      "content": "The world twists and you’re pulled into combat...",
-      "imageUrl": "Background.png",
-      "choices": [
-        {
-          "id": "begin_battle",
-          "label": "Begin Battle",
-          "emoji": "⚔️",
-          "style": 1,
-          "nextNodeId": null
+    "puzzle_success": {
+      "id": "puzzle_success",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Nice!",
+      "public_embed": {
+        "title": "🎉 You Got It!",
+        "description": "The symbols flash bright and you feel... smarter somehow?\n\nWeird, but you'll take it.",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "weapon_discovery",
+          "trait_bonus": { "analytical": 2 }
         }
-      ]
+      }
+    },
+    "puzzle_fail": {
+      "id": "puzzle_fail",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Oops",
+      "public_embed": {
+        "title": "💔 Wrong Order",
+        "description": "The symbols scramble and fade. Oh well.\n\nAt least you tried, right?",
+        "color": 15158332
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "weapon_discovery",
+          "trait_bonus": { "resilient": 1 }
+        }
+      }
+    },
+    "ruins_explore": {
+      "id": "ruins_explore",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "The Ruins",
+      "public_embed": {
+        "title": "🏚️ Among the Rubble",
+        "description": "You pick through the old stones. This place must have been important once.\n\nHey, is that a weapon? Something shiny is poking out of the dirt.",
+        "color": 16750848
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "weapon_discovery"
+        }
+      }
+    },
+    "portal_rush": {
+      "id": "portal_rush",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "No Hesitation",
+      "public_embed": {
+        "title": "💨 You Just Go For It",
+        "description": "Why wait around? You walk straight through.\n\nEverything goes white for a second. When you can see again, you're somewhere else. That was intense.",
+        "color": 15844367
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "weapon_discovery"
+        }
+      }
+    },
+    "weapon_discovery": {
+      "id": "weapon_discovery",
+      "schema_version": 1,
+      "type": "choice",
+      "title": "Something Useful",
+      "public_embed": {
+        "title": "⚔️ A Weapon!",
+        "description": "You find an old sword. It looks beat up but still sharp.\n\nCould be useful, or could be trouble.",
+        "color": 10181046,
+        "footer": "Your call"
+      },
+      "type_specific": {
+        "choices": [
+          {
+            "id": "take_weapon",
+            "label": "Grab it",
+            "emoji": "🗡️",
+            "style": 4,
+            "nextNodeId": "stranger_encounter"
+          },
+          {
+            "id": "leave_weapon",
+            "label": "Leave it",
+            "emoji": "👋",
+            "style": 2,
+            "nextNodeId": "stranger_encounter"
+          },
+          {
+            "id": "examine_weapon",
+            "label": "Look at it closer",
+            "emoji": "🧐",
+            "style": 1,
+            "nextNodeId": "weapon_wisdom"
+          }
+        ]
+      },
+      "ui_hints": {
+        "disable_after_click": true
+      }
+    },
+    "weapon_wisdom": {
+      "id": "weapon_wisdom",
+      "schema_version": 1,
+      "type": "memory",
+      "title": "The Blade Speaks",
+      "public_embed": {
+        "title": "📜 Strange Memories",
+        "description": "When you touch the sword, images flash through your mind. Warriors. Battles. Protection.\n\nA question pops into your head...",
+        "color": 10494192,
+        "fields": [
+          {
+            "name": "❓ Question",
+            "value": "What do you call someone who protects others?"
+          }
+        ]
+      },
+      "type_specific": {
+        "memory": {
+          "question": "What do you call someone who protects others?",
+          "correct_answers": [
+            "guardian",
+            "guardians",
+            "protector",
+            "protectors",
+            "defender",
+            "knight"
+          ],
+          "case_sensitive": false,
+          "hints": ["Rhymes with 'warden'...", "Think superhero, but medieval"],
+          "max_attempts": 3,
+          "on_success": "wisdom_gained",
+          "on_failure": "stranger_encounter"
+        }
+      }
+    },
+    "wisdom_gained": {
+      "id": "wisdom_gained",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Wisdom",
+      "public_embed": {
+        "title": "💡 Something Clicks",
+        "description": "The sword hums happily. You feel like you understand something important now.\n\nNeat.",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "stranger_encounter",
+          "trait_bonus": { "observant": 2, "analytical": 1 }
+        }
+      }
+    },
+    "stranger_encounter": {
+      "id": "stranger_encounter",
+      "schema_version": 1,
+      "type": "social",
+      "title": "Someone's Here",
+      "public_embed": {
+        "title": "🩹 A Hurt Stranger",
+        "description": "You hear groaning. There's someone lying in the rubble. Looks like they've been attacked.\n\nThey see you and reach out weakly. \"Please...\"",
+        "color": 16750848
+      },
+      "type_specific": {
+        "social": {
+          "npc_name": "Wounded Stranger",
+          "reputation_stat": "compassion",
+          "approaches": [
+            {
+              "id": "help_stranger",
+              "label": "Help them up",
+              "emoji": "🤝",
+              "style": 1,
+              "success_chance": 100,
+              "reputation_change": 10,
+              "on_success": "stranger_helped"
+            },
+            {
+              "id": "demand_answers",
+              "label": "Ask what happened first",
+              "emoji": "🤨",
+              "style": 4,
+              "success_chance": 70,
+              "reputation_change": -5,
+              "on_success": "stranger_questioned",
+              "on_failure": "stranger_silent"
+            },
+            {
+              "id": "observe_first",
+              "label": "Watch them for a bit",
+              "emoji": "👀",
+              "style": 2,
+              "success_chance": 90,
+              "reputation_change": 0,
+              "on_success": "stranger_observed"
+            }
+          ]
+        }
+      }
+    },
+    "stranger_helped": {
+      "id": "stranger_helped",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Good Deed",
+      "public_embed": {
+        "title": "🙏 They're Grateful",
+        "description": "You help them stand. They grab your arm tight.\n\n\"Thank you. The shadows, they came out of nowhere. Be careful.\"",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "shadow_encounter"
+        }
+      }
+    },
+    "stranger_questioned": {
+      "id": "stranger_questioned",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Answers",
+      "public_embed": {
+        "title": "💬 They Talk",
+        "description": "\"Shadows,\" they gasp. \"Creatures made of darkness. They hunt anything alive.\"\n\nGood to know.",
+        "color": 16776960
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "shadow_encounter"
+        }
+      }
+    },
+    "stranger_silent": {
+      "id": "stranger_silent",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Silence",
+      "public_embed": {
+        "title": "😶 They Say Nothing",
+        "description": "They just stare at you, too scared or weak to answer.\n\nGuess you'll figure it out yourself.",
+        "color": 15158332
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "shadow_encounter"
+        }
+      }
+    },
+    "stranger_observed": {
+      "id": "stranger_observed",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Watching",
+      "public_embed": {
+        "title": "👁️ You Keep Your Distance",
+        "description": "You watch for a minute. They seem genuinely hurt — not a trap.\n\nYou walk over and help them. Better safe than sorry.",
+        "color": 10181046
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "shadow_encounter"
+        }
+      }
+    },
+    "shadow_encounter": {
+      "id": "shadow_encounter",
+      "schema_version": 1,
+      "type": "choice",
+      "title": "Danger",
+      "public_embed": {
+        "title": "😨 Something's Coming",
+        "description": "The air gets cold. Really cold.\n\nA dark shape rises from the ground. Like a living shadow. No face. No eyes. But you can *feel* it looking at you.\n\n**It's coming this way.**",
+        "color": 2303786,
+        "footer": "⏰ Act fast!"
+      },
+      "type_specific": {
+        "timers": {
+          "duration_seconds": 15
+        },
+        "choices": [
+          {
+            "id": "fight_shadow",
+            "label": "Fight it!",
+            "emoji": "⚔️",
+            "style": 4,
+            "nextNodeId": "shadow_combat"
+          },
+          {
+            "id": "outrun_shadow",
+            "label": "Run for it!",
+            "emoji": "🏃",
+            "style": 1,
+            "nextNodeId": "shadow_chase"
+          },
+          {
+            "id": "hide_stealth",
+            "label": "Hide",
+            "emoji": "🫥",
+            "style": 2,
+            "nextNodeId": "shadow_hide"
+          }
+        ],
+        "outcome_rules": {
+          "on_all_inputs_or_timeout": { "compute": "first" }
+        }
+      },
+      "ui_hints": {
+        "disable_after_click": true
+      }
+    },
+    "shadow_combat": {
+      "id": "shadow_combat",
+      "schema_version": 1,
+      "type": "combat",
+      "title": "Battle",
+      "public_embed": {
+        "title": "⚔️ Fight!",
+        "description": "Alright, let's do this.\n\nThe shadow lunges at you. Time to see what you're made of.",
+        "color": 15158332,
+        "fields": [
+          { "name": "👹 Enemy", "value": "Shadow Thing" },
+          { "name": "🎯 Goal", "value": "Don't die" }
+        ]
+      },
+      "type_specific": {
+        "combat": {
+          "enemies": [
+            {
+              "id": "shadow_wraith",
+              "name": "Shadow Thing",
+              "hp": 20,
+              "max_hp": 20,
+              "damage_range": [3, 6]
+            }
+          ],
+          "player_hp": 30,
+          "player_max_hp": 30,
+          "threat_level": 5,
+          "actions": [
+            {
+              "id": "attack",
+              "label": "Attack",
+              "emoji": "👊",
+              "style": 4,
+              "damage_range": [4, 8]
+            },
+            {
+              "id": "defend",
+              "label": "Block",
+              "emoji": "🛡️",
+              "style": 1,
+              "defense_bonus": 4
+            },
+            {
+              "id": "dodge",
+              "label": "Dodge",
+              "emoji": "💨",
+              "style": 2,
+              "dodge_chance": 40
+            }
+          ],
+          "on_victory": "shadow_victory",
+          "on_defeat": "shadow_defeat"
+        }
+      }
+    },
+    "shadow_victory": {
+      "id": "shadow_victory",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "You Win",
+      "public_embed": {
+        "title": "🏆 Got 'Em!",
+        "description": "The shadow breaks apart like smoke in the wind.\n\nYou're breathing hard but you did it. Nice.",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "prologue_finale",
+          "trait_bonus": { "brave": 2, "aggressive": 1 }
+        }
+      }
+    },
+    "shadow_defeat": {
+      "id": "shadow_defeat",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Knocked Down",
+      "public_embed": {
+        "title": "💀 That Hurt",
+        "description": "The shadow hits you hard. Everything goes dark.\n\nBut you wake up again. Somehow. Maybe you're tougher than you thought.",
+        "color": 15158332
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "prologue_finale",
+          "trait_bonus": { "resilient": 2 }
+        }
+      }
+    },
+    "shadow_chase": {
+      "id": "shadow_chase",
+      "schema_version": 1,
+      "type": "timed",
+      "title": "Run!",
+      "public_embed": {
+        "title": "🏃 GO GO GO!",
+        "description": "You bolt. The shadow chases.\n\nThere's a gap ahead and some debris you could slide under.\n\n**Pick one, quick!**",
+        "color": 16750848,
+        "footer": "⏰ Hurry!"
+      },
+      "type_specific": {
+        "timers": { "duration_seconds": 10 },
+        "choices": [
+          {
+            "id": "leap_gap",
+            "label": "Jump the gap!",
+            "emoji": "🦘",
+            "style": 4,
+            "nextNodeId": "chase_success"
+          },
+          {
+            "id": "slide_under",
+            "label": "Slide under!",
+            "emoji": "🛝",
+            "style": 1,
+            "nextNodeId": "chase_success"
+          }
+        ],
+        "outcome_rules": {
+          "on_all_inputs_or_timeout": { "compute": "first" }
+        }
+      },
+      "ui_hints": {
+        "disable_after_click": true
+      }
+    },
+    "chase_success": {
+      "id": "chase_success",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Safe!",
+      "public_embed": {
+        "title": "✅ You Made It!",
+        "description": "You burst through the portal just as the shadow grabs at empty air.\n\nSafe. For now.",
+        "color": 3066993
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "prologue_finale",
+          "trait_bonus": { "quick": 2, "adaptable": 1 }
+        }
+      }
+    },
+    "shadow_hide": {
+      "id": "shadow_hide",
+      "schema_version": 1,
+      "type": "narrative",
+      "title": "Hidden",
+      "public_embed": {
+        "title": "🫥 You Disappear",
+        "description": "You press yourself into the shadows. Don't move. Don't breathe.\n\nThe shadow drifts past, confused. After a long minute, it gives up and floats away.\n\nSmarter, not harder.",
+        "color": 10181046
+      },
+      "type_specific": {
+        "extra_data": {
+          "nextNodeId": "prologue_finale",
+          "trait_bonus": { "stealthy": 2, "patient": 1 }
+        }
+      }
+    },
+    "prologue_finale": {
+      "id": "prologue_finale",
+      "schema_version": 1,
+      "type": "choice",
+      "title": "Who Are You?",
+      "public_embed": {
+        "title": "🌅 A New World",
+        "description": "You stand at the edge of something new. The hard part is over. Well, the first hard part.\n\nYou still don't remember who you were. But maybe that's okay.\n\nThe real question is: **who do you want to be?**",
+        "color": 16766720,
+        "footer": "💭 This shapes your character"
+      },
+      "type_specific": {
+        "choices": [
+          {
+            "id": "face_shadow",
+            "label": "Someone who faces danger head-on",
+            "emoji": "🦁",
+            "style": 4,
+            "nextNodeId": "profile_generation"
+          },
+          {
+            "id": "seek_knowledge",
+            "label": "Someone who learns everything",
+            "emoji": "📚",
+            "style": 1,
+            "nextNodeId": "profile_generation"
+          },
+          {
+            "id": "protect_others",
+            "label": "Someone who protects others",
+            "emoji": "🛡️",
+            "style": 1,
+            "nextNodeId": "profile_generation"
+          },
+          {
+            "id": "find_my_way",
+            "label": "I'll figure it out as I go",
+            "emoji": "🌟",
+            "style": 2,
+            "nextNodeId": "profile_generation"
+          }
+        ],
+        "extra_data": {
+          "final_choice_traits": {
+            "face_shadow": { "brave": 3, "aggressive": 1 },
+            "seek_knowledge": { "curious": 3, "analytical": 1 },
+            "protect_others": { "protective": 3, "selfless": 1 },
+            "find_my_way": { "adaptable": 2, "creative": 2 }
+          }
+        }
+      },
+      "ui_hints": {
+        "disable_after_click": true
+      }
+    },
+    "profile_generation": {
+      "id": "profile_generation",
+      "schema_version": 1,
+      "type": "meta",
+      "title": "Done!",
+      "public_embed": {
+        "title": "🎮 Your Story Begins",
+        "description": "That's it! Your choices have shaped who you are.\n\n*Building your profile...*",
+        "color": 5793266
+      },
+      "type_specific": {
+        "extra_data": {
+          "trigger": "prologue_complete",
+          "action": "generate_profile"
+        }
+      }
     }
   }
 }

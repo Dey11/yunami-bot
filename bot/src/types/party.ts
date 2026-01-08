@@ -1,5 +1,4 @@
-export type PartyStatus = 'waiting' | 'active' | 'ended' | 'cancelled';
-
+export type PartyStatus = 'forming' | 'waiting' | 'active' | 'ended' | 'cancelled';
 export type PartyPlayer = {
   odId: string;
   username: string;
@@ -8,7 +7,6 @@ export type PartyPlayer = {
   playerSession?: string;
   role?: string;
 };
-
 export type MultiplayerSession = {
   id: string;
   name: string;

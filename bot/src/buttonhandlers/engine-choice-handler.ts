@@ -13,7 +13,13 @@ import {
 } from '../quickstart/runtime-graph.js';
 import { getPartyByPlayer } from '../quickstart/party-session.js';
 import { renderNodeWithContext } from '../engine/dispatcher.js';
-import type { Choice } from '../engine/types.js';
+import { recordPlayerInput } from '../engine/outcome-engine.js';
+import type { Choice, TraitMapping } from '../engine/types.js';
+import {
+  recordPrologueChoice,
+  isPrologueActive,
+  finalizePrologueProfile,
+} from '../engine/prologue-evaluator.js';
 import { isPlayerInSoloArc, getPlayerArc, updateArcNode } from '../engine/arc-manager.js';
 import * as api from '../api/client.js';
 export const handler = {
@@ -138,40 +144,37 @@ export const handler = {
     }
     lockChoice(odId, nodeId, choiceId);
     recordChoice(odId, choiceId, choice.nextNodeId ?? null);
-    
-    // Prologue choices are tracked by server via api.submitPrologueChoice
-    if (session.storyId === 'prologue_1') { // Use storyId check instead of isPrologueActive
+    if (isPrologueActive(odId)) {
+      const traitMappings: TraitMapping = session.storyData.traitMappings || {};
+      recordPrologueChoice(odId, choiceId, traitMappings);
       await api.submitPrologueChoice(odId, nodeId, choiceId, choice.nextNodeId ?? '');
     }
-
     if (isTimedNode) {
       recordVote(odId, nodeId, choiceId);
-      // Also record on server for outcome resolution
-      await api.recordGameVote(odId, nodeId, choiceId);
     }
+    recordPlayerInput(nodeId, odId, { choiceId }, partyId);
     
     // Early vote completion: only for 3+ player parties when all have voted
     // For 2-player parties, always wait for timer (leader decides ties)
     if (isTimedNode && party && party.status === 'active' && party.players.length >= 3) {
+      const { hasAllInputs, getNodeInputs, evaluateOutcome, clearNodeInputs } = await import('../engine/outcome-engine.js');
       const { clearTimer, getActiveMessage, setActiveMessage } = await import('../quickstart/runtime-graph.js');
       const { TextChannel } = await import('discord.js');
       
       const expectedPlayerIds = party.players.map(p => p.odId);
-      
-      // Check vote status from server
-      const votesRes = await api.getGameVotes(odId, nodeId);
-      const currentVoteCount = votesRes.data?.summary?.totalVotes ?? 0;
+      const inputs = getNodeInputs(nodeId, partyId);
+      const currentVoteCount = inputs?.playerInputs.size ?? 0;
       
       console.log(`[EarlyVote] Node: ${nodeId}, PartyId: ${partyId}`);
       console.log(`[EarlyVote] Party player count: ${party.players.length}`);
       console.log(`[EarlyVote] Expected: ${expectedPlayerIds.length}, Current: ${currentVoteCount}`);
       
-      if (currentVoteCount >= expectedPlayerIds.length) {
-        // All players have voted - resolve outcome on server
-        const resolveRes = await api.resolveOutcome(odId, nodeId, party.ownerId);
-        if (resolveRes.data) {
-          const { outcome: result, nextNode } = resolveRes.data;
-          // clearNodeInputs(nodeId, partyId); // Handled on server now
+      if (hasAllInputs(nodeId, expectedPlayerIds, partyId)) {
+        // All players have voted - proceed immediately
+        const inputs = getNodeInputs(nodeId, partyId);
+        if (inputs) {
+          const result = evaluateOutcome(currentNode, inputs, party);
+          clearNodeInputs(nodeId, partyId);
           clearTimer(odId, `${nodeId}:timer`);
           
           if (result.nextNodeId) {
@@ -210,22 +213,29 @@ export const handler = {
     
     if (!choice.nextNodeId || choice.nextNodeId === null) {
       if (session.storyId === 'prologue_1') {
-        const completeResult = await api.completePrologue(odId);
-        if (completeResult.data) {
-          const { user, roleDescription } = completeResult.data;
-          const embed = {
-            title: '🎭 Prologue Complete!',
-            description: `Your journey has shaped who you are.\n\n**Your Role: ${user.role?.toUpperCase()}**\n\n${roleDescription}`,
-            color: 0x00b3b3,
-            footer: { text: 'You can now join multiplayer parties!' },
-          };
-          if (choice.ephemeral_confirmation && !inSoloArc) {
-            await interaction.message.edit({ embeds: [embed], components: [] });
-          } else {
-            await interaction.editReply({ embeds: [embed], components: [] });
+        const prologueResult = finalizePrologueProfile(odId);
+        if (prologueResult) {
+          const completeResult = await api.completePrologue(odId, {
+            baseStats: prologueResult.baseStats,
+            personalityType: prologueResult.personalityType,
+            startingInventory: prologueResult.startingInventory,
+            dominantTraits: prologueResult.dominantTraits,
+            personalityDescription: prologueResult.personalityDescription
+          });
+          if (completeResult.data) {
+            const { user, roleDescription } = completeResult.data;
+            const embed = {
+              title: '🎭 Prologue Complete!',
+              description: `Your journey has shaped who you are.\n\n**Your Role: ${user.role?.toUpperCase()}**\n\n${roleDescription}`,
+              color: 0x00b3b3,
+              footer: { text: 'You can now join multiplayer parties!' },
+            };
+            if (choice.ephemeral_confirmation && !inSoloArc) {
+              await interaction.message.edit({ embeds: [embed], components: [] });
+            } else {
+              await interaction.editReply({ embeds: [embed], components: [] });
+            }
           }
-        } else {
-             await interaction.editReply({ content: `Failed to complete prologue: ${completeResult.error}` });
         }
       } else {
         await api.endStory(odId, session.storyId);

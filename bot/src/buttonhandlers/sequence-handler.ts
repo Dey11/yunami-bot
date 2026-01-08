@@ -14,13 +14,11 @@ import {
   checkSequenceAnswer,
 } from '../engine/builders/sequence-builder.js';
 import { renderNodeWithContext } from '../engine/dispatcher.js';
-
 export const handler = {
   id: /^sequence:(.+):(.+)$/,
   async execute(interaction: any) {
     const odId = interaction.user.id;
     const session = getSession(odId);
-
     if (!session) {
       await interaction.reply({
         content: 'No active session. Please start a new story.',
@@ -28,7 +26,6 @@ export const handler = {
       });
       return;
     }
-
     const match = interaction.customId.match(/^sequence:([^:]+):(.+)$/);
     if (!match) {
       await interaction.reply({
@@ -37,9 +34,7 @@ export const handler = {
       });
       return;
     }
-
     const [, nodeId, action] = match;
-
     const currentNode = session.storyData.nodes?.[nodeId];
     if (!currentNode || currentNode.type !== 'sequence') {
       await interaction.reply({
@@ -48,7 +43,6 @@ export const handler = {
       });
       return;
     }
-
     const sequence = currentNode.type_specific?.sequence;
     if (!sequence) {
       await interaction.reply({
@@ -57,11 +51,8 @@ export const handler = {
       });
       return;
     }
-
     await interaction.deferUpdate();
-
     let currentSelection = getSequenceSelection(odId, nodeId) || [];
-
     if (action === 'reset') {
       clearSequenceSelection(odId, nodeId);
       currentSelection = [];
@@ -73,7 +64,6 @@ export const handler = {
         currentSelection,
         sequence.correct_order
       );
-
       if (isCorrect) {
         clearSequenceSelection(odId, nodeId);
         recordChoice(
@@ -81,7 +71,6 @@ export const handler = {
           `sequence:${nodeId}:success`,
           sequence.on_success ?? null
         );
-
         if (sequence.on_success) {
           const nextNode = session.storyData.nodes?.[sequence.on_success];
           if (nextNode) {
@@ -91,22 +80,18 @@ export const handler = {
               nodeId: nextNode.id,
               party,
             });
-
             const payload: any = {
               content: '✅ **Correct!** The sequence was right!',
               embeds: [result.embed],
               components: result.components ?? [],
             };
-
             if (result.attachment) {
               payload.files = [result.attachment];
             }
-
             await interaction.editReply(payload);
             return;
           }
         }
-
         await interaction.editReply({
           content: '✅ **Correct!** You solved the puzzle!',
         });
@@ -114,11 +99,9 @@ export const handler = {
       } else {
         decrementSequenceAttempts(odId, nodeId);
         const remaining = getSequenceAttempts(odId, nodeId);
-
         if (remaining <= 0 && sequence.on_failure) {
           clearSequenceSelection(odId, nodeId);
           recordChoice(odId, `sequence:${nodeId}:failure`, sequence.on_failure);
-
           const nextNode = session.storyData.nodes?.[sequence.on_failure];
           if (nextNode) {
             const party = getPartyByPlayer(odId);
@@ -127,25 +110,20 @@ export const handler = {
               nodeId: nextNode.id,
               party,
             });
-
             const payload: any = {
               content: '❌ **Failed!** No attempts remaining.',
               embeds: [result.embed],
               components: result.components ?? [],
             };
-
             if (result.attachment) {
               payload.files = [result.attachment];
             }
-
             await interaction.editReply(payload);
             return;
           }
         }
-
         clearSequenceSelection(odId, nodeId);
         currentSelection = [];
-
         await interaction.followUp({
           content: `❌ **Wrong order!** ${remaining > 0 ? `${remaining} attempts remaining.` : 'Try again!'}`,
           flags: MessageFlags.Ephemeral,
@@ -158,23 +136,19 @@ export const handler = {
         setSequenceSelection(odId, nodeId, currentSelection);
       }
     }
-
     const party = getPartyByPlayer(odId);
     const result = await buildSequenceNode(currentNode, {
       playerId: odId,
       nodeId: currentNode.id,
       currentSelection,
     });
-
     const payload: any = {
       embeds: [result.embed],
       components: result.components ?? [],
     };
-
     if (result.attachment) {
       payload.files = [result.attachment];
     }
-
     await interaction.editReply(payload);
   },
 };

@@ -7,25 +7,21 @@ export interface ProfileData {
     createdAt: Date;
     lastActive: Date;
   };
-
   stats: {
     hp: { current: number; max: number };
     def: number;
   };
-
   progression: {
     xp: { current: number; max: number };
     rank: string;
     serverRank: number;
   };
-
   showcase?: {
     type: 'character' | 'item' | 'achievement';
     imageUrl?: string;
     name?: string;
   };
 }
-
 export function createProfile(
   username: string,
   avatarUrl: string

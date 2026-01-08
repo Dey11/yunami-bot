@@ -1,47 +1,35 @@
 import { MessageFlags } from 'discord.js';
 import { storySceneBuilder } from '../quickstart/embed-builder.js';
 import { initSession } from '../quickstart/runtime-graph.js';
+import { storyGraph } from '../quickstart/story-graph.js';
 import { renderNode } from '../engine/dispatcher.js';
 import * as api from '../api/client.js';
-
 export const handler = {
   id: /^start:.+/,
   async execute(interaction: any) {
-    const discordId = interaction.user.id;
+    const odId = interaction.user.id;
     const storyId = interaction.customId.split(':')[1];
-
-    await interaction.deferUpdate();
-
-    // Start story via backend API
-    const { data, error } = await api.startStory(discordId, storyId);
-
-    if (error) {
-      await interaction.editReply({
-        content: `Failed to start story: ${error}`,
-        components: [],
-      });
-      return;
-    }
-
-    // Fetch story data from backend
-    const storyResponse = await api.getStory(discordId, storyId);
-    if (storyResponse.error || !storyResponse.data?.story) {
-      await interaction.editReply({
+    const storyData = storyGraph.getStory(storyId);
+    if (!storyData) {
+      await interaction.reply({
         content: 'Story not found.',
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+    await interaction.deferUpdate();
+    const { data: apiData, error } = await api.startStory(odId, storyId);
+    if (error) {
+       console.error('Failed to start story session on API:', error);
+       await interaction.editReply({
+        content: `Unable to sync story progress: ${error}`,
         components: [],
       });
       return;
     }
-
-    const storyData = storyResponse.data.story;
-    const progress = data?.progress;
-    const currentNodeId = progress?.currentNodeId || storyData.firstNodeId;
-
-    // Initialize local session for rendering (still needed for now)
-    initSession(discordId, storyData.id, currentNodeId, storyData);
-
-    const firstNode = storyData.nodes[currentNodeId];
-
+    const startNodeId = apiData?.progress?.currentNodeId || storyData.firstNodeId;
+    initSession(odId, storyData.id, startNodeId, storyData);
+    const firstNode = storyData.nodes[startNodeId];
     if (firstNode.type) {
       const nextNodeId = firstNode.type_specific?.extra_data?.nextNodeId;
       const result = await renderNode(firstNode, nextNodeId);
@@ -53,7 +41,7 @@ export const handler = {
       await interaction.editReply(payload);
     } else {
       const [cutsceneEmbed, choicesButton, cutsceneImage] =
-        await storySceneBuilder(currentNodeId, storyData);
+        await storySceneBuilder(startNodeId, storyData);
       const payload: any = {
         embeds: [cutsceneEmbed],
         components: choicesButton ? [choicesButton] : [],

@@ -2,8 +2,8 @@ import { initSession, setActiveMessage } from '../quickstart/runtime-graph.js';
 import { MessageFlags } from 'discord.js';
 import { storyGraph } from '../quickstart/story-graph.js';
 import { renderNode } from '../engine/dispatcher.js';
+import { initPrologueEvaluation, restoreFromChoices } from '../engine/prologue-evaluator.js';
 import * as api from '../api/client.js';
-
 export const handler = {
   id: 'createProfile',
   async execute(interaction: any) {
@@ -33,7 +33,11 @@ export const handler = {
       const progress = response.data?.progress;
       const startNodeId = progress?.currentNodeId || data.firstNodeId;
       initSession(odId, data.id, startNodeId, data);
-
+      if (progress?.state?.choices) {
+          restoreFromChoices(odId, progress.state.choices, data.traitMappings || {});
+      } else {
+          initPrologueEvaluation(odId);
+      }
       const currentNode = data.nodes[startNodeId];
       if (!currentNode) {
         console.error('Node not found:', startNodeId);

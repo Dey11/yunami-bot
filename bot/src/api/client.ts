@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.API_BASE_URL || "http://127.0.0.1:3000";
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3000";
 interface ApiResponse<T> {
   data?: T;
   error?: string;
@@ -52,19 +52,21 @@ export async function submitPrologueChoice(
     nextNodeId,
   });
 }
-export async function completePrologue(discordId: string) {
-  return request<{
-    message: string;
-    user: any;
-    roleDescription: string;
-    stats: any;
-    traits: string[];
-    inventory: string[];
-  }>(
+export async function completePrologue(
+  discordId: string,
+  result: {
+    baseStats: any;
+    personalityType: string; 
+    startingInventory: string[];
+    dominantTraits: string[];
+    personalityDescription: string;
+  }
+) {
+  return request<{ message: string; user: any; roleDescription: string }>(
     "POST",
     "/prologue/complete",
     discordId,
-    {}
+    result
   );
 }
 export async function listStories(discordId: string) {
@@ -334,133 +336,3 @@ export async function completeArcMerge(discordId: string, partyId: string) {
 export async function clearArcState(discordId: string, partyId: string) {
   return request<{ message: string }>("DELETE", `/arc/${partyId}`, discordId);
 }
-
-// ============== Game Engine API ==============
-
-export interface CombatState {
-  player_hp: number;
-  enemies: { id: string; hp: number }[];
-  defending: boolean;
-  turn: number;
-}
-
-export interface CombatActionResult {
-  combatLog: string[];
-  state: CombatState;
-  outcome?: "victory" | "defeat" | "flee" | "continue";
-  nextNodeId?: string | null;
-  nextNode?: any;
-}
-
-export interface VoteSummary {
-  totalVotes: number;
-  voteCounts: Record<string, number>;
-  voters: Record<string, string[]>;
-  playerChoices: Record<string, string>;
-  timedOut: boolean;
-}
-
-export interface OutcomeResult {
-  nextNodeId: string | null;
-  winningChoiceId?: string | null;
-  message?: string;
-}
-
-/**
- * Initialize combat for a node (server-side)
- */
-export async function initCombat(discordId: string, nodeId: string) {
-  return request<{ message: string; state: CombatState }>(
-    "POST",
-    "/game/combat/init",
-    discordId,
-    { nodeId }
-  );
-}
-
-/**
- * Get current combat state from server
- */
-export async function getCombatState(discordId: string, nodeId: string) {
-  return request<{ state: CombatState | null }>(
-    "GET",
-    `/game/combat/${nodeId}`,
-    discordId
-  );
-}
-
-/**
- * Process a combat action (server-side calculation)
- */
-export async function processCombatAction(
-  discordId: string,
-  nodeId: string,
-  actionId: string
-) {
-  return request<CombatActionResult>(
-    "POST",
-    "/game/combat/action",
-    discordId,
-    { nodeId, actionId }
-  );
-}
-
-/**
- * Record a player vote for outcome resolution
- */
-export async function recordGameVote(
-  discordId: string,
-  nodeId: string,
-  choiceId: string
-) {
-  return request<{ message: string; choiceId: string }>(
-    "POST",
-    "/game/vote",
-    discordId,
-    { nodeId, choiceId }
-  );
-}
-
-/**
- * Get vote summary for a node
- */
-export async function getGameVotes(discordId: string, nodeId: string) {
-  return request<{ summary: VoteSummary }>(
-    "GET",
-    `/game/votes/${nodeId}`,
-    discordId
-  );
-}
-
-/**
- * Resolve outcome based on votes (server-side)
- */
-export async function resolveOutcome(
-  discordId: string,
-  nodeId: string,
-  partyLeaderId?: string
-) {
-  return request<{ outcome: OutcomeResult; nextNode: any }>(
-    "POST",
-    "/game/resolve",
-    discordId,
-    { nodeId, partyLeaderId }
-  );
-}
-
-/**
- * Transition to a new node (simple choice)
- */
-export async function transitionNode(
-  discordId: string,
-  nextNodeId: string,
-  choiceId?: string
-) {
-  return request<{ message: string; currentNodeId: string; node: any }>(
-    "POST",
-    "/game/transition",
-    discordId,
-    { nextNodeId, choiceId }
-  );
-}
-
