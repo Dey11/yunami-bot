@@ -1,4 +1,5 @@
 import { initSession, setActiveMessage } from '../quickstart/runtime-graph.js';
+import { MessageFlags } from 'discord.js';
 import { storyGraph } from '../quickstart/story-graph.js';
 import { renderNode } from '../engine/dispatcher.js';
 import { initPrologueEvaluation, restoreFromChoices } from '../engine/prologue-evaluator.js';
@@ -11,15 +12,17 @@ export const handler = {
       const data = storyGraph.getStory('prologue_1');
       if (!data) {
         console.error('Prologue not found');
-        await interaction.reply({ content: 'Prologue story not found.', ephemeral: true });
+        await interaction.reply({ content: 'Prologue story not found.', flags: MessageFlags.Ephemeral });
         return;
       }
       await interaction.deferUpdate();
       const response = await api.startPrologue(odId);
       if (response.error) {
-         if (response.error.includes('already completed')) {
+       if (response.error.includes('already completed')) {
            await interaction.editReply({ 
-             content: 'You already have a profile! Use `/profile` to view it.' 
+             content: 'You already have a profile! Use `/profile` to view it.',
+             embeds: [],
+             components: []
            });
            return;
          }

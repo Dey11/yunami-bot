@@ -45,7 +45,11 @@ function checkAllTimers(): void {
   const sessions = getSessionsMap();
   for (const session of sessions.values()) {
     for (const [timerId, timer] of session.activeTimers.entries()) {
-      if (isTimerExpired(session.odId, timerId)) {
+      const expired = isTimerExpired(session.odId, timerId);
+      const elapsed = Date.now() - timer.startTime;
+      console.log(`[Timer] Checking ${timerId} for ${session.odId}: elapsed=${Math.floor(elapsed/1000)}s, duration=${Math.floor(timer.duration/1000)}s, expired=${expired}`);
+      if (expired) {
+        console.log(`[Timer] EXPIRED: ${timerId} - triggering handler`);
         handleExpiredTimer(session, timer.nodeId, timerId);
       }
     }

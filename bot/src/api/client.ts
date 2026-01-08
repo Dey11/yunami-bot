@@ -78,8 +78,8 @@ export async function getStory(discordId: string, storyId: string) {
 export async function getNode(discordId: string, storyId: string, nodeId: string) {
   return request<{ node: any }>("GET", `/stories/${storyId}/node/${nodeId}`, discordId);
 }
-export async function createParty(discordId: string) {
-  return request<{ message: string; party: any }>("POST", "/party/create", discordId);
+export async function createParty(discordId: string, name?: string, maxSize?: number) {
+  return request<{ message: string; party: any }>("POST", "/party/create", discordId, { name, maxSize });
 }
 export async function joinParty(discordId: string, code: string) {
   return request<{ message: string; party: any }>("POST", "/party/join", discordId, { code });
@@ -87,9 +87,17 @@ export async function joinParty(discordId: string, code: string) {
 export async function getParty(discordId: string, partyId: string) {
   return request<{ party: any }>("GET", `/party/${partyId}`, discordId);
 }
+export async function getMyParty(discordId: string) {
+  return request<{ party: any }>("GET", "/party/me", discordId);
+}
 export async function setReady(discordId: string, partyId: string, isReady: boolean) {
   return request<{ message: string; party: any }>("POST", `/party/${partyId}/ready`, discordId, {
     isReady,
+  });
+}
+export async function setPartyRole(discordId: string, partyId: string, role: string) {
+  return request<{ message: string; party: any }>("POST", `/party/${partyId}/role`, discordId, {
+    role,
   });
 }
 export async function leaveParty(discordId: string, partyId: string) {

@@ -1,6 +1,7 @@
 import { AttachmentBuilder } from 'discord.js';
 import Canvas from '@napi-rs/canvas';
 import path from 'path';
+import { promises as fs } from 'fs';
 const imageCache = new Map<string, any>();
 export async function buildCanvas(imagePath: string, subtitle?: string) {
   const canvas = Canvas.createCanvas(2752, 1536);
@@ -8,7 +9,8 @@ export async function buildCanvas(imagePath: string, subtitle?: string) {
   const absolutePath = path.resolve(process.cwd(), 'assets', imagePath);
   let background = imageCache.get(absolutePath);
   if (!background) {
-    background = await Canvas.loadImage(absolutePath);
+    const buffer = await fs.readFile(absolutePath);
+    background = await Canvas.loadImage(buffer);
     imageCache.set(absolutePath, background);
   }
   ctx.drawImage(background, 0, 0, canvas.width, canvas.height);

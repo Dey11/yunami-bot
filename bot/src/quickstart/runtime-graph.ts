@@ -1,4 +1,5 @@
 import * as api from '../api/client.js';
+import { storyGraph } from './story-graph.js';
 export type PlayerSession = {
   odId: string;
   storyId: string;
@@ -83,6 +84,41 @@ export function initSession(
   api.createSession(odId, storyId, entryNodeId).catch((err) => {
     console.error('[runtime-graph] Failed to create session on server:', err);
   });
+  return session;
+}
+export function restoreSession(sessionData: any): PlayerSession {
+  const session: PlayerSession = {
+    odId: sessionData.userId || sessionData.odId,
+    storyId: sessionData.storyId,
+    storyData: {}, // Note: Story data needs to be loaded separately if not present
+    currentNodeId: sessionData.currentNodeId,
+    choices: sessionData.choices || [],
+    flags: sessionData.flags || {},
+    checkpoints: sessionData.checkpoints || [],
+    inventory: sessionData.inventory || [],
+    resources: sessionData.resources || { credits: 0 },
+    lockedChoices: new Map(), // Need to fetch locks?
+    activeVotes: new Map(),
+    activeTimers: new Map(),
+    partyRole: sessionData.partyRole,
+    activeMessage: sessionData.activeMessageId ? {
+        channelId: sessionData.activeChannelId,
+        messageId: sessionData.activeMessageId,
+        lastUpdated: Date.now()
+    } : undefined,
+    sequenceSelections: new Map(),
+    sequenceAttempts: new Map(),
+    memoryAttempts: new Map(),
+    memoryHintIndex: new Map(),
+    combatStates: new Map(),
+  };
+
+  // Re-load story data helper
+  if (storyGraph) {
+      session.storyData = storyGraph.getStory(session.storyId);
+  }
+
+  sessions.set(session.odId, session);
   return session;
 }
 export function getSession(odId: string): PlayerSession | undefined {
@@ -220,6 +256,7 @@ export function startTimer(
 ): void {
   const session = sessions.get(odId);
   if (session) {
+    console.log(`[Timer] STARTED: ${timerId} for ${odId}, duration=${durationSeconds}s`);
     session.activeTimers.set(timerId, {
       startTime: Date.now(),
       duration: durationSeconds * 1000,
@@ -228,6 +265,8 @@ export function startTimer(
     api.startTimer(odId, timerId, nodeId, durationSeconds).catch((err) => {
       console.error('[runtime-graph] Failed to start timer on server:', err);
     });
+  } else {
+    console.warn(`[Timer] FAILED to start ${timerId} - no session for ${odId}`);
   }
 }
 export function getTimer(
@@ -283,6 +322,7 @@ export function setActiveMessage(
   const session = sessions.get(odId);
   if (session) {
     session.activeMessage = { channelId, messageId, lastUpdated: Date.now() };
+    syncSessionToServer(odId);
   }
 }
 export function getActiveMessage(

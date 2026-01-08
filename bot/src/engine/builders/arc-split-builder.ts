@@ -6,7 +6,7 @@ import {
 } from 'discord.js';
 import type { StoryNode, BuilderResult, ArcDefinition } from '../types.js';
 import type { MultiplayerSession } from '../../types/party.js';
-import { initArcSplit } from '../arc-manager.js';
+import { initArcSplit, getPartyArcState, isPartyInArcSplit } from '../arc-manager.js';
 import { getPartyRole } from '../../quickstart/runtime-graph.js';
 export interface ArcSplitContext {
   playerId: string;
@@ -28,16 +28,22 @@ export async function buildArcSplitNode(
   if (!context.party) {
     throw new Error('arc_split requires a party (multiplayer)');
   }
-  const players = context.party.players.map(p => ({
-    odId: p.odId,
-    role: p.role || getPartyRole(p.odId),
-  }));
-  const arcState = initArcSplit(
-    context.party.id,
-    node.id,
-    arcSplitConfig,
-    players
-  );
+  
+  // Check if arc state already exists (another player already initialized)
+  let arcState = getPartyArcState(context.party.id);
+  if (!arcState || arcState.splitNodeId !== node.id) {
+    // Only initialize if no state exists OR if this is a different split node
+    const players = context.party.players.map(p => ({
+      odId: p.odId,
+      role: p.role || getPartyRole(p.odId),
+    }));
+    arcState = initArcSplit(
+      context.party.id,
+      node.id,
+      arcSplitConfig,
+      players
+    );
+  }
   const embed = new EmbedBuilder()
     .setColor(publicEmbed?.color ?? 0x9b59b6);
   if (publicEmbed?.title) embed.setTitle(publicEmbed.title);

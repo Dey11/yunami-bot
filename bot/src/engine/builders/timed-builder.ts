@@ -14,6 +14,7 @@ import {
   getSession,
 } from '../../quickstart/runtime-graph.js';
 import { getPartyByPlayer } from '../../quickstart/party-session.js';
+import { isPlayerInSoloArc } from '../arc-manager.js';
 import { buildProgressBar } from '../timer-progress.js';
 import type {
   StoryNode,
@@ -47,12 +48,14 @@ export async function buildTimedNode(
       (publicEmbed?.description || '') +
         `\n\n⏱️ Time remaining: <t:${expiryTime}:R>`
     );
-    startTimer(
-      context.playerId,
-      `${context.nodeId}:timer`,
-      context.nodeId,
-      timer.duration_seconds
-    );
+    if (!isPlayerInSoloArc(context.party?.id, context.playerId)) {
+      startTimer(
+        context.playerId,
+        `${context.nodeId}:timer`,
+        context.nodeId,
+        timer.duration_seconds
+      );
+    }
   } else if (publicEmbed?.footer) {
     embed.setFooter({ text: publicEmbed.footer });
   }

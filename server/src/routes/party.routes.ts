@@ -3,6 +3,20 @@ import { authMiddleware } from "../middleware/auth";
 import * as partyService from "../services/party.service";
 const router = Router();
 router.use(authMiddleware);
+router.get("/me", async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const party = await partyService.getPartyForUser(user.id);
+    if (!party) {
+      res.status(404).json({ error: "You are not in a party" });
+      return;
+    }
+    res.json({ party });
+  } catch (error) {
+    console.error("Error fetching user party:", error);
+    res.status(500).json({ error: "Failed to fetch party" });
+  }
+});
 router.post("/create", async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
@@ -14,7 +28,13 @@ router.post("/create", async (req: Request, res: Response) => {
       });
       return;
     }
-    const party = await partyService.createParty({ leaderId: user.id });
+    const { name, maxSize } = req.body;
+
+    const party = await partyService.createParty({ 
+      leaderId: user.id,
+      name: name,
+      maxSize: typeof maxSize === 'number' ? maxSize : 4
+    });
     res.status(201).json({ message: "Party created", party });
   } catch (error) {
     console.error("Error creating party:", error);
@@ -95,6 +115,45 @@ router.post("/:partyId/ready", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error setting ready:", error);
     res.status(500).json({ error: "Failed to update ready status" });
+  }
+});
+
+router.post("/:partyId/role", async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const { partyId } = req.params;
+    const { role } = req.body;
+    
+    if (!partyId) {
+      res.status(400).json({ error: "partyId is required" });
+      return;
+    }
+    
+    const validRoles = ["scout", "leader", "healer", "warrior"];
+    if (!role || !validRoles.includes(role)) {
+      res.status(400).json({ error: "Invalid role. Must be: scout, leader, healer, warrior" });
+      return;
+    }
+    
+    const party = await partyService.getPartyById(partyId);
+    if (!party) {
+      res.status(404).json({ error: "Party not found" });
+      return;
+    }
+    
+    // Check if role is already taken by someone else
+    const roleTaken = await partyService.isRoleTaken(partyId, role, user.id);
+    if (roleTaken) {
+      res.status(400).json({ error: `Role ${role} is already taken by another player` });
+      return;
+    }
+    
+    await partyService.setPartyRole(partyId, user.id, role);
+    const updatedParty = await partyService.getPartyById(partyId);
+    res.json({ message: "Role updated", party: updatedParty });
+  } catch (error) {
+    console.error("Error setting role:", error);
+    res.status(500).json({ error: "Failed to update role" });
   }
 });
 router.delete("/:partyId/leave", async (req: Request, res: Response) => {

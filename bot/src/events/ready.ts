@@ -1,4 +1,5 @@
 import { client } from '../index.js';
-client.on('ready', () => {
+import { Events } from 'discord.js';
+client.on(Events.ClientReady, () => {
   console.log(`Logged in as ${client.user?.tag}!`);
 });

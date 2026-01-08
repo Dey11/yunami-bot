@@ -26,13 +26,42 @@ export const handler = {
   id: /^choice:(.+):(.+)$/,
   async execute(interaction: any) {
     const odId = interaction.user.id;
-    const session = getSession(odId);
+    const { restoreSession } = await import('../quickstart/runtime-graph.js');
+    const { mapRemotePartyToLocal, restorePartySession } = await import('../quickstart/party-session.js');
+
+    let session = getSession(odId);
+    if (!session) {
+      try {
+        const sessionRes = await api.getSession(odId);
+        if (sessionRes.data?.session) {
+            session = restoreSession(sessionRes.data.session);
+        }
+      } catch (e) {
+        console.error("Failed to restore session", e);
+      }
+    }
+
     if (!session) {
       await interaction.reply({
         content: 'No active session. Please start a new story.',
         flags: MessageFlags.Ephemeral,
       });
       return;
+    }
+    
+    // Ensure Party is also restored
+    let party = getPartyByPlayer(odId);
+    if (!party) {
+         try {
+             const partyRes = await api.getMyParty(odId);
+             if (partyRes.data?.party) {
+                 const restoredParty = mapRemotePartyToLocal(partyRes.data.party);
+                 restorePartySession(restoredParty);
+                 party = restoredParty as any;
+             }
+         } catch (e) {
+             console.error("Failed to restore party", e);
+         }
     }
     const [, nodeId, choiceId] =
       interaction.customId.match(/^choice:(.+):(.+)$/) || [];
@@ -60,7 +89,11 @@ export const handler = {
       });
       return;
     }
-    const isTimedNode = currentNode.type === 'timed';
+    // Party already retrieved at top of function
+    const partyId = party?.id;
+    const inSoloArc = isPlayerInSoloArc(partyId, odId);
+
+    const isTimedNode = currentNode.type === 'timed' && !inSoloArc; // Disable timed logic for solo arcs
     if (isTimedNode) {
       const timerId = `${nodeId}:timer`;
       if (isTimerExpired(odId, timerId)) {
@@ -96,7 +129,7 @@ export const handler = {
         }
       }
     }
-    if (choice.ephemeral_confirmation || isTimedNode) {
+    if ((choice.ephemeral_confirmation || isTimedNode) && !inSoloArc) {
       await interaction.reply({
         content: `You chose: **${choice.label}**. Your vote has been recorded.`,
         flags: MessageFlags.Ephemeral,
@@ -119,10 +152,65 @@ export const handler = {
     if (isTimedNode) {
       recordVote(odId, nodeId, choiceId);
     }
-    const party = getPartyByPlayer(odId);
-    const partyId = party?.id;
-    const inSoloArc = isPlayerInSoloArc(partyId, odId);
     recordPlayerInput(nodeId, odId, { choiceId }, partyId);
+    
+    // Early vote completion: only for 3+ player parties when all have voted
+    // For 2-player parties, always wait for timer (leader decides ties)
+    if (isTimedNode && party && party.status === 'active' && party.players.length >= 3) {
+      const { hasAllInputs, getNodeInputs, evaluateOutcome, clearNodeInputs } = await import('../engine/outcome-engine.js');
+      const { clearTimer, getActiveMessage, setActiveMessage } = await import('../quickstart/runtime-graph.js');
+      const { TextChannel } = await import('discord.js');
+      
+      const expectedPlayerIds = party.players.map(p => p.odId);
+      const inputs = getNodeInputs(nodeId, partyId);
+      const currentVoteCount = inputs?.playerInputs.size ?? 0;
+      
+      console.log(`[EarlyVote] Node: ${nodeId}, PartyId: ${partyId}`);
+      console.log(`[EarlyVote] Party player count: ${party.players.length}`);
+      console.log(`[EarlyVote] Expected: ${expectedPlayerIds.length}, Current: ${currentVoteCount}`);
+      
+      if (hasAllInputs(nodeId, expectedPlayerIds, partyId)) {
+        // All players have voted - proceed immediately
+        const inputs = getNodeInputs(nodeId, partyId);
+        if (inputs) {
+          const result = evaluateOutcome(currentNode, inputs, party);
+          clearNodeInputs(nodeId, partyId);
+          clearTimer(odId, `${nodeId}:timer`);
+          
+          if (result.nextNodeId) {
+            const nextNode = session.storyData.nodes?.[result.nextNodeId];
+            if (nextNode) {
+              const context = { playerId: odId, nodeId: nextNode.id, party };
+              const renderResult = await renderNodeWithContext(nextNode, context);
+              const payload: any = {
+                content: result.message ? `🗳️ ${result.message}` : undefined,
+                embeds: [renderResult.embed],
+                components: renderResult.components ?? [],
+              };
+              if (renderResult.attachment) payload.files = [renderResult.attachment];
+              
+              // Update the shared message for all players
+              const activeMsg = getActiveMessage(odId);
+              if (activeMsg) {
+                try {
+                  const channel = await interaction.client.channels.fetch(activeMsg.channelId) as typeof TextChannel.prototype;
+                  const msg = await channel.messages.fetch(activeMsg.messageId);
+                  await msg.edit(payload);
+                  // Update all players' active message
+                  for (const p of party.players) {
+                    setActiveMessage(p.odId, activeMsg.channelId, activeMsg.messageId);
+                  }
+                } catch (err) {
+                  console.warn('[EarlyVoteComplete] Failed to update shared message:', err);
+                }
+              }
+            }
+          }
+          return; // Exit early, vote completed
+        }
+      }
+    }
+    
     if (!choice.nextNodeId || choice.nextNodeId === null) {
       if (session.storyId === 'prologue_1') {
         const prologueResult = finalizePrologueProfile(odId);
@@ -142,7 +230,7 @@ export const handler = {
               color: 0x00b3b3,
               footer: { text: 'You can now join multiplayer parties!' },
             };
-            if (choice.ephemeral_confirmation) {
+            if (choice.ephemeral_confirmation && !inSoloArc) {
               await interaction.message.edit({ embeds: [embed], components: [] });
             } else {
               await interaction.editReply({ embeds: [embed], components: [] });
@@ -156,7 +244,7 @@ export const handler = {
           description: 'Your journey has come to an end... for now.',
           color: 0x00b3b3,
         };
-        if (choice.ephemeral_confirmation) {
+        if (choice.ephemeral_confirmation && !inSoloArc) {
           await interaction.message.edit({ embeds: [embed], components: [] });
         } else {
           await interaction.editReply({ embeds: [embed], components: [] });
@@ -179,7 +267,7 @@ export const handler = {
           components: result.components ?? [],
         };
         if (result.attachment) payload.files = [result.attachment];
-        if (choice.ephemeral_confirmation) {
+        if (choice.ephemeral_confirmation && !inSoloArc) {
           await interaction.message.edit(payload);
           setActiveMessage(
             odId,

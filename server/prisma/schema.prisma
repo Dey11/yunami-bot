@@ -49,6 +49,8 @@ model UserProgress {
 model Party {
   id        String   @id @default(cuid())
   code      String   @unique // Invite code (short, e.g., "ABC123")
+  name      String?  // Party name
+  maxSize   Int      @default(4)
   leaderId  String
   storyId   String? // The story this party is playing, if started
   status    String   @default("forming") // forming | active | completed
@@ -59,11 +61,12 @@ model Party {
 }
 
 model PartyMember {
-  id       String   @id @default(cuid())
-  partyId  String
-  userId   String
-  isReady  Boolean  @default(false)
-  joinedAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  partyId   String
+  userId    String
+  isReady   Boolean  @default(false)
+  partyRole String?  // Party role: scout, leader, healer, warrior
+  joinedAt  DateTime @default(now())
 
   party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
