@@ -1,80 +1,70 @@
-g# Yunami 🎮
+# 🎭 Yunami: The Multiplayer Role-Playing Bot
 
-An interactive storytelling Discord bot with multiplayer adventures, real-time voting, and dynamic narratives.
+**Turn your Discord server into a living story.**
 
----
-
-## What is Yunami?
-
-Yunami brings **choose-your-own-adventure** stories to Discord. Play solo or team up with friends to make decisions that shape the story. Features include:
-
-- 🎭 **Rich narrative experiences** with images and dynamic text
-- ⚔️ **Meaningful choices** that affect the story
-- 👥 **Multiplayer parties** - adventure with friends
-- ⏱️ **Timed decisions** - vote before time runs out
-- 🗳️ **Group voting** - majority wins
+Yunami is not just a text game—it's a shared cinematic experience. You and your friends take on unique roles (like *The Detective*, *The Criminal*, or *The Scholar*) and play through interactive stories where everyone sees the same screen, but **everyone has different secrets.**
 
 ---
 
-## How to Play
+## 🔥 Features that Make it Special
 
-### Solo Play
-1. Use `/start` to begin a story
-2. Click buttons to make choices
-3. Watch the story unfold based on your decisions
+### 🕵️‍♀️ True Role-Playing
+You aren't just voting on options. You **are** your character.
+- **The Detective** sees clues others miss.
+- **The Criminal** can take illegal actions (that only they can see!).
+- **The Scholar** deciphers ancient texts.
 
-### Multiplayer
-1. Create a party with `/party-create`
-2. Invite friends with `/party-invite @user`
-3. Start with `/startmultiplayer`
-4. Vote together on decisions!
+### 🤫 Secret Information
+While everyone looks at the main story in the channel, Yunami sends **private DMs** to specific players.
+> *"You notice the Detective is lying. Do you call them out?"*
 
----
+### 📺 Shared Screen Experience
+No more scrolling up and down. The story happens in **one single, updating message**. It feels like watching a movie together, but you control the plot.
 
-## Commands
-
-| Command | What it does |
-|---------|--------------|
-| `/start` | Begin a solo adventure |
-| `/party-create` | Create a group for multiplayer |
-| `/party-invite` | Invite a friend to your party |
-| `/party-lobby` | See who's in your party |
-| `/startmultiplayer` | Begin a group adventure |
-| `/profile` | View your player profile |
+### ⏱️ High-Stakes Moments
+- **Timed Decisions:** The bomb is ticking. Vote now or explode.
+- **Split Missions:** The party splits up! Team A goes to the woods, Team B investigates the basement. You'll have to trust that they survived...
 
 ---
 
-## Timed Voting
+## 🎮 How to Play
 
-Some decisions have a timer! When you see the progress bar:
-
+### 1. Gather Your Party
+One person creates the lobby.
 ```
-⏱️ 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 30s
+/party-create name:MidnightSquad
 ```
 
-Vote before it runs out! The majority choice wins. If you don't vote, the group decides without you.
+### 2. Invite Friends
+Get your friends in. It's best with 3 players!
+```
+/party-invite user:@Friend
+```
+
+### 3. Choose Your Story
+Start the adventure. We recommend **"The Pale King's Wake"** for the full experience.
+```
+/startmultiplayer
+```
+
+### 4. Play!
+- **Read the scene** on the main screen.
+- **Check your DMs** for secret intel.
+- **Click buttons** to make choices. (Only YOU can see choices for your role!)
 
 ---
 
-## Tips
+## 🧩 Current Stories
 
-- 💰 **Resources matter** - some choices cost credits
-- 🤝 **Coordinate with your party** - discuss before voting
-- ⏰ **Don't wait too long** - timed decisions auto-resolve
-- 🎯 **Every choice counts** - your decisions shape the story
+### 🕯️ The Pale King's Wake (3 Players)
+*Horror / Mystery*
+Fifteen years ago, you buried a body in the Louisiana bayou. Now, someone knows. You must return to the scene of the crime to destroy the evidence before the police—or something worse—finds it.
 
----
-
-## Add Yunami to Your Server
-
-[Invite Link Coming Soon]
+* **The Detective**: The corrupt cop who covered it up.
+* **The Criminal**: The muscle who did the dirty work.
+* **The Scholar**: The one who knows the ritual actually worked.
 
 ---
 
-## Support
-
-Having issues? Join our [Discord Server](https://discord.gg/your-invite) for help.
-
----
-
-*Choose wisely. Your story awaits.* ✨
+*Built for the Discord App App Hackathon 2024.*
+*Ready to play? Invite Yunami and start your story.* ✨
