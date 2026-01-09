@@ -199,4 +199,28 @@ router.get("/by-code/:code", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to fetch party" });
   }
 });
+
+// Set shared message for party (for shared screen experience)
+router.post("/:partyId/shared-message", async (req: Request, res: Response) => {
+  try {
+    const { partyId } = req.params;
+    const { channelId, messageId } = req.body;
+    
+    if (!partyId) {
+      res.status(400).json({ error: "partyId is required" });
+      return;
+    }
+    if (!channelId || !messageId) {
+      res.status(400).json({ error: "channelId and messageId are required" });
+      return;
+    }
+    
+    const party = await partyService.setPartySharedMessage(partyId, channelId, messageId);
+    res.json({ message: "Shared message updated", party });
+  } catch (error) {
+    console.error("Error setting shared message:", error);
+    res.status(500).json({ error: "Failed to set shared message" });
+  }
+});
+
 export default router;

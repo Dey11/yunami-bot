@@ -4,6 +4,7 @@ import {
   getPartyByPlayer,
   mapRemotePartyToLocal,
   restorePartySession,
+  setPartyMessage,
 } from '../quickstart/party-session.js';
 import { storyGraph } from '../quickstart/story-graph.js';
 import { loadAndRenderNode } from '../engine/dispatcher.js';
@@ -89,7 +90,9 @@ export const handler = {
     
     const renderResult = await loadAndRenderNode(
       firstNode,
-      interaction.user.id
+      interaction.user.id,
+      undefined,
+      party
     );
     
     if (!renderResult.allowed) {
@@ -109,10 +112,15 @@ export const handler = {
       payload.files = [renderResult.result!.attachment];
     }
     
-    // Send to channel so everyone can see
+    // Send to channel so everyone can see - this is THE SHARED MESSAGE
     const response = await interaction.channel.send(payload);
     
     await interaction.editReply({ content: 'Story started!', components: [] });
+    
+    // Use shared party message instead of per-player messages
+    setPartyMessage(party.id, interaction.channelId, response.id, discordId);
+    
+    // Also set active message for each player for backwards compatibility
     for (const player of party.players) {
       setActiveMessage(player.odId, interaction.channelId, response.id);
     }

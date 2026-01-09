@@ -5,6 +5,7 @@ import {
   ButtonStyle,
 } from 'discord.js';
 import type { StoryNode, BuilderResult } from '../types.js';
+
 export function buildMetaNode(node: StoryNode): BuilderResult {
   const embed = node.public_embed;
   const action = node.type_specific?.extra_data?.action || 'default';
@@ -24,14 +25,17 @@ export function buildMetaNode(node: StoryNode): BuilderResult {
       });
     }
   }
+
   const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
       .setCustomId(`meta:${node.id}:${action}`)
       .setLabel(buttonLabel)
       .setStyle(ButtonStyle.Primary)
   );
+
   return {
     embed: embedBuilder,
     components: [row],
   };
 }
+

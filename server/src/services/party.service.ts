@@ -159,3 +159,22 @@ export async function isRoleTaken(
   return !!member;
 }
 
+// Set the shared message for a party (for shared screen experience)
+export async function setPartySharedMessage(
+  partyId: string,
+  channelId: string,
+  messageId: string
+): Promise<Party> {
+  return prisma.party.update({
+    where: { id: partyId },
+    data: {
+      sharedChannelId: channelId,
+      sharedMessageId: messageId,
+    },
+    include: {
+      members: {
+        include: { user: true },
+      },
+    },
+  });
+}

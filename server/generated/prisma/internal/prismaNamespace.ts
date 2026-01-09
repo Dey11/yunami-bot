@@ -393,11 +393,8 @@ export const ModelName = {
   ChoiceLock: 'ChoiceLock',
   Vote: 'Vote',
   Timer: 'Timer',
-  ArcState: 'ArcState',
-  ActiveArc: 'ActiveArc',
-  ArcPlayer: 'ArcPlayer',
-  NodeVote: 'NodeVote',
-  CombatState: 'CombatState'
+  CombatState: 'CombatState',
+  NodeVote: 'NodeVote'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -413,7 +410,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "userProgress" | "party" | "partyMember" | "minigameState" | "gameSession" | "choiceLock" | "vote" | "timer" | "arcState" | "activeArc" | "arcPlayer" | "nodeVote" | "combatState"
+    modelProps: "user" | "userProgress" | "party" | "partyMember" | "minigameState" | "gameSession" | "choiceLock" | "vote" | "timer" | "combatState" | "nodeVote"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1083,225 +1080,77 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    ArcState: {
-      payload: Prisma.$ArcStatePayload<ExtArgs>
-      fields: Prisma.ArcStateFieldRefs
+    CombatState: {
+      payload: Prisma.$CombatStatePayload<ExtArgs>
+      fields: Prisma.CombatStateFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.ArcStateFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcStatePayload> | null
+          args: Prisma.CombatStateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.ArcStateFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcStatePayload>
+          args: Prisma.CombatStateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>
         }
         findFirst: {
-          args: Prisma.ArcStateFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcStatePayload> | null
+          args: Prisma.CombatStateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.ArcStateFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcStatePayload>
+          args: Prisma.CombatStateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>
         }
         findMany: {
-          args: Prisma.ArcStateFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcStatePayload>[]
+          args: Prisma.CombatStateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>[]
         }
         create: {
-          args: Prisma.ArcStateCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcStatePayload>
+          args: Prisma.CombatStateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>
         }
         createMany: {
-          args: Prisma.ArcStateCreateManyArgs<ExtArgs>
+          args: Prisma.CombatStateCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.ArcStateCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcStatePayload>[]
+          args: Prisma.CombatStateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>[]
         }
         delete: {
-          args: Prisma.ArcStateDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcStatePayload>
+          args: Prisma.CombatStateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>
         }
         update: {
-          args: Prisma.ArcStateUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcStatePayload>
+          args: Prisma.CombatStateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>
         }
         deleteMany: {
-          args: Prisma.ArcStateDeleteManyArgs<ExtArgs>
+          args: Prisma.CombatStateDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.ArcStateUpdateManyArgs<ExtArgs>
+          args: Prisma.CombatStateUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.ArcStateUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcStatePayload>[]
+          args: Prisma.CombatStateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>[]
         }
         upsert: {
-          args: Prisma.ArcStateUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcStatePayload>
+          args: Prisma.CombatStateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>
         }
         aggregate: {
-          args: Prisma.ArcStateAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateArcState>
+          args: Prisma.CombatStateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCombatState>
         }
         groupBy: {
-          args: Prisma.ArcStateGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ArcStateGroupByOutputType>[]
+          args: Prisma.CombatStateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CombatStateGroupByOutputType>[]
         }
         count: {
-          args: Prisma.ArcStateCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ArcStateCountAggregateOutputType> | number
-        }
-      }
-    }
-    ActiveArc: {
-      payload: Prisma.$ActiveArcPayload<ExtArgs>
-      fields: Prisma.ActiveArcFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.ActiveArcFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActiveArcPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.ActiveArcFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActiveArcPayload>
-        }
-        findFirst: {
-          args: Prisma.ActiveArcFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActiveArcPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.ActiveArcFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActiveArcPayload>
-        }
-        findMany: {
-          args: Prisma.ActiveArcFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActiveArcPayload>[]
-        }
-        create: {
-          args: Prisma.ActiveArcCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActiveArcPayload>
-        }
-        createMany: {
-          args: Prisma.ActiveArcCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.ActiveArcCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActiveArcPayload>[]
-        }
-        delete: {
-          args: Prisma.ActiveArcDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActiveArcPayload>
-        }
-        update: {
-          args: Prisma.ActiveArcUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActiveArcPayload>
-        }
-        deleteMany: {
-          args: Prisma.ActiveArcDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.ActiveArcUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.ActiveArcUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActiveArcPayload>[]
-        }
-        upsert: {
-          args: Prisma.ActiveArcUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActiveArcPayload>
-        }
-        aggregate: {
-          args: Prisma.ActiveArcAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateActiveArc>
-        }
-        groupBy: {
-          args: Prisma.ActiveArcGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ActiveArcGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.ActiveArcCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ActiveArcCountAggregateOutputType> | number
-        }
-      }
-    }
-    ArcPlayer: {
-      payload: Prisma.$ArcPlayerPayload<ExtArgs>
-      fields: Prisma.ArcPlayerFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.ArcPlayerFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcPlayerPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.ArcPlayerFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcPlayerPayload>
-        }
-        findFirst: {
-          args: Prisma.ArcPlayerFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcPlayerPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.ArcPlayerFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcPlayerPayload>
-        }
-        findMany: {
-          args: Prisma.ArcPlayerFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcPlayerPayload>[]
-        }
-        create: {
-          args: Prisma.ArcPlayerCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcPlayerPayload>
-        }
-        createMany: {
-          args: Prisma.ArcPlayerCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.ArcPlayerCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcPlayerPayload>[]
-        }
-        delete: {
-          args: Prisma.ArcPlayerDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcPlayerPayload>
-        }
-        update: {
-          args: Prisma.ArcPlayerUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcPlayerPayload>
-        }
-        deleteMany: {
-          args: Prisma.ArcPlayerDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.ArcPlayerUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.ArcPlayerUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcPlayerPayload>[]
-        }
-        upsert: {
-          args: Prisma.ArcPlayerUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArcPlayerPayload>
-        }
-        aggregate: {
-          args: Prisma.ArcPlayerAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateArcPlayer>
-        }
-        groupBy: {
-          args: Prisma.ArcPlayerGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ArcPlayerGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.ArcPlayerCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ArcPlayerCountAggregateOutputType> | number
+          args: Prisma.CombatStateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CombatStateCountAggregateOutputType> | number
         }
       }
     }
@@ -1376,80 +1225,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.NodeVoteCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.NodeVoteCountAggregateOutputType> | number
-        }
-      }
-    }
-    CombatState: {
-      payload: Prisma.$CombatStatePayload<ExtArgs>
-      fields: Prisma.CombatStateFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.CombatStateFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.CombatStateFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>
-        }
-        findFirst: {
-          args: Prisma.CombatStateFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.CombatStateFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>
-        }
-        findMany: {
-          args: Prisma.CombatStateFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>[]
-        }
-        create: {
-          args: Prisma.CombatStateCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>
-        }
-        createMany: {
-          args: Prisma.CombatStateCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.CombatStateCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>[]
-        }
-        delete: {
-          args: Prisma.CombatStateDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>
-        }
-        update: {
-          args: Prisma.CombatStateUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>
-        }
-        deleteMany: {
-          args: Prisma.CombatStateDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.CombatStateUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.CombatStateUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>[]
-        }
-        upsert: {
-          args: Prisma.CombatStateUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CombatStatePayload>
-        }
-        aggregate: {
-          args: Prisma.CombatStateAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateCombatState>
-        }
-        groupBy: {
-          args: Prisma.CombatStateGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.CombatStateGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.CombatStateCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.CombatStateCountAggregateOutputType> | number
         }
       }
     }
@@ -1531,6 +1306,8 @@ export const PartyScalarFieldEnum = {
   leaderId: 'leaderId',
   storyId: 'storyId',
   status: 'status',
+  sharedChannelId: 'sharedChannelId',
+  sharedMessageId: 'sharedMessageId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1621,42 +1398,16 @@ export const TimerScalarFieldEnum = {
 export type TimerScalarFieldEnum = (typeof TimerScalarFieldEnum)[keyof typeof TimerScalarFieldEnum]
 
 
-export const ArcStateScalarFieldEnum = {
+export const CombatStateScalarFieldEnum = {
   id: 'id',
-  partyId: 'partyId',
-  splitNodeId: 'splitNodeId',
-  mergeNodeId: 'mergeNodeId',
-  status: 'status',
+  sessionId: 'sessionId',
+  nodeId: 'nodeId',
+  state: 'state',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type ArcStateScalarFieldEnum = (typeof ArcStateScalarFieldEnum)[keyof typeof ArcStateScalarFieldEnum]
-
-
-export const ActiveArcScalarFieldEnum = {
-  id: 'id',
-  arcStateId: 'arcStateId',
-  arcId: 'arcId',
-  label: 'label',
-  entryNodeId: 'entryNodeId',
-  currentNodeId: 'currentNodeId',
-  status: 'status',
-  isSoloArc: 'isSoloArc',
-  startedAt: 'startedAt'
-} as const
-
-export type ActiveArcScalarFieldEnum = (typeof ActiveArcScalarFieldEnum)[keyof typeof ActiveArcScalarFieldEnum]
-
-
-export const ArcPlayerScalarFieldEnum = {
-  id: 'id',
-  activeArcId: 'activeArcId',
-  odId: 'odId',
-  assignedAt: 'assignedAt'
-} as const
-
-export type ArcPlayerScalarFieldEnum = (typeof ArcPlayerScalarFieldEnum)[keyof typeof ArcPlayerScalarFieldEnum]
+export type CombatStateScalarFieldEnum = (typeof CombatStateScalarFieldEnum)[keyof typeof CombatStateScalarFieldEnum]
 
 
 export const NodeVoteScalarFieldEnum = {
@@ -1669,18 +1420,6 @@ export const NodeVoteScalarFieldEnum = {
 } as const
 
 export type NodeVoteScalarFieldEnum = (typeof NodeVoteScalarFieldEnum)[keyof typeof NodeVoteScalarFieldEnum]
-
-
-export const CombatStateScalarFieldEnum = {
-  id: 'id',
-  sessionId: 'sessionId',
-  nodeId: 'nodeId',
-  state: 'state',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type CombatStateScalarFieldEnum = (typeof CombatStateScalarFieldEnum)[keyof typeof CombatStateScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1917,11 +1656,8 @@ export type GlobalOmitConfig = {
   choiceLock?: Prisma.ChoiceLockOmit
   vote?: Prisma.VoteOmit
   timer?: Prisma.TimerOmit
-  arcState?: Prisma.ArcStateOmit
-  activeArc?: Prisma.ActiveArcOmit
-  arcPlayer?: Prisma.ArcPlayerOmit
-  nodeVote?: Prisma.NodeVoteOmit
   combatState?: Prisma.CombatStateOmit
+  nodeVote?: Prisma.NodeVoteOmit
 }
 
 /* Types for Logging */

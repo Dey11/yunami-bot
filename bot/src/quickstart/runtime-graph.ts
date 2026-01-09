@@ -87,6 +87,43 @@ export function initSession(
   return session;
 }
 export function restoreSession(sessionData: any): PlayerSession {
+  // Restore lockedChoices from DB choiceLocks
+  const lockedChoices = new Map<string, Set<string>>();
+  if (sessionData.choiceLocks && Array.isArray(sessionData.choiceLocks)) {
+    for (const lock of sessionData.choiceLocks) {
+      if (!lockedChoices.has(lock.nodeId)) {
+        lockedChoices.set(lock.nodeId, new Set());
+      }
+      lockedChoices.get(lock.nodeId)!.add(lock.choiceId);
+    }
+  }
+
+  // Restore activeVotes from DB votes
+  const activeVotes = new Map<string, string>();
+  if (sessionData.votes && Array.isArray(sessionData.votes)) {
+    for (const vote of sessionData.votes) {
+      activeVotes.set(vote.nodeId, vote.choiceId);
+    }
+  }
+
+  // Restore activeTimers from DB timers (recalculate remaining time)
+  const activeTimers = new Map<string, { startTime: number; duration: number; nodeId: string }>();
+  if (sessionData.timers && Array.isArray(sessionData.timers)) {
+    for (const timer of sessionData.timers) {
+      const startedAt = new Date(timer.startedAt).getTime();
+      const expiresAt = new Date(timer.expiresAt).getTime();
+      const duration = expiresAt - startedAt;
+      // Only restore if timer hasn't expired
+      if (expiresAt > Date.now()) {
+        activeTimers.set(timer.timerId, {
+          startTime: startedAt,
+          duration,
+          nodeId: timer.nodeId,
+        });
+      }
+    }
+  }
+
   const session: PlayerSession = {
     odId: sessionData.userId || sessionData.odId,
     storyId: sessionData.storyId,
@@ -97,9 +134,9 @@ export function restoreSession(sessionData: any): PlayerSession {
     checkpoints: sessionData.checkpoints || [],
     inventory: sessionData.inventory || [],
     resources: sessionData.resources || { credits: 0 },
-    lockedChoices: new Map(), // Need to fetch locks?
-    activeVotes: new Map(),
-    activeTimers: new Map(),
+    lockedChoices,
+    activeVotes,
+    activeTimers,
     partyRole: sessionData.partyRole,
     activeMessage: sessionData.activeMessageId ? {
         channelId: sessionData.activeChannelId,

@@ -103,6 +103,21 @@ export async function setPartyRole(discordId: string, partyId: string, role: str
 export async function leaveParty(discordId: string, partyId: string) {
   return request<{ message: string }>("DELETE", `/party/${partyId}/leave`, discordId);
 }
+
+// Set shared message for party (for shared screen experience)
+export async function setPartySharedMessage(
+  discordId: string,
+  partyId: string,
+  channelId: string,
+  messageId: string
+) {
+  return request<{ message: string; party: any }>(
+    "POST",
+    `/party/${partyId}/shared-message`,
+    discordId,
+    { channelId, messageId }
+  );
+}
 export async function startStory(
   discordId: string,
   storyId: string,
@@ -274,65 +289,4 @@ export async function getTimerStatus(discordId: string, timerId: string) {
     `/session/timer/${timerId}`,
     discordId
   );
-}
-export async function getArcState(discordId: string, partyId: string) {
-  return request<{ arcState: any }>("GET", `/arc/${partyId}`, discordId);
-}
-export async function initArcSplit(
-  discordId: string,
-  partyId: string,
-  splitNodeId: string,
-  config: any,
-  players: { odId: string; role?: string }[]
-) {
-  return request<{ message: string; arcState: any }>("POST", "/arc/split", discordId, {
-    partyId,
-    splitNodeId,
-    config,
-    players,
-  });
-}
-export async function getPlayerArc(discordId: string, partyId: string, odId: string) {
-  return request<{ arc: any }>("GET", `/arc/${partyId}/player/${odId}`, discordId);
-}
-export async function isPlayerInSoloArc(
-  discordId: string,
-  partyId: string,
-  odId: string
-): Promise<boolean> {
-  const result = await request<{ isSolo: boolean }>(
-    "GET",
-    `/arc/${partyId}/solo/${odId}`,
-    discordId
-  );
-  return result.data?.isSolo ?? false;
-}
-export async function updateArcNode(
-  discordId: string,
-  partyId: string,
-  arcId: string,
-  nodeId: string
-) {
-  return request<{ message: string }>("PATCH", `/arc/${partyId}/node`, discordId, {
-    arcId,
-    nodeId,
-  });
-}
-export async function markArcAtMerge(discordId: string, partyId: string, arcId: string) {
-  return request<{ message: string }>("POST", `/arc/${partyId}/merge-ready`, discordId, {
-    arcId,
-  });
-}
-export async function checkMergeStatus(discordId: string, partyId: string) {
-  return request<{ allReady: boolean; arcsNotReady: string[] }>(
-    "GET",
-    `/arc/${partyId}/merge-status`,
-    discordId
-  );
-}
-export async function completeArcMerge(discordId: string, partyId: string) {
-  return request<{ message: string; arcState: any }>("POST", `/arc/${partyId}/merge`, discordId);
-}
-export async function clearArcState(discordId: string, partyId: string) {
-  return request<{ message: string }>("DELETE", `/arc/${partyId}`, discordId);
 }

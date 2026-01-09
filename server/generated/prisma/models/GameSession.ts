@@ -245,6 +245,8 @@ export type GameSessionWhereInput = {
   choiceLocks?: Prisma.ChoiceLockListRelationFilter
   votes?: Prisma.VoteListRelationFilter
   timers?: Prisma.TimerListRelationFilter
+  combatStates?: Prisma.CombatStateListRelationFilter
+  nodeVotes?: Prisma.NodeVoteListRelationFilter
 }
 
 export type GameSessionOrderByWithRelationInput = {
@@ -266,6 +268,8 @@ export type GameSessionOrderByWithRelationInput = {
   choiceLocks?: Prisma.ChoiceLockOrderByRelationAggregateInput
   votes?: Prisma.VoteOrderByRelationAggregateInput
   timers?: Prisma.TimerOrderByRelationAggregateInput
+  combatStates?: Prisma.CombatStateOrderByRelationAggregateInput
+  nodeVotes?: Prisma.NodeVoteOrderByRelationAggregateInput
 }
 
 export type GameSessionWhereUniqueInput = Prisma.AtLeast<{
@@ -290,6 +294,8 @@ export type GameSessionWhereUniqueInput = Prisma.AtLeast<{
   choiceLocks?: Prisma.ChoiceLockListRelationFilter
   votes?: Prisma.VoteListRelationFilter
   timers?: Prisma.TimerListRelationFilter
+  combatStates?: Prisma.CombatStateListRelationFilter
+  nodeVotes?: Prisma.NodeVoteListRelationFilter
 }, "id" | "odId">
 
 export type GameSessionOrderByWithAggregationInput = {
@@ -353,6 +359,8 @@ export type GameSessionCreateInput = {
   choiceLocks?: Prisma.ChoiceLockCreateNestedManyWithoutSessionInput
   votes?: Prisma.VoteCreateNestedManyWithoutSessionInput
   timers?: Prisma.TimerCreateNestedManyWithoutSessionInput
+  combatStates?: Prisma.CombatStateCreateNestedManyWithoutSessionInput
+  nodeVotes?: Prisma.NodeVoteCreateNestedManyWithoutSessionInput
 }
 
 export type GameSessionUncheckedCreateInput = {
@@ -374,6 +382,8 @@ export type GameSessionUncheckedCreateInput = {
   choiceLocks?: Prisma.ChoiceLockUncheckedCreateNestedManyWithoutSessionInput
   votes?: Prisma.VoteUncheckedCreateNestedManyWithoutSessionInput
   timers?: Prisma.TimerUncheckedCreateNestedManyWithoutSessionInput
+  combatStates?: Prisma.CombatStateUncheckedCreateNestedManyWithoutSessionInput
+  nodeVotes?: Prisma.NodeVoteUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type GameSessionUpdateInput = {
@@ -395,6 +405,8 @@ export type GameSessionUpdateInput = {
   choiceLocks?: Prisma.ChoiceLockUpdateManyWithoutSessionNestedInput
   votes?: Prisma.VoteUpdateManyWithoutSessionNestedInput
   timers?: Prisma.TimerUpdateManyWithoutSessionNestedInput
+  combatStates?: Prisma.CombatStateUpdateManyWithoutSessionNestedInput
+  nodeVotes?: Prisma.NodeVoteUpdateManyWithoutSessionNestedInput
 }
 
 export type GameSessionUncheckedUpdateInput = {
@@ -416,6 +428,8 @@ export type GameSessionUncheckedUpdateInput = {
   choiceLocks?: Prisma.ChoiceLockUncheckedUpdateManyWithoutSessionNestedInput
   votes?: Prisma.VoteUncheckedUpdateManyWithoutSessionNestedInput
   timers?: Prisma.TimerUncheckedUpdateManyWithoutSessionNestedInput
+  combatStates?: Prisma.CombatStateUncheckedUpdateManyWithoutSessionNestedInput
+  nodeVotes?: Prisma.NodeVoteUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type GameSessionCreateManyInput = {
@@ -594,6 +608,34 @@ export type GameSessionUpdateOneRequiredWithoutTimersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GameSessionUpdateToOneWithWhereWithoutTimersInput, Prisma.GameSessionUpdateWithoutTimersInput>, Prisma.GameSessionUncheckedUpdateWithoutTimersInput>
 }
 
+export type GameSessionCreateNestedOneWithoutCombatStatesInput = {
+  create?: Prisma.XOR<Prisma.GameSessionCreateWithoutCombatStatesInput, Prisma.GameSessionUncheckedCreateWithoutCombatStatesInput>
+  connectOrCreate?: Prisma.GameSessionCreateOrConnectWithoutCombatStatesInput
+  connect?: Prisma.GameSessionWhereUniqueInput
+}
+
+export type GameSessionUpdateOneRequiredWithoutCombatStatesNestedInput = {
+  create?: Prisma.XOR<Prisma.GameSessionCreateWithoutCombatStatesInput, Prisma.GameSessionUncheckedCreateWithoutCombatStatesInput>
+  connectOrCreate?: Prisma.GameSessionCreateOrConnectWithoutCombatStatesInput
+  upsert?: Prisma.GameSessionUpsertWithoutCombatStatesInput
+  connect?: Prisma.GameSessionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GameSessionUpdateToOneWithWhereWithoutCombatStatesInput, Prisma.GameSessionUpdateWithoutCombatStatesInput>, Prisma.GameSessionUncheckedUpdateWithoutCombatStatesInput>
+}
+
+export type GameSessionCreateNestedOneWithoutNodeVotesInput = {
+  create?: Prisma.XOR<Prisma.GameSessionCreateWithoutNodeVotesInput, Prisma.GameSessionUncheckedCreateWithoutNodeVotesInput>
+  connectOrCreate?: Prisma.GameSessionCreateOrConnectWithoutNodeVotesInput
+  connect?: Prisma.GameSessionWhereUniqueInput
+}
+
+export type GameSessionUpdateOneRequiredWithoutNodeVotesNestedInput = {
+  create?: Prisma.XOR<Prisma.GameSessionCreateWithoutNodeVotesInput, Prisma.GameSessionUncheckedCreateWithoutNodeVotesInput>
+  connectOrCreate?: Prisma.GameSessionCreateOrConnectWithoutNodeVotesInput
+  upsert?: Prisma.GameSessionUpsertWithoutNodeVotesInput
+  connect?: Prisma.GameSessionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GameSessionUpdateToOneWithWhereWithoutNodeVotesInput, Prisma.GameSessionUpdateWithoutNodeVotesInput>, Prisma.GameSessionUncheckedUpdateWithoutNodeVotesInput>
+}
+
 export type GameSessionCreateWithoutChoiceLocksInput = {
   id?: string
   odId: string
@@ -612,6 +654,8 @@ export type GameSessionCreateWithoutChoiceLocksInput = {
   updatedAt?: Date | string
   votes?: Prisma.VoteCreateNestedManyWithoutSessionInput
   timers?: Prisma.TimerCreateNestedManyWithoutSessionInput
+  combatStates?: Prisma.CombatStateCreateNestedManyWithoutSessionInput
+  nodeVotes?: Prisma.NodeVoteCreateNestedManyWithoutSessionInput
 }
 
 export type GameSessionUncheckedCreateWithoutChoiceLocksInput = {
@@ -632,6 +676,8 @@ export type GameSessionUncheckedCreateWithoutChoiceLocksInput = {
   updatedAt?: Date | string
   votes?: Prisma.VoteUncheckedCreateNestedManyWithoutSessionInput
   timers?: Prisma.TimerUncheckedCreateNestedManyWithoutSessionInput
+  combatStates?: Prisma.CombatStateUncheckedCreateNestedManyWithoutSessionInput
+  nodeVotes?: Prisma.NodeVoteUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type GameSessionCreateOrConnectWithoutChoiceLocksInput = {
@@ -668,6 +714,8 @@ export type GameSessionUpdateWithoutChoiceLocksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   votes?: Prisma.VoteUpdateManyWithoutSessionNestedInput
   timers?: Prisma.TimerUpdateManyWithoutSessionNestedInput
+  combatStates?: Prisma.CombatStateUpdateManyWithoutSessionNestedInput
+  nodeVotes?: Prisma.NodeVoteUpdateManyWithoutSessionNestedInput
 }
 
 export type GameSessionUncheckedUpdateWithoutChoiceLocksInput = {
@@ -688,6 +736,8 @@ export type GameSessionUncheckedUpdateWithoutChoiceLocksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   votes?: Prisma.VoteUncheckedUpdateManyWithoutSessionNestedInput
   timers?: Prisma.TimerUncheckedUpdateManyWithoutSessionNestedInput
+  combatStates?: Prisma.CombatStateUncheckedUpdateManyWithoutSessionNestedInput
+  nodeVotes?: Prisma.NodeVoteUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type GameSessionCreateWithoutVotesInput = {
@@ -708,6 +758,8 @@ export type GameSessionCreateWithoutVotesInput = {
   updatedAt?: Date | string
   choiceLocks?: Prisma.ChoiceLockCreateNestedManyWithoutSessionInput
   timers?: Prisma.TimerCreateNestedManyWithoutSessionInput
+  combatStates?: Prisma.CombatStateCreateNestedManyWithoutSessionInput
+  nodeVotes?: Prisma.NodeVoteCreateNestedManyWithoutSessionInput
 }
 
 export type GameSessionUncheckedCreateWithoutVotesInput = {
@@ -728,6 +780,8 @@ export type GameSessionUncheckedCreateWithoutVotesInput = {
   updatedAt?: Date | string
   choiceLocks?: Prisma.ChoiceLockUncheckedCreateNestedManyWithoutSessionInput
   timers?: Prisma.TimerUncheckedCreateNestedManyWithoutSessionInput
+  combatStates?: Prisma.CombatStateUncheckedCreateNestedManyWithoutSessionInput
+  nodeVotes?: Prisma.NodeVoteUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type GameSessionCreateOrConnectWithoutVotesInput = {
@@ -764,6 +818,8 @@ export type GameSessionUpdateWithoutVotesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   choiceLocks?: Prisma.ChoiceLockUpdateManyWithoutSessionNestedInput
   timers?: Prisma.TimerUpdateManyWithoutSessionNestedInput
+  combatStates?: Prisma.CombatStateUpdateManyWithoutSessionNestedInput
+  nodeVotes?: Prisma.NodeVoteUpdateManyWithoutSessionNestedInput
 }
 
 export type GameSessionUncheckedUpdateWithoutVotesInput = {
@@ -784,6 +840,8 @@ export type GameSessionUncheckedUpdateWithoutVotesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   choiceLocks?: Prisma.ChoiceLockUncheckedUpdateManyWithoutSessionNestedInput
   timers?: Prisma.TimerUncheckedUpdateManyWithoutSessionNestedInput
+  combatStates?: Prisma.CombatStateUncheckedUpdateManyWithoutSessionNestedInput
+  nodeVotes?: Prisma.NodeVoteUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type GameSessionCreateWithoutTimersInput = {
@@ -804,6 +862,8 @@ export type GameSessionCreateWithoutTimersInput = {
   updatedAt?: Date | string
   choiceLocks?: Prisma.ChoiceLockCreateNestedManyWithoutSessionInput
   votes?: Prisma.VoteCreateNestedManyWithoutSessionInput
+  combatStates?: Prisma.CombatStateCreateNestedManyWithoutSessionInput
+  nodeVotes?: Prisma.NodeVoteCreateNestedManyWithoutSessionInput
 }
 
 export type GameSessionUncheckedCreateWithoutTimersInput = {
@@ -824,6 +884,8 @@ export type GameSessionUncheckedCreateWithoutTimersInput = {
   updatedAt?: Date | string
   choiceLocks?: Prisma.ChoiceLockUncheckedCreateNestedManyWithoutSessionInput
   votes?: Prisma.VoteUncheckedCreateNestedManyWithoutSessionInput
+  combatStates?: Prisma.CombatStateUncheckedCreateNestedManyWithoutSessionInput
+  nodeVotes?: Prisma.NodeVoteUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type GameSessionCreateOrConnectWithoutTimersInput = {
@@ -860,6 +922,8 @@ export type GameSessionUpdateWithoutTimersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   choiceLocks?: Prisma.ChoiceLockUpdateManyWithoutSessionNestedInput
   votes?: Prisma.VoteUpdateManyWithoutSessionNestedInput
+  combatStates?: Prisma.CombatStateUpdateManyWithoutSessionNestedInput
+  nodeVotes?: Prisma.NodeVoteUpdateManyWithoutSessionNestedInput
 }
 
 export type GameSessionUncheckedUpdateWithoutTimersInput = {
@@ -880,6 +944,216 @@ export type GameSessionUncheckedUpdateWithoutTimersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   choiceLocks?: Prisma.ChoiceLockUncheckedUpdateManyWithoutSessionNestedInput
   votes?: Prisma.VoteUncheckedUpdateManyWithoutSessionNestedInput
+  combatStates?: Prisma.CombatStateUncheckedUpdateManyWithoutSessionNestedInput
+  nodeVotes?: Prisma.NodeVoteUncheckedUpdateManyWithoutSessionNestedInput
+}
+
+export type GameSessionCreateWithoutCombatStatesInput = {
+  id?: string
+  odId: string
+  storyId: string
+  currentNodeId: string
+  choices?: Prisma.GameSessionCreatechoicesInput | string[]
+  flags?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  checkpoints?: Prisma.GameSessionCreatecheckpointsInput | string[]
+  inventory?: Prisma.GameSessionCreateinventoryInput | string[]
+  resources?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  partyRole?: string | null
+  activeChannelId?: string | null
+  activeMessageId?: string | null
+  activeMessageAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  choiceLocks?: Prisma.ChoiceLockCreateNestedManyWithoutSessionInput
+  votes?: Prisma.VoteCreateNestedManyWithoutSessionInput
+  timers?: Prisma.TimerCreateNestedManyWithoutSessionInput
+  nodeVotes?: Prisma.NodeVoteCreateNestedManyWithoutSessionInput
+}
+
+export type GameSessionUncheckedCreateWithoutCombatStatesInput = {
+  id?: string
+  odId: string
+  storyId: string
+  currentNodeId: string
+  choices?: Prisma.GameSessionCreatechoicesInput | string[]
+  flags?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  checkpoints?: Prisma.GameSessionCreatecheckpointsInput | string[]
+  inventory?: Prisma.GameSessionCreateinventoryInput | string[]
+  resources?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  partyRole?: string | null
+  activeChannelId?: string | null
+  activeMessageId?: string | null
+  activeMessageAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  choiceLocks?: Prisma.ChoiceLockUncheckedCreateNestedManyWithoutSessionInput
+  votes?: Prisma.VoteUncheckedCreateNestedManyWithoutSessionInput
+  timers?: Prisma.TimerUncheckedCreateNestedManyWithoutSessionInput
+  nodeVotes?: Prisma.NodeVoteUncheckedCreateNestedManyWithoutSessionInput
+}
+
+export type GameSessionCreateOrConnectWithoutCombatStatesInput = {
+  where: Prisma.GameSessionWhereUniqueInput
+  create: Prisma.XOR<Prisma.GameSessionCreateWithoutCombatStatesInput, Prisma.GameSessionUncheckedCreateWithoutCombatStatesInput>
+}
+
+export type GameSessionUpsertWithoutCombatStatesInput = {
+  update: Prisma.XOR<Prisma.GameSessionUpdateWithoutCombatStatesInput, Prisma.GameSessionUncheckedUpdateWithoutCombatStatesInput>
+  create: Prisma.XOR<Prisma.GameSessionCreateWithoutCombatStatesInput, Prisma.GameSessionUncheckedCreateWithoutCombatStatesInput>
+  where?: Prisma.GameSessionWhereInput
+}
+
+export type GameSessionUpdateToOneWithWhereWithoutCombatStatesInput = {
+  where?: Prisma.GameSessionWhereInput
+  data: Prisma.XOR<Prisma.GameSessionUpdateWithoutCombatStatesInput, Prisma.GameSessionUncheckedUpdateWithoutCombatStatesInput>
+}
+
+export type GameSessionUpdateWithoutCombatStatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  odId?: Prisma.StringFieldUpdateOperationsInput | string
+  storyId?: Prisma.StringFieldUpdateOperationsInput | string
+  currentNodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  choices?: Prisma.GameSessionUpdatechoicesInput | string[]
+  flags?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  checkpoints?: Prisma.GameSessionUpdatecheckpointsInput | string[]
+  inventory?: Prisma.GameSessionUpdateinventoryInput | string[]
+  resources?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  partyRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeChannelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  choiceLocks?: Prisma.ChoiceLockUpdateManyWithoutSessionNestedInput
+  votes?: Prisma.VoteUpdateManyWithoutSessionNestedInput
+  timers?: Prisma.TimerUpdateManyWithoutSessionNestedInput
+  nodeVotes?: Prisma.NodeVoteUpdateManyWithoutSessionNestedInput
+}
+
+export type GameSessionUncheckedUpdateWithoutCombatStatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  odId?: Prisma.StringFieldUpdateOperationsInput | string
+  storyId?: Prisma.StringFieldUpdateOperationsInput | string
+  currentNodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  choices?: Prisma.GameSessionUpdatechoicesInput | string[]
+  flags?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  checkpoints?: Prisma.GameSessionUpdatecheckpointsInput | string[]
+  inventory?: Prisma.GameSessionUpdateinventoryInput | string[]
+  resources?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  partyRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeChannelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  choiceLocks?: Prisma.ChoiceLockUncheckedUpdateManyWithoutSessionNestedInput
+  votes?: Prisma.VoteUncheckedUpdateManyWithoutSessionNestedInput
+  timers?: Prisma.TimerUncheckedUpdateManyWithoutSessionNestedInput
+  nodeVotes?: Prisma.NodeVoteUncheckedUpdateManyWithoutSessionNestedInput
+}
+
+export type GameSessionCreateWithoutNodeVotesInput = {
+  id?: string
+  odId: string
+  storyId: string
+  currentNodeId: string
+  choices?: Prisma.GameSessionCreatechoicesInput | string[]
+  flags?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  checkpoints?: Prisma.GameSessionCreatecheckpointsInput | string[]
+  inventory?: Prisma.GameSessionCreateinventoryInput | string[]
+  resources?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  partyRole?: string | null
+  activeChannelId?: string | null
+  activeMessageId?: string | null
+  activeMessageAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  choiceLocks?: Prisma.ChoiceLockCreateNestedManyWithoutSessionInput
+  votes?: Prisma.VoteCreateNestedManyWithoutSessionInput
+  timers?: Prisma.TimerCreateNestedManyWithoutSessionInput
+  combatStates?: Prisma.CombatStateCreateNestedManyWithoutSessionInput
+}
+
+export type GameSessionUncheckedCreateWithoutNodeVotesInput = {
+  id?: string
+  odId: string
+  storyId: string
+  currentNodeId: string
+  choices?: Prisma.GameSessionCreatechoicesInput | string[]
+  flags?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  checkpoints?: Prisma.GameSessionCreatecheckpointsInput | string[]
+  inventory?: Prisma.GameSessionCreateinventoryInput | string[]
+  resources?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  partyRole?: string | null
+  activeChannelId?: string | null
+  activeMessageId?: string | null
+  activeMessageAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  choiceLocks?: Prisma.ChoiceLockUncheckedCreateNestedManyWithoutSessionInput
+  votes?: Prisma.VoteUncheckedCreateNestedManyWithoutSessionInput
+  timers?: Prisma.TimerUncheckedCreateNestedManyWithoutSessionInput
+  combatStates?: Prisma.CombatStateUncheckedCreateNestedManyWithoutSessionInput
+}
+
+export type GameSessionCreateOrConnectWithoutNodeVotesInput = {
+  where: Prisma.GameSessionWhereUniqueInput
+  create: Prisma.XOR<Prisma.GameSessionCreateWithoutNodeVotesInput, Prisma.GameSessionUncheckedCreateWithoutNodeVotesInput>
+}
+
+export type GameSessionUpsertWithoutNodeVotesInput = {
+  update: Prisma.XOR<Prisma.GameSessionUpdateWithoutNodeVotesInput, Prisma.GameSessionUncheckedUpdateWithoutNodeVotesInput>
+  create: Prisma.XOR<Prisma.GameSessionCreateWithoutNodeVotesInput, Prisma.GameSessionUncheckedCreateWithoutNodeVotesInput>
+  where?: Prisma.GameSessionWhereInput
+}
+
+export type GameSessionUpdateToOneWithWhereWithoutNodeVotesInput = {
+  where?: Prisma.GameSessionWhereInput
+  data: Prisma.XOR<Prisma.GameSessionUpdateWithoutNodeVotesInput, Prisma.GameSessionUncheckedUpdateWithoutNodeVotesInput>
+}
+
+export type GameSessionUpdateWithoutNodeVotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  odId?: Prisma.StringFieldUpdateOperationsInput | string
+  storyId?: Prisma.StringFieldUpdateOperationsInput | string
+  currentNodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  choices?: Prisma.GameSessionUpdatechoicesInput | string[]
+  flags?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  checkpoints?: Prisma.GameSessionUpdatecheckpointsInput | string[]
+  inventory?: Prisma.GameSessionUpdateinventoryInput | string[]
+  resources?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  partyRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeChannelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  choiceLocks?: Prisma.ChoiceLockUpdateManyWithoutSessionNestedInput
+  votes?: Prisma.VoteUpdateManyWithoutSessionNestedInput
+  timers?: Prisma.TimerUpdateManyWithoutSessionNestedInput
+  combatStates?: Prisma.CombatStateUpdateManyWithoutSessionNestedInput
+}
+
+export type GameSessionUncheckedUpdateWithoutNodeVotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  odId?: Prisma.StringFieldUpdateOperationsInput | string
+  storyId?: Prisma.StringFieldUpdateOperationsInput | string
+  currentNodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  choices?: Prisma.GameSessionUpdatechoicesInput | string[]
+  flags?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  checkpoints?: Prisma.GameSessionUpdatecheckpointsInput | string[]
+  inventory?: Prisma.GameSessionUpdateinventoryInput | string[]
+  resources?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  partyRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeChannelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  choiceLocks?: Prisma.ChoiceLockUncheckedUpdateManyWithoutSessionNestedInput
+  votes?: Prisma.VoteUncheckedUpdateManyWithoutSessionNestedInput
+  timers?: Prisma.TimerUncheckedUpdateManyWithoutSessionNestedInput
+  combatStates?: Prisma.CombatStateUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 
@@ -891,12 +1165,16 @@ export type GameSessionCountOutputType = {
   choiceLocks: number
   votes: number
   timers: number
+  combatStates: number
+  nodeVotes: number
 }
 
 export type GameSessionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   choiceLocks?: boolean | GameSessionCountOutputTypeCountChoiceLocksArgs
   votes?: boolean | GameSessionCountOutputTypeCountVotesArgs
   timers?: boolean | GameSessionCountOutputTypeCountTimersArgs
+  combatStates?: boolean | GameSessionCountOutputTypeCountCombatStatesArgs
+  nodeVotes?: boolean | GameSessionCountOutputTypeCountNodeVotesArgs
 }
 
 /**
@@ -930,6 +1208,20 @@ export type GameSessionCountOutputTypeCountTimersArgs<ExtArgs extends runtime.Ty
   where?: Prisma.TimerWhereInput
 }
 
+/**
+ * GameSessionCountOutputType without action
+ */
+export type GameSessionCountOutputTypeCountCombatStatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CombatStateWhereInput
+}
+
+/**
+ * GameSessionCountOutputType without action
+ */
+export type GameSessionCountOutputTypeCountNodeVotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NodeVoteWhereInput
+}
+
 
 export type GameSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -950,6 +1242,8 @@ export type GameSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   choiceLocks?: boolean | Prisma.GameSession$choiceLocksArgs<ExtArgs>
   votes?: boolean | Prisma.GameSession$votesArgs<ExtArgs>
   timers?: boolean | Prisma.GameSession$timersArgs<ExtArgs>
+  combatStates?: boolean | Prisma.GameSession$combatStatesArgs<ExtArgs>
+  nodeVotes?: boolean | Prisma.GameSession$nodeVotesArgs<ExtArgs>
   _count?: boolean | Prisma.GameSessionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["gameSession"]>
 
@@ -1012,6 +1306,8 @@ export type GameSessionInclude<ExtArgs extends runtime.Types.Extensions.Internal
   choiceLocks?: boolean | Prisma.GameSession$choiceLocksArgs<ExtArgs>
   votes?: boolean | Prisma.GameSession$votesArgs<ExtArgs>
   timers?: boolean | Prisma.GameSession$timersArgs<ExtArgs>
+  combatStates?: boolean | Prisma.GameSession$combatStatesArgs<ExtArgs>
+  nodeVotes?: boolean | Prisma.GameSession$nodeVotesArgs<ExtArgs>
   _count?: boolean | Prisma.GameSessionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GameSessionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1023,6 +1319,8 @@ export type $GameSessionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     choiceLocks: Prisma.$ChoiceLockPayload<ExtArgs>[]
     votes: Prisma.$VotePayload<ExtArgs>[]
     timers: Prisma.$TimerPayload<ExtArgs>[]
+    combatStates: Prisma.$CombatStatePayload<ExtArgs>[]
+    nodeVotes: Prisma.$NodeVotePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1437,6 +1735,8 @@ export interface Prisma__GameSessionClient<T, Null = never, ExtArgs extends runt
   choiceLocks<T extends Prisma.GameSession$choiceLocksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameSession$choiceLocksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChoiceLockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   votes<T extends Prisma.GameSession$votesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameSession$votesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   timers<T extends Prisma.GameSession$timersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameSession$timersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  combatStates<T extends Prisma.GameSession$combatStatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameSession$combatStatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CombatStatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  nodeVotes<T extends Prisma.GameSession$nodeVotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameSession$nodeVotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NodeVotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1938,6 +2238,54 @@ export type GameSession$timersArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.TimerScalarFieldEnum | Prisma.TimerScalarFieldEnum[]
+}
+
+/**
+ * GameSession.combatStates
+ */
+export type GameSession$combatStatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CombatState
+   */
+  select?: Prisma.CombatStateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CombatState
+   */
+  omit?: Prisma.CombatStateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CombatStateInclude<ExtArgs> | null
+  where?: Prisma.CombatStateWhereInput
+  orderBy?: Prisma.CombatStateOrderByWithRelationInput | Prisma.CombatStateOrderByWithRelationInput[]
+  cursor?: Prisma.CombatStateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CombatStateScalarFieldEnum | Prisma.CombatStateScalarFieldEnum[]
+}
+
+/**
+ * GameSession.nodeVotes
+ */
+export type GameSession$nodeVotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the NodeVote
+   */
+  select?: Prisma.NodeVoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the NodeVote
+   */
+  omit?: Prisma.NodeVoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NodeVoteInclude<ExtArgs> | null
+  where?: Prisma.NodeVoteWhereInput
+  orderBy?: Prisma.NodeVoteOrderByWithRelationInput | Prisma.NodeVoteOrderByWithRelationInput[]
+  cursor?: Prisma.NodeVoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NodeVoteScalarFieldEnum | Prisma.NodeVoteScalarFieldEnum[]
 }
 
 /**

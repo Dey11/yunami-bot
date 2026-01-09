@@ -5,7 +5,7 @@ import {
   EmbedBuilder,
 } from 'discord.js';
 import { buildCanvas } from '../../quickstart/canvas-builder.js';
-import { getSequenceAttempts } from '../../quickstart/runtime-graph.js';
+import { getSequenceAttempts, getPartyRole } from '../../quickstart/runtime-graph.js';
 import type { StoryNode, BuilderResult, SequenceStep } from '../types.js';
 export interface SequenceBuilderContext {
   playerId: string;
@@ -66,7 +66,8 @@ export async function buildSequenceNode(
     const stepRows = buildStepButtons(
       sequence.steps,
       context.nodeId,
-      currentSelection
+      currentSelection,
+      context.playerId
     );
     components.push(...stepRows);
   }
@@ -109,12 +110,24 @@ export async function buildSequenceNode(
 function buildStepButtons(
   steps: SequenceStep[],
   nodeId: string,
-  currentSelection: string[]
+  currentSelection: string[],
+  playerId: string
 ): ActionRowBuilder<ButtonBuilder>[] {
   const rows: ActionRowBuilder<ButtonBuilder>[] = [];
   let currentRow = new ActionRowBuilder<ButtonBuilder>();
   let buttonCount = 0;
+
+  // Get player's role for filtering
+  const playerRole = getPartyRole(playerId);
+
   for (const step of steps) {
+    // If allowed_roles is specified, skip if player's role is not in the list
+    if (step.allowed_roles && step.allowed_roles.length > 0) {
+      if (!playerRole || !step.allowed_roles.includes(playerRole)) {
+        continue; // Hide button for this player
+      }
+    }
+
     if (buttonCount >= 5) {
       rows.push(currentRow);
       currentRow = new ActionRowBuilder<ButtonBuilder>();

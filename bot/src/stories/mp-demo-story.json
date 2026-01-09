@@ -83,7 +83,7 @@
       "tags": ["shared", "all-players"],
       "public_embed": {
         "title": "🚪 Entering Through the Front",
-        "description": "Dressed as cleaning staff, you walk past the security desk. The guard barely glances up from his phone.\n\nYou're in. But now the team must split up.",
+        "description": "Dressed as cleaning staff, you walk past the security desk. The guard barely glances up from his phone.\n\nYou're in. Now to execute the split plan.",
         "image": "Background.png",
         "footer": "All players"
       },
@@ -102,7 +102,7 @@
       "tags": ["shared", "all-players"],
       "public_embed": {
         "title": "🕳️ Through the Tunnels",
-        "description": "You crawl through the dark maintenance shaft. Rats scatter as your flashlight sweeps the walls.\n\nYou emerge in the bank's basement. Time to split up.",
+        "description": "You crawl through the dark maintenance shaft. Rats scatter as your flashlight sweeps the walls.\n\nYou emerge in the bank's basement. Time to execute the split plan.",
         "image": "Background.png",
         "footer": "All players"
       },
@@ -120,163 +120,97 @@
       "title": "The Split",
       "tags": ["arc-split"],
       "public_embed": {
-        "title": "⚡ Time to Split Up",
-        "description": "The vault is on the lower level, but security cameras need to be disabled from the control room.\n\nThe **Scout** will sneak to the control room and receive private intel.\nThe **Main Team** will proceed to the vault entrance.",
+        "title": "⚡ Mission Assignments",
+        "description": "The plan requires precise timing. Assignments have been issued.\n\n**The Scout** must disable the cameras.\n**The Main Team** must breach the vault mechanism.",
         "image": "Background.png",
-        "footer": "Teams will separate",
+        "footer": "Check DMs for secret intel",
         "fields": [
-          { "name": "🔍 Scout Mission", "value": "Disable cameras. You'll receive a secret DM." },
-          { "name": "🛡️ Main Team", "value": "Proceed to the vault. Work together." }
-        ]
-      },
-      "type_specific": {
-        "arc_split": {
-          "split_mode": "role_based",
-          "merge_node_id": "reunion",
-          "arcs": [
-            {
-              "id": "solo_scout",
-              "label": "Scout Mission",
-              "description": "Disable cameras and receive secret intel",
-              "player_count": 1,
-              "entry_node_id": "scout_dm",
-              "required_roles": ["scout"]
-            },
-            {
-              "id": "main_team",
-              "label": "Main Team",
-              "description": "Proceed to the vault",
-              "player_count": "remaining",
-              "entry_node_id": "team_vault"
-            }
-          ]
-        }
-      },
-      "preconditions": {
-        "min_player_count": 2
-      }
-    },
-
-    "scout_dm": {
-      "id": "scout_dm",
-      "schema_version": 1,
-      "type": "dm",
-      "title": "Secret Intel",
-      "tags": ["solo-arc", "scout", "private"],
-      "public_embed": {
-        "title": "📩 Intercepted Transmission",
-        "description": "You tap into the security feed and discover something unexpected...\n\n**The vault contains more than just the deposit box.** There's a hidden compartment behind the main safe.\n\nThis information is yours alone. Use it wisely when you reunite with the team.",
-        "image": "Background.png",
-        "footer": "Private Intel | Scout Only",
-        "fields": [
-          { "name": "🔐 Secret Code", "value": "The hidden compartment code is **7-4-2-9**" }
+          { "name": "🔍 Scout", "value": "Check your DMs for the control room code." },
+          { "name": "🛡️ Main Team", "value": "Prepare your equipment." }
         ]
       },
       "side_effects_on_enter": {
         "spawn_dm_jobs": true
       },
       "type_specific": {
-        "arc_context": {
-          "arc_id": "solo_scout"
+        "arc_split": {
+          "split_mode": "role_based",
+          "merge_node_id": "scout_mission",
+          "arcs": [
+            {
+              "id": "solo_scout",
+              "label": "Scout",
+              "description": "Disable security",
+              "player_count": 1,
+              "entry_node_id": "scout_mission",
+              "required_roles": ["scout"]
+            },
+            {
+              "id": "main_team",
+              "label": "Main Team",
+              "description": "Breach vault",
+              "player_count": "remaining",
+              "entry_node_id": "scout_mission"
+            }
+          ]
         },
         "dm_deliveries": [
           {
             "recipient_role": "scout",
             "content": {
-              "text": "🔐 **SECRET INTEL** 🔐\n\nYou intercepted a transmission!\n\n**The hidden compartment code is: 7-4-2-9**\n\nThis information is yours alone. Share it with your team when you reunite."
+              "text": "🔐 **SECRET INTEL** 🔐\n\nYou've tapped into the security feed.\n\n**Control Room Override Code: 7-4-2-9**\n\nThe team is relying on you. Do not fail."
             }
           }
-        ],
-        "extra_data": {
-          "nextNodeId": "scout_disable"
-        }
+        ]
       },
       "preconditions": {
-        "required_arc": "solo_scout"
+        "min_player_count": 2
       }
     },
 
-    "scout_disable": {
-      "id": "scout_disable",
+    "scout_mission": {
+      "id": "scout_mission",
       "schema_version": 1,
       "type": "choice",
-      "title": "Control Room",
-      "tags": ["solo-arc", "scout"],
+      "title": "Scout's Move",
+      "tags": ["scout-turn"],
       "public_embed": {
         "title": "📹 Camera Control Room",
-        "description": "You've reached the control room. A guard is asleep at the desk.\n\nHow do you proceed?",
+        "description": "The team waits in the shadows while **The Scout** approaches the control terminal.\n\nA guard is fast asleep at the desk.",
         "image": "Background.png",
-        "footer": "Solo Arc | Scout"
+        "footer": "Waiting for Scout..."
       },
       "type_specific": {
-        "arc_context": {
-          "arc_id": "solo_scout"
-        },
         "choices": [
           {
             "id": "disable_silent",
-            "label": "Silently disable cameras",
-            "ephemeral_confirmation": true,
-            "nextNodeId": "scout_success"
+            "label": "Silently disable (Scout only)",
+            "allowed_roles": ["scout"],
+            "nextNodeId": "team_breach"
           },
           {
             "id": "disable_loud",
-            "label": "Knock out the guard first",
-            "ephemeral_confirmation": true,
-            "nextNodeId": "scout_success"
+            "label": "Knock out guard (Scout only)",
+            "allowed_roles": ["scout"],
+            "nextNodeId": "team_breach"
           }
         ]
-      },
-      "preconditions": {
-        "required_arc": "solo_scout"
       }
     },
 
-    "scout_success": {
-      "id": "scout_success",
-      "schema_version": 1,
-      "type": "narrative",
-      "title": "Cameras Down",
-      "tags": ["solo-arc", "scout"],
-      "public_embed": {
-        "title": "✅ Cameras Disabled",
-        "description": "The security feeds go dark. You've bought the team valuable time.\n\nTime to rendezvous.",
-        "image": "Background.png",
-        "footer": "Solo Arc Complete"
-      },
-      "type_specific": {
-        "arc_context": {
-          "arc_id": "solo_scout"
-        },
-        "extra_data": {
-          "nextNodeId": "reunion"
-        }
-      },
-      "preconditions": {
-        "required_arc": "solo_scout"
-      }
-    },
-
-    "team_vault": {
-      "id": "team_vault",
+    "team_breach": {
+      "id": "team_breach",
       "schema_version": 1,
       "type": "timed",
-      "title": "Vault Approach",
-      "tags": ["group-arc", "main-team", "vote"],
+      "title": "Vault Breach",
+      "tags": ["team-turn"],
       "public_embed": {
         "title": "🔒 The Vault Door",
-        "description": "You reach the vault. The door is massive, reinforced steel.\n\nHow does the team proceed?",
+        "description": "Cameras are down! The Scout signals clear.\n\nNow it's up to the **Main Team** to crack the vault door.",
         "image": "Background.png",
-        "footer": "Group Arc | Vote together",
-        "fields": [
-          { "name": "💣 Explosives", "value": "Fast but loud. Might trigger alarms." },
-          { "name": "🔧 Safecracker", "value": "Slow but silent. Requires patience." }
-        ]
+        "footer": "Main Team voting..."
       },
       "type_specific": {
-        "arc_context": {
-          "arc_id": "main_team"
-        },
         "timers": {
           "duration_seconds": 30
         },
@@ -284,68 +218,18 @@
           {
             "id": "explosives",
             "label": "Use Explosives",
-            "nextNodeId": "team_vault_open"
+            "nextNodeId": "finale"
           },
           {
             "id": "safecracker",
             "label": "Safecracker Method",
-            "nextNodeId": "team_vault_open"
+            "nextNodeId": "finale"
           }
         ],
         "outcome_rules": {
           "on_all_inputs_or_timeout": {
             "compute": "majority"
           }
-        }
-      },
-      "preconditions": {
-        "required_arc": "main_team"
-      }
-    },
-
-    "team_vault_open": {
-      "id": "team_vault_open",
-      "schema_version": 1,
-      "type": "narrative",
-      "title": "Vault Open",
-      "tags": ["group-arc", "main-team"],
-      "public_embed": {
-        "title": "🚪 The Vault Opens",
-        "description": "The heavy door swings open, revealing rows of safety deposit boxes.\n\nYou locate Box #742. Inside is a flash drive labeled 'CLASSIFIED'.\n\nTime to meet up with the scout.",
-        "image": "Background.png",
-        "footer": "Group Arc Complete"
-      },
-      "type_specific": {
-        "arc_context": {
-          "arc_id": "main_team"
-        },
-        "extra_data": {
-          "nextNodeId": "reunion"
-        }
-      },
-      "preconditions": {
-        "required_arc": "main_team"
-      }
-    },
-
-    "reunion": {
-      "id": "reunion",
-      "schema_version": 1,
-      "type": "arc_merge",
-      "title": "The Rendezvous",
-      "tags": ["arc-merge", "all-players"],
-      "public_embed": {
-        "title": "🤝 Team Reunited",
-        "description": "The team regroups in the basement corridor.\n\nThe scout shares intel about a hidden compartment. The main team shows the flash drive from Box #742.\n\n**Together, you have everything you need.**",
-        "image": "Background.png",
-        "footer": "All players together",
-        "fields": [
-          { "name": "📦 Loot", "value": "Flash drive + Knowledge of hidden compartment" }
-        ]
-      },
-      "type_specific": {
-        "extra_data": {
-          "nextNodeId": "finale"
         }
       }
     },
@@ -354,13 +238,13 @@
       "id": "finale",
       "schema_version": 1,
       "type": "narrative",
-      "title": "The Escape",
-      "tags": ["ending", "all-players"],
+      "title": "Mission Complete",
+      "tags": ["ending"],
       "public_embed": {
-        "title": "🚗 Clean Getaway",
-        "description": "Sirens wail in the distance, but you're already blocks away.\n\nThe heist was a success. The flash drive contains evidence that will bring down a corrupt politician.\n\n**Mission Complete.**\n\n*The Heist Demo Complete!*",
+        "title": "💰 Payday",
+        "description": "The vault swings open. You grab the contents of Box #742 and vanish before the police arrive.\n\n**Mission Successful!**\n\nThe crew splits the loot and disappears into the night.",
         "image": "Background.png",
-        "footer": "Story complete"
+        "footer": "Story Complete"
       }
     }
   }

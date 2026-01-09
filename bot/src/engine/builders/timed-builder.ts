@@ -114,7 +114,18 @@ function buildChoiceButtons(
   const rows: ActionRowBuilder<ButtonBuilder>[] = [];
   let currentRow = new ActionRowBuilder<ButtonBuilder>();
   let buttonCount = 0;
+
+  // Get player's role for filtering
+  const playerRole = getPartyRole(context.playerId);
+
   for (const choice of choices) {
+    // If allowed_roles is specified, skip if player's role is not in the list
+    if (choice.allowed_roles && choice.allowed_roles.length > 0) {
+      if (!playerRole || !choice.allowed_roles.includes(playerRole)) {
+        continue; // Hide button for this player
+      }
+    }
+
     if (buttonCount >= 5) {
       rows.push(currentRow);
       currentRow = new ActionRowBuilder<ButtonBuilder>();

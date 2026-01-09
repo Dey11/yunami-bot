@@ -26,6 +26,7 @@ export interface Story {
   firstNodeId: string;
   entryNodeId?: string;
   nodes: Record<string, StoryNode>;
+  traitMappings?: Record<string, Record<string, number>>;
 }
 export interface StoryListItem {
   id: string;

@@ -20,4 +20,6 @@ export type MultiplayerSession = {
   startedAt?: Date;
   endedAt?: Date;
   inviteCode?: string;
+  // Shared message for all party members (single screen experience)
+  sharedMessage?: { channelId: string; messageId: string };
 };

@@ -42,6 +42,8 @@ export type PartyMinAggregateOutputType = {
   leaderId: string | null
   storyId: string | null
   status: string | null
+  sharedChannelId: string | null
+  sharedMessageId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -54,6 +56,8 @@ export type PartyMaxAggregateOutputType = {
   leaderId: string | null
   storyId: string | null
   status: string | null
+  sharedChannelId: string | null
+  sharedMessageId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,6 +70,8 @@ export type PartyCountAggregateOutputType = {
   leaderId: number
   storyId: number
   status: number
+  sharedChannelId: number
+  sharedMessageId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -88,6 +94,8 @@ export type PartyMinAggregateInputType = {
   leaderId?: true
   storyId?: true
   status?: true
+  sharedChannelId?: true
+  sharedMessageId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +108,8 @@ export type PartyMaxAggregateInputType = {
   leaderId?: true
   storyId?: true
   status?: true
+  sharedChannelId?: true
+  sharedMessageId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +122,8 @@ export type PartyCountAggregateInputType = {
   leaderId?: true
   storyId?: true
   status?: true
+  sharedChannelId?: true
+  sharedMessageId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -211,6 +223,8 @@ export type PartyGroupByOutputType = {
   leaderId: string
   storyId: string | null
   status: string
+  sharedChannelId: string | null
+  sharedMessageId: string | null
   createdAt: Date
   updatedAt: Date
   _count: PartyCountAggregateOutputType | null
@@ -246,6 +260,8 @@ export type PartyWhereInput = {
   leaderId?: Prisma.StringFilter<"Party"> | string
   storyId?: Prisma.StringNullableFilter<"Party"> | string | null
   status?: Prisma.StringFilter<"Party"> | string
+  sharedChannelId?: Prisma.StringNullableFilter<"Party"> | string | null
+  sharedMessageId?: Prisma.StringNullableFilter<"Party"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Party"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Party"> | Date | string
   members?: Prisma.PartyMemberListRelationFilter
@@ -259,6 +275,8 @@ export type PartyOrderByWithRelationInput = {
   leaderId?: Prisma.SortOrder
   storyId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  sharedChannelId?: Prisma.SortOrderInput | Prisma.SortOrder
+  sharedMessageId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   members?: Prisma.PartyMemberOrderByRelationAggregateInput
@@ -275,6 +293,8 @@ export type PartyWhereUniqueInput = Prisma.AtLeast<{
   leaderId?: Prisma.StringFilter<"Party"> | string
   storyId?: Prisma.StringNullableFilter<"Party"> | string | null
   status?: Prisma.StringFilter<"Party"> | string
+  sharedChannelId?: Prisma.StringNullableFilter<"Party"> | string | null
+  sharedMessageId?: Prisma.StringNullableFilter<"Party"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Party"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Party"> | Date | string
   members?: Prisma.PartyMemberListRelationFilter
@@ -288,6 +308,8 @@ export type PartyOrderByWithAggregationInput = {
   leaderId?: Prisma.SortOrder
   storyId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  sharedChannelId?: Prisma.SortOrderInput | Prisma.SortOrder
+  sharedMessageId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PartyCountOrderByAggregateInput
@@ -308,6 +330,8 @@ export type PartyScalarWhereWithAggregatesInput = {
   leaderId?: Prisma.StringWithAggregatesFilter<"Party"> | string
   storyId?: Prisma.StringNullableWithAggregatesFilter<"Party"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"Party"> | string
+  sharedChannelId?: Prisma.StringNullableWithAggregatesFilter<"Party"> | string | null
+  sharedMessageId?: Prisma.StringNullableWithAggregatesFilter<"Party"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Party"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Party"> | Date | string
 }
@@ -320,6 +344,8 @@ export type PartyCreateInput = {
   leaderId: string
   storyId?: string | null
   status?: string
+  sharedChannelId?: string | null
+  sharedMessageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.PartyMemberCreateNestedManyWithoutPartyInput
@@ -333,6 +359,8 @@ export type PartyUncheckedCreateInput = {
   leaderId: string
   storyId?: string | null
   status?: string
+  sharedChannelId?: string | null
+  sharedMessageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.PartyMemberUncheckedCreateNestedManyWithoutPartyInput
@@ -346,6 +374,8 @@ export type PartyUpdateInput = {
   leaderId?: Prisma.StringFieldUpdateOperationsInput | string
   storyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedChannelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sharedMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.PartyMemberUpdateManyWithoutPartyNestedInput
@@ -359,6 +389,8 @@ export type PartyUncheckedUpdateInput = {
   leaderId?: Prisma.StringFieldUpdateOperationsInput | string
   storyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedChannelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sharedMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.PartyMemberUncheckedUpdateManyWithoutPartyNestedInput
@@ -372,6 +404,8 @@ export type PartyCreateManyInput = {
   leaderId: string
   storyId?: string | null
   status?: string
+  sharedChannelId?: string | null
+  sharedMessageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -384,6 +418,8 @@ export type PartyUpdateManyMutationInput = {
   leaderId?: Prisma.StringFieldUpdateOperationsInput | string
   storyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedChannelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sharedMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -396,6 +432,8 @@ export type PartyUncheckedUpdateManyInput = {
   leaderId?: Prisma.StringFieldUpdateOperationsInput | string
   storyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedChannelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sharedMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -408,6 +446,8 @@ export type PartyCountOrderByAggregateInput = {
   leaderId?: Prisma.SortOrder
   storyId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  sharedChannelId?: Prisma.SortOrder
+  sharedMessageId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -424,6 +464,8 @@ export type PartyMaxOrderByAggregateInput = {
   leaderId?: Prisma.SortOrder
   storyId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  sharedChannelId?: Prisma.SortOrder
+  sharedMessageId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -436,6 +478,8 @@ export type PartyMinOrderByAggregateInput = {
   leaderId?: Prisma.SortOrder
   storyId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  sharedChannelId?: Prisma.SortOrder
+  sharedMessageId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -471,6 +515,8 @@ export type PartyCreateWithoutMembersInput = {
   leaderId: string
   storyId?: string | null
   status?: string
+  sharedChannelId?: string | null
+  sharedMessageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -483,6 +529,8 @@ export type PartyUncheckedCreateWithoutMembersInput = {
   leaderId: string
   storyId?: string | null
   status?: string
+  sharedChannelId?: string | null
+  sharedMessageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -511,6 +559,8 @@ export type PartyUpdateWithoutMembersInput = {
   leaderId?: Prisma.StringFieldUpdateOperationsInput | string
   storyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedChannelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sharedMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -523,6 +573,8 @@ export type PartyUncheckedUpdateWithoutMembersInput = {
   leaderId?: Prisma.StringFieldUpdateOperationsInput | string
   storyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  sharedChannelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sharedMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -566,6 +618,8 @@ export type PartySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   leaderId?: boolean
   storyId?: boolean
   status?: boolean
+  sharedChannelId?: boolean
+  sharedMessageId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   members?: boolean | Prisma.Party$membersArgs<ExtArgs>
@@ -580,6 +634,8 @@ export type PartySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   leaderId?: boolean
   storyId?: boolean
   status?: boolean
+  sharedChannelId?: boolean
+  sharedMessageId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["party"]>
@@ -592,6 +648,8 @@ export type PartySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   leaderId?: boolean
   storyId?: boolean
   status?: boolean
+  sharedChannelId?: boolean
+  sharedMessageId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["party"]>
@@ -604,11 +662,13 @@ export type PartySelectScalar = {
   leaderId?: boolean
   storyId?: boolean
   status?: boolean
+  sharedChannelId?: boolean
+  sharedMessageId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PartyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "maxSize" | "leaderId" | "storyId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["party"]>
+export type PartyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "maxSize" | "leaderId" | "storyId" | "status" | "sharedChannelId" | "sharedMessageId" | "createdAt" | "updatedAt", ExtArgs["result"]["party"]>
 export type PartyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | Prisma.Party$membersArgs<ExtArgs>
   _count?: boolean | Prisma.PartyCountOutputTypeDefaultArgs<ExtArgs>
@@ -629,6 +689,8 @@ export type $PartyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     leaderId: string
     storyId: string | null
     status: string
+    sharedChannelId: string | null
+    sharedMessageId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["party"]>
@@ -1062,6 +1124,8 @@ export interface PartyFieldRefs {
   readonly leaderId: Prisma.FieldRef<"Party", 'String'>
   readonly storyId: Prisma.FieldRef<"Party", 'String'>
   readonly status: Prisma.FieldRef<"Party", 'String'>
+  readonly sharedChannelId: Prisma.FieldRef<"Party", 'String'>
+  readonly sharedMessageId: Prisma.FieldRef<"Party", 'String'>
   readonly createdAt: Prisma.FieldRef<"Party", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Party", 'DateTime'>
 }

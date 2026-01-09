@@ -85,27 +85,12 @@ export type Vote = Prisma.VoteModel
  */
 export type Timer = Prisma.TimerModel
 /**
- * Model ArcState
+ * Model CombatState
  * 
  */
-export type ArcState = Prisma.ArcStateModel
-/**
- * Model ActiveArc
- * 
- */
-export type ActiveArc = Prisma.ActiveArcModel
-/**
- * Model ArcPlayer
- * 
- */
-export type ArcPlayer = Prisma.ArcPlayerModel
+export type CombatState = Prisma.CombatStateModel
 /**
  * Model NodeVote
  * 
  */
 export type NodeVote = Prisma.NodeVoteModel
-/**
- * Model CombatState
- * 
- */
-export type CombatState = Prisma.CombatStateModel

@@ -54,6 +54,9 @@ model Party {
   leaderId  String
   storyId   String? // The story this party is playing, if started
   status    String   @default("forming") // forming | active | completed
+  // Shared message for party (single screen experience)
+  sharedChannelId String?
+  sharedMessageId String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -115,9 +118,11 @@ model GameSession {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  choiceLocks ChoiceLock[]
-  votes       Vote[]
-  timers      Timer[]
+  choiceLocks   ChoiceLock[]
+  votes         Vote[]
+  timers        Timer[]
+  combatStates  CombatState[]
+  nodeVotes     NodeVote[]
 
   @@index([odId])
 }
@@ -167,53 +172,37 @@ model Timer {
   @@index([expiresAt])
 }
 
-// ==================== ARC STATE ====================
+// ==================== COMBAT STATE ====================
 
-// Arc split state for a party
-model ArcState {
-  id          String   @id @default(cuid())
-  partyId     String   @unique
-  splitNodeId String
-  mergeNodeId String
-  status      String   @default("active") // active | waiting | completed
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+// Persisted combat state for a session/node
+model CombatState {
+  id        String   @id @default(cuid())
+  sessionId String
+  nodeId    String
+  state     Json     @default("{}") // { player_hp, enemies, defending, turn }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  arcs ActiveArc[]
+  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
-  @@index([partyId])
+  @@unique([sessionId, nodeId])
+  @@index([sessionId])
 }
 
-// Individual arc within a split
-model ActiveArc {
-  id            String   @id @default(cuid())
-  arcStateId    String
-  arcId         String   // From story definition
-  label         String
-  entryNodeId   String
-  currentNodeId String
-  status        String   @default("active") // active | waiting_at_merge | completed
-  isSoloArc     Boolean  @default(false)
-  startedAt     DateTime @default(now())
+// ==================== NODE VOTES ====================
 
-  arcState ArcState    @relation(fields: [arcStateId], references: [id], onDelete: Cascade)
-  players  ArcPlayer[]
+// Votes for timed decision nodes (party voting)
+model NodeVote {
+  id        String   @id @default(cuid())
+  sessionId String
+  nodeId    String
+  playerId  String   // Discord user ID of the voter
+  choiceId  String
+  votedAt   DateTime @default(now())
 
-  @@unique([arcStateId, arcId])
-  @@index([arcStateId])
+  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, nodeId, playerId]) // One vote per player per node
+  @@index([sessionId])
+  @@index([sessionId, nodeId])
 }
-
-// Player-to-arc assignment
-model ArcPlayer {
-  id          String   @id @default(cuid())
-  activeArcId String
-  odId        String   // Discord user ID
-  assignedAt  DateTime @default(now())
-
-  activeArc ActiveArc @relation(fields: [activeArcId], references: [id], onDelete: Cascade)
-
-  @@unique([activeArcId, odId])
-  @@index([activeArcId])
-  @@index([odId])
-}
-

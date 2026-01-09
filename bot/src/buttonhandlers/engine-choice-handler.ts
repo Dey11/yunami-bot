@@ -11,7 +11,7 @@ import {
   recordVote,
   isTimerExpired,
 } from '../quickstart/runtime-graph.js';
-import { getPartyByPlayer } from '../quickstart/party-session.js';
+import { getPartyByPlayer, getPartyMessage, setPartyMessage } from '../quickstart/party-session.js';
 import { renderNodeWithContext } from '../engine/dispatcher.js';
 import { recordPlayerInput } from '../engine/outcome-engine.js';
 import type { Choice, TraitMapping } from '../engine/types.js';
@@ -189,16 +189,18 @@ export const handler = {
               };
               if (renderResult.attachment) payload.files = [renderResult.attachment];
               
-              // Update the shared message for all players
-              const activeMsg = getActiveMessage(odId);
-              if (activeMsg) {
+              // Use shared party message
+              const partyMsg = getPartyMessage(partyId!);
+              if (partyMsg) {
                 try {
-                  const channel = await interaction.client.channels.fetch(activeMsg.channelId) as typeof TextChannel.prototype;
-                  const msg = await channel.messages.fetch(activeMsg.messageId);
+                  const channel = await interaction.client.channels.fetch(partyMsg.channelId) as typeof TextChannel.prototype;
+                  const msg = await channel.messages.fetch(partyMsg.messageId);
                   await msg.edit(payload);
-                  // Update all players' active message
+                  // Update party's shared message reference (in case message ID changed)
+                  setPartyMessage(partyId!, partyMsg.channelId, partyMsg.messageId, odId);
+                  // Also update per-player for backwards compatibility
                   for (const p of party.players) {
-                    setActiveMessage(p.odId, activeMsg.channelId, activeMsg.messageId);
+                    setActiveMessage(p.odId, partyMsg.channelId, partyMsg.messageId);
                   }
                 } catch (err) {
                   console.warn('[EarlyVoteComplete] Failed to update shared message:', err);
@@ -267,6 +269,29 @@ export const handler = {
           components: result.components ?? [],
         };
         if (result.attachment) payload.files = [result.attachment];
+        
+        // If in a party, update the shared party message
+        if (party && party.status === 'active' && !inSoloArc) {
+          const partyMsg = getPartyMessage(party.id);
+          if (partyMsg) {
+            try {
+              const { TextChannel } = await import('discord.js');
+              const channel = await interaction.client.channels.fetch(partyMsg.channelId) as typeof TextChannel.prototype;
+              const msg = await channel.messages.fetch(partyMsg.messageId);
+              await msg.edit(payload);
+              // Also update per-player for backwards compatibility
+              for (const p of party.players) {
+                setActiveMessage(p.odId, partyMsg.channelId, partyMsg.messageId);
+              }
+              await interaction.editReply({ content: '✓' }).catch(() => {}); // Acknowledge the interaction
+              return;
+            } catch (err) {
+              console.warn('[ChoiceHandler] Failed to update shared party message:', err);
+            }
+          }
+        }
+        
+        // Fallback: update normally (solo play or solo arc)
         if (choice.ephemeral_confirmation && !inSoloArc) {
           await interaction.message.edit(payload);
           setActiveMessage(

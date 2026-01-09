@@ -13,7 +13,6 @@ import { buildMemoryNode } from './builders/memory-builder.js';
 import { buildCombatNode } from './builders/combat-builder.js';
 import { buildMetaNode } from './builders/meta-builder.js';
 import { buildArcSplitNode } from './builders/arc-split-builder.js';
-import { handleArcMerge } from './arc-merge-handler.js';
 import { checkPreconditions } from './preconditions.js';
 import { executeSideEffects } from './side-effects.js';
 import { getPartyByPlayer } from '../quickstart/party-session.js';
@@ -57,7 +56,7 @@ export async function renderNodeWithContext(
 ): Promise<BuilderResult> {
   switch (node.type) {
     case 'narrative':
-      return buildNarrativeNode(node, nextNodeId);
+      return buildNarrativeNode(node, nextNodeId, { playerId: context.playerId, party: context.party });
     case 'choice':
       return buildChoiceNode(node, context);
     case 'timed':
@@ -86,12 +85,6 @@ export async function renderNodeWithContext(
       });
     case 'arc_split':
       return buildArcSplitNode(node, {
-        playerId: context.playerId,
-        party: context.party ?? null,
-        nodeId: context.nodeId,
-      });
-    case 'arc_merge':
-      return handleArcMerge(node, {
         playerId: context.playerId,
         party: context.party ?? null,
         nodeId: context.nodeId,

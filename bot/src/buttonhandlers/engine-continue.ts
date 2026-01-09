@@ -5,11 +5,9 @@ import {
   setActiveMessage,
   getActiveMessage,
 } from '../quickstart/runtime-graph.js';
-import { getPartyByPlayer, mapRemotePartyToLocal, restorePartySession } from '../quickstart/party-session.js';
+import { getPartyByPlayer, mapRemotePartyToLocal, restorePartySession, getPartyMessage, setPartyMessage } from '../quickstart/party-session.js';
 import { renderNodeWithContext } from '../engine/dispatcher.js';
 import * as api from '../api/client.js';
-import { broadcastMergeUpdate } from '../helpers/party-broadcast.js';
-import { ArcMergeResult } from '../engine/arc-merge-handler.js';
 
 export const handler = {
   id: /^engine:continue:(.+)$/,
@@ -86,45 +84,33 @@ export const handler = {
       components: result.components ?? [],
     };
     if (result.attachment) payload.files = [result.attachment];
+    
+    // If in a party, update the shared party message
+    if (party && party.status === 'active') {
+      const partyMsg = getPartyMessage(party.id);
+      if (partyMsg) {
+        try {
+          const channel = await interaction.client.channels.fetch(partyMsg.channelId) as TextChannel;
+          const msg = await channel.messages.fetch(partyMsg.messageId);
+          await msg.edit(payload);
+          // Also update per-player for backwards compatibility
+          for (const p of party.players) {
+            setActiveMessage(p.odId, partyMsg.channelId, partyMsg.messageId);
+          }
+          return;
+        } catch (err) {
+          console.warn('[EngineContinue] Failed to update shared party message:', err);
+        }
+      }
+    }
+    
+    // Fallback: update normally (solo play or no shared message)
     await interaction.editReply(payload);
     setActiveMessage(
       userId,
       interaction.message.channelId,
       interaction.message.id
     );
-
-    // Handle merge completion: update shared channel message
-    if (nextNode.type === 'arc_merge' && (result as ArcMergeResult).allMerged && party) {
-
-        for (const player of party.players) {
-            const activeMsg = getActiveMessage(player.odId);
-            if (activeMsg) {
-                try {
-                    const channel = await interaction.client.channels.fetch(activeMsg.channelId) as TextChannel;
-                    if (channel) {
-                        const message = await channel.messages.fetch(activeMsg.messageId);
-                        if (message && !message.flags.has(MessageFlags.Ephemeral)) {
-                            // Found a non-ephemeral shared message, update it
-                            await message.edit(payload);
-                            console.log(`[EngineContinue] Updated shared message ${activeMsg.messageId}`);
-                            // Update all players' activeMessage to this shared message
-                            for (const p of party.players) {
-                                setActiveMessage(p.odId, activeMsg.channelId, activeMsg.messageId);
-                            }
-                            break;
-                        }
-                    }
-                } catch (err: any) {
-                    if (err.code !== 10008) {
-                        console.warn(`[EngineContinue] Failed to update shared message:`, err);
-                    }
-                }
-            }
-        }
-        
-        // Also broadcast to other players' ephemeral messages
-        await broadcastMergeUpdate(interaction.client, party, payload, userId);
-    }
   },
 };
 

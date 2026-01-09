@@ -186,6 +186,7 @@ export type CombatStateWhereInput = {
   state?: Prisma.JsonFilter<"CombatState">
   createdAt?: Prisma.DateTimeFilter<"CombatState"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CombatState"> | Date | string
+  session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
 }
 
 export type CombatStateOrderByWithRelationInput = {
@@ -195,6 +196,7 @@ export type CombatStateOrderByWithRelationInput = {
   state?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  session?: Prisma.GameSessionOrderByWithRelationInput
 }
 
 export type CombatStateWhereUniqueInput = Prisma.AtLeast<{
@@ -208,6 +210,7 @@ export type CombatStateWhereUniqueInput = Prisma.AtLeast<{
   state?: Prisma.JsonFilter<"CombatState">
   createdAt?: Prisma.DateTimeFilter<"CombatState"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CombatState"> | Date | string
+  session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
 }, "id" | "sessionId_nodeId">
 
 export type CombatStateOrderByWithAggregationInput = {
@@ -236,29 +239,29 @@ export type CombatStateScalarWhereWithAggregatesInput = {
 
 export type CombatStateCreateInput = {
   id?: string
-  sessionId: string
   nodeId: string
-  state: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  state?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  session: Prisma.GameSessionCreateNestedOneWithoutCombatStatesInput
 }
 
 export type CombatStateUncheckedCreateInput = {
   id?: string
   sessionId: string
   nodeId: string
-  state: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  state?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type CombatStateUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   nodeId?: Prisma.StringFieldUpdateOperationsInput | string
   state?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  session?: Prisma.GameSessionUpdateOneRequiredWithoutCombatStatesNestedInput
 }
 
 export type CombatStateUncheckedUpdateInput = {
@@ -274,14 +277,13 @@ export type CombatStateCreateManyInput = {
   id?: string
   sessionId: string
   nodeId: string
-  state: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  state?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type CombatStateUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   nodeId?: Prisma.StringFieldUpdateOperationsInput | string
   state?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -295,6 +297,16 @@ export type CombatStateUncheckedUpdateManyInput = {
   state?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CombatStateListRelationFilter = {
+  every?: Prisma.CombatStateWhereInput
+  some?: Prisma.CombatStateWhereInput
+  none?: Prisma.CombatStateWhereInput
+}
+
+export type CombatStateOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type CombatStateSessionIdNodeIdCompoundUniqueInput = {
@@ -327,6 +339,134 @@ export type CombatStateMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type CombatStateCreateNestedManyWithoutSessionInput = {
+  create?: Prisma.XOR<Prisma.CombatStateCreateWithoutSessionInput, Prisma.CombatStateUncheckedCreateWithoutSessionInput> | Prisma.CombatStateCreateWithoutSessionInput[] | Prisma.CombatStateUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.CombatStateCreateOrConnectWithoutSessionInput | Prisma.CombatStateCreateOrConnectWithoutSessionInput[]
+  createMany?: Prisma.CombatStateCreateManySessionInputEnvelope
+  connect?: Prisma.CombatStateWhereUniqueInput | Prisma.CombatStateWhereUniqueInput[]
+}
+
+export type CombatStateUncheckedCreateNestedManyWithoutSessionInput = {
+  create?: Prisma.XOR<Prisma.CombatStateCreateWithoutSessionInput, Prisma.CombatStateUncheckedCreateWithoutSessionInput> | Prisma.CombatStateCreateWithoutSessionInput[] | Prisma.CombatStateUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.CombatStateCreateOrConnectWithoutSessionInput | Prisma.CombatStateCreateOrConnectWithoutSessionInput[]
+  createMany?: Prisma.CombatStateCreateManySessionInputEnvelope
+  connect?: Prisma.CombatStateWhereUniqueInput | Prisma.CombatStateWhereUniqueInput[]
+}
+
+export type CombatStateUpdateManyWithoutSessionNestedInput = {
+  create?: Prisma.XOR<Prisma.CombatStateCreateWithoutSessionInput, Prisma.CombatStateUncheckedCreateWithoutSessionInput> | Prisma.CombatStateCreateWithoutSessionInput[] | Prisma.CombatStateUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.CombatStateCreateOrConnectWithoutSessionInput | Prisma.CombatStateCreateOrConnectWithoutSessionInput[]
+  upsert?: Prisma.CombatStateUpsertWithWhereUniqueWithoutSessionInput | Prisma.CombatStateUpsertWithWhereUniqueWithoutSessionInput[]
+  createMany?: Prisma.CombatStateCreateManySessionInputEnvelope
+  set?: Prisma.CombatStateWhereUniqueInput | Prisma.CombatStateWhereUniqueInput[]
+  disconnect?: Prisma.CombatStateWhereUniqueInput | Prisma.CombatStateWhereUniqueInput[]
+  delete?: Prisma.CombatStateWhereUniqueInput | Prisma.CombatStateWhereUniqueInput[]
+  connect?: Prisma.CombatStateWhereUniqueInput | Prisma.CombatStateWhereUniqueInput[]
+  update?: Prisma.CombatStateUpdateWithWhereUniqueWithoutSessionInput | Prisma.CombatStateUpdateWithWhereUniqueWithoutSessionInput[]
+  updateMany?: Prisma.CombatStateUpdateManyWithWhereWithoutSessionInput | Prisma.CombatStateUpdateManyWithWhereWithoutSessionInput[]
+  deleteMany?: Prisma.CombatStateScalarWhereInput | Prisma.CombatStateScalarWhereInput[]
+}
+
+export type CombatStateUncheckedUpdateManyWithoutSessionNestedInput = {
+  create?: Prisma.XOR<Prisma.CombatStateCreateWithoutSessionInput, Prisma.CombatStateUncheckedCreateWithoutSessionInput> | Prisma.CombatStateCreateWithoutSessionInput[] | Prisma.CombatStateUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.CombatStateCreateOrConnectWithoutSessionInput | Prisma.CombatStateCreateOrConnectWithoutSessionInput[]
+  upsert?: Prisma.CombatStateUpsertWithWhereUniqueWithoutSessionInput | Prisma.CombatStateUpsertWithWhereUniqueWithoutSessionInput[]
+  createMany?: Prisma.CombatStateCreateManySessionInputEnvelope
+  set?: Prisma.CombatStateWhereUniqueInput | Prisma.CombatStateWhereUniqueInput[]
+  disconnect?: Prisma.CombatStateWhereUniqueInput | Prisma.CombatStateWhereUniqueInput[]
+  delete?: Prisma.CombatStateWhereUniqueInput | Prisma.CombatStateWhereUniqueInput[]
+  connect?: Prisma.CombatStateWhereUniqueInput | Prisma.CombatStateWhereUniqueInput[]
+  update?: Prisma.CombatStateUpdateWithWhereUniqueWithoutSessionInput | Prisma.CombatStateUpdateWithWhereUniqueWithoutSessionInput[]
+  updateMany?: Prisma.CombatStateUpdateManyWithWhereWithoutSessionInput | Prisma.CombatStateUpdateManyWithWhereWithoutSessionInput[]
+  deleteMany?: Prisma.CombatStateScalarWhereInput | Prisma.CombatStateScalarWhereInput[]
+}
+
+export type CombatStateCreateWithoutSessionInput = {
+  id?: string
+  nodeId: string
+  state?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CombatStateUncheckedCreateWithoutSessionInput = {
+  id?: string
+  nodeId: string
+  state?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CombatStateCreateOrConnectWithoutSessionInput = {
+  where: Prisma.CombatStateWhereUniqueInput
+  create: Prisma.XOR<Prisma.CombatStateCreateWithoutSessionInput, Prisma.CombatStateUncheckedCreateWithoutSessionInput>
+}
+
+export type CombatStateCreateManySessionInputEnvelope = {
+  data: Prisma.CombatStateCreateManySessionInput | Prisma.CombatStateCreateManySessionInput[]
+  skipDuplicates?: boolean
+}
+
+export type CombatStateUpsertWithWhereUniqueWithoutSessionInput = {
+  where: Prisma.CombatStateWhereUniqueInput
+  update: Prisma.XOR<Prisma.CombatStateUpdateWithoutSessionInput, Prisma.CombatStateUncheckedUpdateWithoutSessionInput>
+  create: Prisma.XOR<Prisma.CombatStateCreateWithoutSessionInput, Prisma.CombatStateUncheckedCreateWithoutSessionInput>
+}
+
+export type CombatStateUpdateWithWhereUniqueWithoutSessionInput = {
+  where: Prisma.CombatStateWhereUniqueInput
+  data: Prisma.XOR<Prisma.CombatStateUpdateWithoutSessionInput, Prisma.CombatStateUncheckedUpdateWithoutSessionInput>
+}
+
+export type CombatStateUpdateManyWithWhereWithoutSessionInput = {
+  where: Prisma.CombatStateScalarWhereInput
+  data: Prisma.XOR<Prisma.CombatStateUpdateManyMutationInput, Prisma.CombatStateUncheckedUpdateManyWithoutSessionInput>
+}
+
+export type CombatStateScalarWhereInput = {
+  AND?: Prisma.CombatStateScalarWhereInput | Prisma.CombatStateScalarWhereInput[]
+  OR?: Prisma.CombatStateScalarWhereInput[]
+  NOT?: Prisma.CombatStateScalarWhereInput | Prisma.CombatStateScalarWhereInput[]
+  id?: Prisma.StringFilter<"CombatState"> | string
+  sessionId?: Prisma.StringFilter<"CombatState"> | string
+  nodeId?: Prisma.StringFilter<"CombatState"> | string
+  state?: Prisma.JsonFilter<"CombatState">
+  createdAt?: Prisma.DateTimeFilter<"CombatState"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"CombatState"> | Date | string
+}
+
+export type CombatStateCreateManySessionInput = {
+  id?: string
+  nodeId: string
+  state?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CombatStateUpdateWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CombatStateUncheckedUpdateWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CombatStateUncheckedUpdateManyWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 
 
 export type CombatStateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -336,6 +476,7 @@ export type CombatStateSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   state?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["combatState"]>
 
 export type CombatStateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -345,6 +486,7 @@ export type CombatStateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   state?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["combatState"]>
 
 export type CombatStateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -354,6 +496,7 @@ export type CombatStateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   state?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["combatState"]>
 
 export type CombatStateSelectScalar = {
@@ -366,10 +509,21 @@ export type CombatStateSelectScalar = {
 }
 
 export type CombatStateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "nodeId" | "state" | "createdAt" | "updatedAt", ExtArgs["result"]["combatState"]>
+export type CombatStateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+}
+export type CombatStateIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+}
+export type CombatStateIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+}
 
 export type $CombatStatePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CombatState"
-  objects: {}
+  objects: {
+    session: Prisma.$GameSessionPayload<ExtArgs>
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     sessionId: string
@@ -771,6 +925,7 @@ readonly fields: CombatStateFieldRefs;
  */
 export interface Prisma__CombatStateClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  session<T extends Prisma.GameSessionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameSessionDefaultArgs<ExtArgs>>): Prisma.Prisma__GameSessionClient<runtime.Types.Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -823,6 +978,10 @@ export type CombatStateFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.CombatStateOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CombatStateInclude<ExtArgs> | null
+  /**
    * Filter, which CombatState to fetch.
    */
   where: Prisma.CombatStateWhereUniqueInput
@@ -841,6 +1000,10 @@ export type CombatStateFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exten
    */
   omit?: Prisma.CombatStateOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CombatStateInclude<ExtArgs> | null
+  /**
    * Filter, which CombatState to fetch.
    */
   where: Prisma.CombatStateWhereUniqueInput
@@ -858,6 +1021,10 @@ export type CombatStateFindFirstArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the CombatState
    */
   omit?: Prisma.CombatStateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CombatStateInclude<ExtArgs> | null
   /**
    * Filter, which CombatState to fetch.
    */
@@ -907,6 +1074,10 @@ export type CombatStateFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extens
    */
   omit?: Prisma.CombatStateOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CombatStateInclude<ExtArgs> | null
+  /**
    * Filter, which CombatState to fetch.
    */
   where?: Prisma.CombatStateWhereInput
@@ -955,6 +1126,10 @@ export type CombatStateFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   omit?: Prisma.CombatStateOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CombatStateInclude<ExtArgs> | null
+  /**
    * Filter, which CombatStates to fetch.
    */
   where?: Prisma.CombatStateWhereInput
@@ -998,6 +1173,10 @@ export type CombatStateCreateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.CombatStateOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CombatStateInclude<ExtArgs> | null
+  /**
    * The data needed to create a CombatState.
    */
   data: Prisma.XOR<Prisma.CombatStateCreateInput, Prisma.CombatStateUncheckedCreateInput>
@@ -1031,6 +1210,10 @@ export type CombatStateCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Ext
    */
   data: Prisma.CombatStateCreateManyInput | Prisma.CombatStateCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CombatStateIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1045,6 +1228,10 @@ export type CombatStateUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the CombatState
    */
   omit?: Prisma.CombatStateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CombatStateInclude<ExtArgs> | null
   /**
    * The data needed to update a CombatState.
    */
@@ -1097,6 +1284,10 @@ export type CombatStateUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Ext
    * Limit how many CombatStates to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CombatStateIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1111,6 +1302,10 @@ export type CombatStateUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the CombatState
    */
   omit?: Prisma.CombatStateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CombatStateInclude<ExtArgs> | null
   /**
    * The filter to search for the CombatState to update in case it exists.
    */
@@ -1137,6 +1332,10 @@ export type CombatStateDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the CombatState
    */
   omit?: Prisma.CombatStateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CombatStateInclude<ExtArgs> | null
   /**
    * Filter which CombatState to delete.
    */
@@ -1169,4 +1368,8 @@ export type CombatStateDefaultArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the CombatState
    */
   omit?: Prisma.CombatStateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CombatStateInclude<ExtArgs> | null
 }

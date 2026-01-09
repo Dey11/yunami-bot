@@ -60,11 +60,8 @@ export const ModelName = {
   ChoiceLock: 'ChoiceLock',
   Vote: 'Vote',
   Timer: 'Timer',
-  ArcState: 'ArcState',
-  ActiveArc: 'ActiveArc',
-  ArcPlayer: 'ArcPlayer',
-  NodeVote: 'NodeVote',
-  CombatState: 'CombatState'
+  CombatState: 'CombatState',
+  NodeVote: 'NodeVote'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -122,6 +119,8 @@ export const PartyScalarFieldEnum = {
   leaderId: 'leaderId',
   storyId: 'storyId',
   status: 'status',
+  sharedChannelId: 'sharedChannelId',
+  sharedMessageId: 'sharedMessageId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -212,42 +211,16 @@ export const TimerScalarFieldEnum = {
 export type TimerScalarFieldEnum = (typeof TimerScalarFieldEnum)[keyof typeof TimerScalarFieldEnum]
 
 
-export const ArcStateScalarFieldEnum = {
+export const CombatStateScalarFieldEnum = {
   id: 'id',
-  partyId: 'partyId',
-  splitNodeId: 'splitNodeId',
-  mergeNodeId: 'mergeNodeId',
-  status: 'status',
+  sessionId: 'sessionId',
+  nodeId: 'nodeId',
+  state: 'state',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type ArcStateScalarFieldEnum = (typeof ArcStateScalarFieldEnum)[keyof typeof ArcStateScalarFieldEnum]
-
-
-export const ActiveArcScalarFieldEnum = {
-  id: 'id',
-  arcStateId: 'arcStateId',
-  arcId: 'arcId',
-  label: 'label',
-  entryNodeId: 'entryNodeId',
-  currentNodeId: 'currentNodeId',
-  status: 'status',
-  isSoloArc: 'isSoloArc',
-  startedAt: 'startedAt'
-} as const
-
-export type ActiveArcScalarFieldEnum = (typeof ActiveArcScalarFieldEnum)[keyof typeof ActiveArcScalarFieldEnum]
-
-
-export const ArcPlayerScalarFieldEnum = {
-  id: 'id',
-  activeArcId: 'activeArcId',
-  odId: 'odId',
-  assignedAt: 'assignedAt'
-} as const
-
-export type ArcPlayerScalarFieldEnum = (typeof ArcPlayerScalarFieldEnum)[keyof typeof ArcPlayerScalarFieldEnum]
+export type CombatStateScalarFieldEnum = (typeof CombatStateScalarFieldEnum)[keyof typeof CombatStateScalarFieldEnum]
 
 
 export const NodeVoteScalarFieldEnum = {
@@ -260,18 +233,6 @@ export const NodeVoteScalarFieldEnum = {
 } as const
 
 export type NodeVoteScalarFieldEnum = (typeof NodeVoteScalarFieldEnum)[keyof typeof NodeVoteScalarFieldEnum]
-
-
-export const CombatStateScalarFieldEnum = {
-  id: 'id',
-  sessionId: 'sessionId',
-  nodeId: 'nodeId',
-  state: 'state',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type CombatStateScalarFieldEnum = (typeof CombatStateScalarFieldEnum)[keyof typeof CombatStateScalarFieldEnum]
 
 
 export const SortOrder = {

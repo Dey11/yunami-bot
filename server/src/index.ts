@@ -8,7 +8,6 @@ import {
   storiesRoutes,
   minigameRoutes,
   sessionRoutes,
-  arcRoutes,
 } from "./routes";
 import { errorHandler } from "./middleware/error";
 const app = express();
@@ -25,7 +24,6 @@ app.use("/story", storyRoutes);
 app.use("/stories", storiesRoutes);
 app.use("/minigame", minigameRoutes);
 app.use("/session", sessionRoutes);
-app.use("/arc", arcRoutes);
 app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`🚀 Yunami server running on http://localhost:${PORT}`);

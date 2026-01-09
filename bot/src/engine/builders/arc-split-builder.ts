@@ -6,92 +6,100 @@ import {
 } from 'discord.js';
 import type { StoryNode, BuilderResult, ArcDefinition } from '../types.js';
 import type { MultiplayerSession } from '../../types/party.js';
-import { initArcSplit, getPartyArcState, isPartyInArcSplit } from '../arc-manager.js';
 import { getPartyRole } from '../../quickstart/runtime-graph.js';
+
 export interface ArcSplitContext {
   playerId: string;
   party: MultiplayerSession | null;
   nodeId: string;
 }
+
 export interface ArcSplitResult extends BuilderResult {
-  arcAssignments?: Map<string, string>; 
+  roleInfo?: Map<string, string>; // role -> private info (for DM delivery)
 }
+
+/**
+ * Arc-split in shared screen mode:
+ * - Everyone sees the same screen with role assignments
+ * - DM deliveries send private info to specific roles (via side_effects)
+ * - Only leader can press Continue to proceed
+ * - No separate paths - everyone stays on the same story track
+ */
 export async function buildArcSplitNode(
   node: StoryNode,
   context: ArcSplitContext
 ): Promise<ArcSplitResult> {
   const publicEmbed = node.public_embed;
   const arcSplitConfig = node.type_specific?.arc_split;
-  if (!arcSplitConfig) {
-    throw new Error('arc_split node missing arc_split config');
-  }
+  
   if (!context.party) {
     throw new Error('arc_split requires a party (multiplayer)');
   }
-  
-  // Check if arc state already exists (another player already initialized)
-  let arcState = getPartyArcState(context.party.id);
-  if (!arcState || arcState.splitNodeId !== node.id) {
-    // Only initialize if no state exists OR if this is a different split node
-    const players = context.party.players.map(p => ({
-      odId: p.odId,
-      role: p.role || getPartyRole(p.odId),
-    }));
-    arcState = initArcSplit(
-      context.party.id,
-      node.id,
-      arcSplitConfig,
-      players
-    );
-  }
+
   const embed = new EmbedBuilder()
     .setColor(publicEmbed?.color ?? 0x9b59b6);
+  
   if (publicEmbed?.title) embed.setTitle(publicEmbed.title);
   else if (node.title) embed.setTitle(node.title);
-  else embed.setTitle('⚔️ The Group Splits');
-  let description = publicEmbed?.description || 'Your group is splitting up...';
-  description += '\n\n**Team Assignments:**\n';
-  for (const [arcId, arc] of arcState.activeArcs) {
-    const playerNames = arc.playerIds
-      .map((id: string) => {
-        const player = context.party!.players.find(p => p.odId === id);
-        return player?.username || 'Unknown';
-      })
-      .join(', ');
-    const arcDef = arc.arcDefinition;
-    description += `\n**${arcDef.label}**${arc.isSoloArc ? ' 🎭' : ''}\n`;
-    description += `> ${playerNames}\n`;
-    if (arcDef.description) {
-      description += `> *${arcDef.description}*\n`;
+  else embed.setTitle('📋 Mission Briefing');
+  
+  let description = publicEmbed?.description || 'Your team receives their assignments...';
+  
+  // Show role assignments if arc config exists
+  if (arcSplitConfig?.arcs) {
+    description += '\n\n**Assignments:**\n';
+    
+    for (const arc of arcSplitConfig.arcs) {
+      // Find players with required roles for this arc
+      const assignedPlayers = context.party.players.filter(p => {
+        const playerRole = p.role || getPartyRole(p.odId);
+        return arc.required_roles?.includes(playerRole || '') ?? false;
+      });
+      
+      if (assignedPlayers.length > 0) {
+        const playerNames = assignedPlayers.map(p => p.username).join(', ');
+        description += `\n**${arc.label}**\n`;
+        description += `> ${playerNames}\n`;
+        if (arc.description) {
+          description += `> *${arc.description}*\n`;
+        }
+      }
     }
   }
+  
   embed.setDescription(description);
+  
   if (publicEmbed?.footer) {
     embed.setFooter({ text: publicEmbed.footer });
   } else {
-    embed.setFooter({ text: 'Each team will proceed to their own path' });
+    embed.setFooter({ text: 'Private briefings have been sent to team members' });
   }
-  const arcAssignments = new Map<string, string>();
-  for (const [arcId, arc] of arcState.activeArcs) {
-    for (const playerId of arc.playerIds) {
-      arcAssignments.set(playerId, arc.arcDefinition.entry_node_id);
-    }
+
+  // Only party leader can press Continue
+  const isLeader = context.party.ownerId === context.playerId;
+  
+  // Get next node from the config (merge_node_id is where everyone goes)
+  const nextNodeId = arcSplitConfig?.merge_node_id || node.type_specific?.extra_data?.nextNodeId;
+  
+  let components: ActionRowBuilder<ButtonBuilder>[] | null = null;
+  if (nextNodeId && isLeader) {
+    components = [
+      new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setCustomId(`engine:continue:${nextNodeId}`)
+          .setLabel('Continue')
+          .setEmoji('▶️')
+          .setStyle(ButtonStyle.Primary)
+      ),
+    ];
   }
-  const components = [
-    new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder()
-        .setCustomId(`arc_continue:${node.id}`)
-        .setLabel('Continue')
-        .setEmoji('▶️')
-        .setStyle(ButtonStyle.Primary)
-    ),
-  ];
+
   return {
     embed,
     components,
-    arcAssignments,
   };
 }
+
 export function formatArcInfo(arc: ArcDefinition, playerCount: number): string {
   const parts = [arc.label];
   if (arc.description) {
@@ -103,3 +111,4 @@ export function formatArcInfo(arc: ArcDefinition, playerCount: number): string {
   }
   return parts.join('\n');
 }
+

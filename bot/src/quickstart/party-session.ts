@@ -231,10 +231,16 @@ export function cleanupOldParties(maxAgeMinutes: number = 60): number {
 }
 // Helper to map remote API party to local structure
 export function mapRemotePartyToLocal(remoteParty: any): MultiplayerSession {
+  // Find the leader's Discord ID from members
+  const leaderMember = (remoteParty.members || []).find(
+    (m: any) => m.userId === remoteParty.leaderId
+  );
+  const ownerDiscordId = leaderMember?.user?.discordId || remoteParty.leaderId;
+
   return {
     id: remoteParty.id,
     name: remoteParty.name || 'Party',
-    ownerId: remoteParty.leaderId,
+    ownerId: ownerDiscordId,
     maxSize: remoteParty.maxSize || 4,
     players: (remoteParty.members || []).map((m: any) => ({
       odId: m.user.discordId,
@@ -246,5 +252,40 @@ export function mapRemotePartyToLocal(remoteParty: any): MultiplayerSession {
     status: remoteParty.status,
     inviteCode: remoteParty.code,
     createdAt: new Date(remoteParty.createdAt || Date.now()),
+    // Restore shared message if present
+    sharedMessage: remoteParty.sharedMessageId ? {
+      channelId: remoteParty.sharedChannelId,
+      messageId: remoteParty.sharedMessageId,
+    } : undefined,
   };
+}
+
+// Set the shared message for a party (used for single-screen experience)
+// Also syncs to server for persistence across bot restarts
+export function setPartyMessage(
+  partyId: string,
+  channelId: string,
+  messageId: string,
+  discordId?: string // Discord ID of the player making the call (for auth)
+): void {
+  const party = partySessions.get(partyId);
+  if (party) {
+    party.sharedMessage = { channelId, messageId };
+    
+    // Sync to server for persistence
+    if (discordId) {
+      import('../api/client.js').then(api => {
+        api.setPartySharedMessage(discordId, partyId, channelId, messageId).catch(err => {
+          console.warn('[party-session] Failed to sync shared message to server:', err);
+        });
+      });
+    }
+  }
+}
+
+// Get the shared message for a party
+export function getPartyMessage(
+  partyId: string
+): { channelId: string; messageId: string } | undefined {
+  return partySessions.get(partyId)?.sharedMessage;
 }

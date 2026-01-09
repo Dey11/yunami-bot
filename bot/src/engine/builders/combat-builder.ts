@@ -5,7 +5,7 @@ import {
   EmbedBuilder,
 } from 'discord.js';
 import { buildCanvas } from '../../quickstart/canvas-builder.js';
-import { getCombatState } from '../../quickstart/runtime-graph.js';
+import { getCombatState, getPartyRole } from '../../quickstart/runtime-graph.js';
 import type {
   StoryNode,
   BuilderResult,
@@ -96,7 +96,18 @@ function buildActionButtons(
   const rows: ActionRowBuilder<ButtonBuilder>[] = [];
   let currentRow = new ActionRowBuilder<ButtonBuilder>();
   let buttonCount = 0;
+
+  // Get player's role for filtering
+  const playerRole = getPartyRole(context.playerId);
+
   for (const action of actions) {
+    // If allowed_roles is specified, skip if player's role is not in the list
+    if (action.allowed_roles && action.allowed_roles.length > 0) {
+      if (!playerRole || !action.allowed_roles.includes(playerRole)) {
+        continue; // Hide button for this player
+      }
+    }
+
     if (buttonCount >= 5) {
       rows.push(currentRow);
       currentRow = new ActionRowBuilder<ButtonBuilder>();

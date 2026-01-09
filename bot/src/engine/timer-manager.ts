@@ -5,9 +5,10 @@ import {
   recordChoice,
   getSessionsMap,
   getActiveMessage,
+  setActiveMessage,
   type PlayerSession,
 } from '../quickstart/runtime-graph.js';
-import { getPartyByPlayer } from '../quickstart/party-session.js';
+import { getPartyByPlayer, getPartyMessage } from '../quickstart/party-session.js';
 import {
   markTimedOut,
   getNodeInputs,
@@ -78,7 +79,16 @@ async function defaultExpiryHandler(
   const partyId = party?.id;
   markTimedOut(nodeId, partyId);
   const currentNode = session.storyData?.nodes?.[nodeId];
-  const activeMessage = getActiveMessage(session.odId);
+  
+  // Use shared party message if in multiplayer, otherwise per-player message
+  let activeMessage: { channelId: string; messageId: string } | undefined;
+  if (party && party.status === 'active') {
+    activeMessage = getPartyMessage(party.id);
+  }
+  if (!activeMessage) {
+    activeMessage = getActiveMessage(session.odId);
+  }
+  
   if (!activeMessage) {
     recordChoice(session.odId, `timeout:${nodeId}`, null);
     return;
@@ -122,6 +132,13 @@ async function defaultExpiryHandler(
           payload.files = [renderResult.attachment];
         }
         await msg.edit(payload);
+        
+        // Update all players' active message for backwards compatibility
+        if (party && party.status === 'active') {
+          for (const p of party.players) {
+            setActiveMessage(p.odId, activeMessage.channelId, activeMessage.messageId);
+          }
+        }
         return;
       }
     }
@@ -133,3 +150,4 @@ async function defaultExpiryHandler(
     console.error(`Failed to update message on timer expiry:`, error);
   }
 }
+

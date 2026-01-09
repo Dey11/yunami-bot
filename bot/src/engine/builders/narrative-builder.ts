@@ -6,9 +6,17 @@ import {
 } from 'discord.js';
 import { buildCanvas } from '../../quickstart/canvas-builder.js';
 import type { StoryNode, BuilderResult } from '../types.js';
+import type { MultiplayerSession } from '../../types/party.js';
+
+export interface NarrativeBuilderContext {
+  playerId: string;
+  party?: MultiplayerSession | null;
+}
+
 export async function buildNarrativeNode(
   node: StoryNode,
-  nextNodeId?: string
+  nextNodeId?: string,
+  context?: NarrativeBuilderContext
 ): Promise<BuilderResult> {
   const publicEmbed = node.public_embed;
   const embed = new EmbedBuilder().setColor(publicEmbed?.color ?? 0x0e1015);
@@ -34,7 +42,15 @@ export async function buildNarrativeNode(
   let components: any[] | null = null;
   const resolvedNextId =
     nextNodeId ?? node.type_specific?.extra_data?.nextNodeId;
-  if (resolvedNextId) {
+  
+  // Only party leader can press Continue in multiplayer
+  // In solo play (no party), anyone can continue
+  let isLeader = true;
+  if (context?.party && context.party.status === 'active' && context.playerId) {
+    isLeader = context.party.ownerId === context.playerId;
+  }
+
+  if (resolvedNextId && isLeader) {
     components = [
       new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
@@ -47,3 +63,4 @@ export async function buildNarrativeNode(
   }
   return { embed, components, attachment: attachment ?? undefined };
 }
+

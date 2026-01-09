@@ -8,6 +8,7 @@ import { buildCanvas } from '../../quickstart/canvas-builder.js';
 import {
   getMemoryAttempts,
   getMemoryHintIndex,
+  getPartyRole,
 } from '../../quickstart/runtime-graph.js';
 import type { StoryNode, BuilderResult, MemoryConfig } from '../types.js';
 export interface MemoryBuilderContext {
@@ -64,27 +65,39 @@ export async function buildMemoryNode(
     embed.setImage(`attachment://${attachment.name}`);
   }
   const components: ActionRowBuilder<ButtonBuilder>[] = [];
-  const buttonRow = new ActionRowBuilder<ButtonBuilder>();
-  buttonRow.addComponents(
-    new ButtonBuilder()
-      .setCustomId(`memory:${context.nodeId}:answer`)
-      .setLabel('Answer')
-      .setEmoji('✏️')
-      .setStyle(ButtonStyle.Primary)
-  );
-  if (memory?.hints?.length) {
-    const hintIndex = getMemoryHintIndex(context.playerId, context.nodeId);
-    const hintsRemaining = memory.hints.length - hintIndex;
+
+  // Get player's role for filtering
+  const playerRole = getPartyRole(context.playerId);
+
+  // If allowed_roles is specified, check if player can interact
+  const canInteract = !memory?.allowed_roles || 
+    memory.allowed_roles.length === 0 ||
+    (playerRole && memory.allowed_roles.includes(playerRole));
+
+  if (canInteract) {
+    const buttonRow = new ActionRowBuilder<ButtonBuilder>();
     buttonRow.addComponents(
       new ButtonBuilder()
-        .setCustomId(`memory:${context.nodeId}:hint`)
-        .setLabel(`Hint (${hintsRemaining} left)`)
-        .setEmoji('💡')
-        .setStyle(ButtonStyle.Secondary)
-        .setDisabled(hintsRemaining <= 0)
+        .setCustomId(`memory:${context.nodeId}:answer`)
+        .setLabel('Answer')
+        .setEmoji('✏️')
+        .setStyle(ButtonStyle.Primary)
     );
+    if (memory?.hints?.length) {
+      const hintIndex = getMemoryHintIndex(context.playerId, context.nodeId);
+      const hintsRemaining = memory.hints.length - hintIndex;
+      buttonRow.addComponents(
+        new ButtonBuilder()
+          .setCustomId(`memory:${context.nodeId}:hint`)
+          .setLabel(`Hint (${hintsRemaining} left)`)
+          .setEmoji('💡')
+          .setStyle(ButtonStyle.Secondary)
+          .setDisabled(hintsRemaining <= 0)
+      );
+    }
+    components.push(buttonRow);
   }
-  components.push(buttonRow);
+
   return {
     embed,
     components: components.length > 0 ? components : null,

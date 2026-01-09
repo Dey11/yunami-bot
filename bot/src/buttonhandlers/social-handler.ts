@@ -1,4 +1,4 @@
-import { MessageFlags } from 'discord.js';
+import { MessageFlags, TextChannel } from 'discord.js';
 import {
   getSession,
   recordChoice,
@@ -6,7 +6,7 @@ import {
   modifyResource,
   setActiveMessage,
 } from '../quickstart/runtime-graph.js';
-import { getPartyByPlayer } from '../quickstart/party-session.js';
+import { getPartyByPlayer, getPartyMessage } from '../quickstart/party-session.js';
 import { renderNodeWithContext } from '../engine/dispatcher.js';
 import type { SocialApproach } from '../engine/types.js';
 export const handler = {
@@ -101,11 +101,29 @@ export const handler = {
           payload.files = [result.attachment];
         }
         await interaction.editReply(payload);
-        setActiveMessage(
-          odId,
-          interaction.message.channelId,
-          interaction.message.id
-        );
+
+        // If in party, update shared party message
+        if (party && party.status === 'active') {
+          const partyMsg = getPartyMessage(party.id);
+          if (partyMsg) {
+            try {
+              const channel = await interaction.client.channels.fetch(partyMsg.channelId) as TextChannel;
+              const msg = await channel.messages.fetch(partyMsg.messageId);
+              await msg.edit(payload);
+              for (const p of party.players) {
+                setActiveMessage(p.odId, partyMsg.channelId, partyMsg.messageId);
+              }
+            } catch (err) {
+              console.warn('[SocialHandler] Failed to update shared party message:', err);
+            }
+          }
+        } else {
+          setActiveMessage(
+            odId,
+            interaction.message.channelId,
+            interaction.message.id
+          );
+        }
         return;
       }
     }

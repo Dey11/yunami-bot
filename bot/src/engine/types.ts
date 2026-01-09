@@ -27,6 +27,7 @@ export interface Choice {
   cost?: Record<string, number>;
   ephemeral_confirmation?: boolean;
   nextNodeId?: string | null;
+  allowed_roles?: string[];
 }
 export interface SelectOption {
   id: string;
@@ -60,6 +61,7 @@ export interface SequenceStep {
   id: string;
   label: string;
   emoji?: string;
+  allowed_roles?: string[];
 }
 export interface SequenceConfig {
   steps: SequenceStep[];
@@ -78,6 +80,7 @@ export interface SocialApproach {
   success_chance?: number;
   on_success?: string;
   on_failure?: string;
+  allowed_roles?: string[];
 }
 export interface SocialConfig {
   npc_name: string;
@@ -95,6 +98,7 @@ export interface MemoryConfig {
   max_attempts?: number;
   on_success?: string;
   on_failure?: string;
+  allowed_roles?: string[];
 }
 export interface CombatAction {
   id: string;
@@ -105,6 +109,7 @@ export interface CombatAction {
   defense_bonus?: number;
   dodge_chance?: number;
   cost?: Record<string, number>;
+  allowed_roles?: string[];
 }
 export interface CombatEnemy {
   id: string;
@@ -191,6 +196,7 @@ export interface StoryNode {
   preconditions?: Preconditions;
   side_effects_on_enter?: SideEffectsOnEnter;
   ui_hints?: UIHints;
+  allowed_roles?: string[];
 }
 export interface BuilderResult {
   embed: any;

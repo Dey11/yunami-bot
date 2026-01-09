@@ -6,7 +6,7 @@ import {
   EmbedBuilder,
   MessageFlags,
 } from 'discord.js';
-import { getPartyByPlayer, mapRemotePartyToLocal } from '../../quickstart/party-session.js';
+import { getPartyByPlayer, mapRemotePartyToLocal, restorePartySession } from '../../quickstart/party-session.js';
 import { buildRoleSelectionRow } from '../../buttonhandlers/party-role-handler.js';
 import * as api from '../../api/client.js';
 
@@ -29,6 +29,8 @@ export async function execute(interaction: any) {
      if (remoteParty && (remoteParty.status === 'waiting' || remoteParty.status === 'forming')) {
         console.log('[party-lobby] Found remote party:', remoteParty.id);
         party = mapRemotePartyToLocal(remoteParty) as any;
+        // Save to local cache so ready status persists
+        restorePartySession(party!);
      } else {
         console.log('[party-lobby] No valid remote party found');
      }

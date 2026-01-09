@@ -5,7 +5,7 @@ import {
   EmbedBuilder,
 } from 'discord.js';
 import { buildCanvas } from '../../quickstart/canvas-builder.js';
-import { getResource } from '../../quickstart/runtime-graph.js';
+import { getResource, getPartyRole } from '../../quickstart/runtime-graph.js';
 import type { StoryNode, BuilderResult, SocialApproach } from '../types.js';
 export interface SocialBuilderContext {
   playerId: string;
@@ -82,7 +82,18 @@ function buildApproachButtons(
   let currentRow = new ActionRowBuilder<ButtonBuilder>();
   let buttonCount = 0;
   const currentRep = getResource(context.playerId, reputationStat);
+
+  // Get player's role for filtering
+  const playerRole = getPartyRole(context.playerId);
+
   for (const approach of approaches) {
+    // If allowed_roles is specified, skip if player's role is not in the list
+    if (approach.allowed_roles && approach.allowed_roles.length > 0) {
+      if (!playerRole || !approach.allowed_roles.includes(playerRole)) {
+        continue; // Hide button for this player
+      }
+    }
+
     if (buttonCount >= 5) {
       rows.push(currentRow);
       currentRow = new ActionRowBuilder<ButtonBuilder>();

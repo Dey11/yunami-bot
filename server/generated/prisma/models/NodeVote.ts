@@ -190,6 +190,7 @@ export type NodeVoteWhereInput = {
   playerId?: Prisma.StringFilter<"NodeVote"> | string
   choiceId?: Prisma.StringFilter<"NodeVote"> | string
   votedAt?: Prisma.DateTimeFilter<"NodeVote"> | Date | string
+  session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
 }
 
 export type NodeVoteOrderByWithRelationInput = {
@@ -199,6 +200,7 @@ export type NodeVoteOrderByWithRelationInput = {
   playerId?: Prisma.SortOrder
   choiceId?: Prisma.SortOrder
   votedAt?: Prisma.SortOrder
+  session?: Prisma.GameSessionOrderByWithRelationInput
 }
 
 export type NodeVoteWhereUniqueInput = Prisma.AtLeast<{
@@ -212,6 +214,7 @@ export type NodeVoteWhereUniqueInput = Prisma.AtLeast<{
   playerId?: Prisma.StringFilter<"NodeVote"> | string
   choiceId?: Prisma.StringFilter<"NodeVote"> | string
   votedAt?: Prisma.DateTimeFilter<"NodeVote"> | Date | string
+  session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
 }, "id" | "sessionId_nodeId_playerId">
 
 export type NodeVoteOrderByWithAggregationInput = {
@@ -240,11 +243,11 @@ export type NodeVoteScalarWhereWithAggregatesInput = {
 
 export type NodeVoteCreateInput = {
   id?: string
-  sessionId: string
   nodeId: string
   playerId: string
   choiceId: string
   votedAt?: Date | string
+  session: Prisma.GameSessionCreateNestedOneWithoutNodeVotesInput
 }
 
 export type NodeVoteUncheckedCreateInput = {
@@ -258,11 +261,11 @@ export type NodeVoteUncheckedCreateInput = {
 
 export type NodeVoteUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   nodeId?: Prisma.StringFieldUpdateOperationsInput | string
   playerId?: Prisma.StringFieldUpdateOperationsInput | string
   choiceId?: Prisma.StringFieldUpdateOperationsInput | string
   votedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  session?: Prisma.GameSessionUpdateOneRequiredWithoutNodeVotesNestedInput
 }
 
 export type NodeVoteUncheckedUpdateInput = {
@@ -285,7 +288,6 @@ export type NodeVoteCreateManyInput = {
 
 export type NodeVoteUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   nodeId?: Prisma.StringFieldUpdateOperationsInput | string
   playerId?: Prisma.StringFieldUpdateOperationsInput | string
   choiceId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -299,6 +301,16 @@ export type NodeVoteUncheckedUpdateManyInput = {
   playerId?: Prisma.StringFieldUpdateOperationsInput | string
   choiceId?: Prisma.StringFieldUpdateOperationsInput | string
   votedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type NodeVoteListRelationFilter = {
+  every?: Prisma.NodeVoteWhereInput
+  some?: Prisma.NodeVoteWhereInput
+  none?: Prisma.NodeVoteWhereInput
+}
+
+export type NodeVoteOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type NodeVoteSessionIdNodeIdPlayerIdCompoundUniqueInput = {
@@ -334,6 +346,134 @@ export type NodeVoteMinOrderByAggregateInput = {
   votedAt?: Prisma.SortOrder
 }
 
+export type NodeVoteCreateNestedManyWithoutSessionInput = {
+  create?: Prisma.XOR<Prisma.NodeVoteCreateWithoutSessionInput, Prisma.NodeVoteUncheckedCreateWithoutSessionInput> | Prisma.NodeVoteCreateWithoutSessionInput[] | Prisma.NodeVoteUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.NodeVoteCreateOrConnectWithoutSessionInput | Prisma.NodeVoteCreateOrConnectWithoutSessionInput[]
+  createMany?: Prisma.NodeVoteCreateManySessionInputEnvelope
+  connect?: Prisma.NodeVoteWhereUniqueInput | Prisma.NodeVoteWhereUniqueInput[]
+}
+
+export type NodeVoteUncheckedCreateNestedManyWithoutSessionInput = {
+  create?: Prisma.XOR<Prisma.NodeVoteCreateWithoutSessionInput, Prisma.NodeVoteUncheckedCreateWithoutSessionInput> | Prisma.NodeVoteCreateWithoutSessionInput[] | Prisma.NodeVoteUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.NodeVoteCreateOrConnectWithoutSessionInput | Prisma.NodeVoteCreateOrConnectWithoutSessionInput[]
+  createMany?: Prisma.NodeVoteCreateManySessionInputEnvelope
+  connect?: Prisma.NodeVoteWhereUniqueInput | Prisma.NodeVoteWhereUniqueInput[]
+}
+
+export type NodeVoteUpdateManyWithoutSessionNestedInput = {
+  create?: Prisma.XOR<Prisma.NodeVoteCreateWithoutSessionInput, Prisma.NodeVoteUncheckedCreateWithoutSessionInput> | Prisma.NodeVoteCreateWithoutSessionInput[] | Prisma.NodeVoteUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.NodeVoteCreateOrConnectWithoutSessionInput | Prisma.NodeVoteCreateOrConnectWithoutSessionInput[]
+  upsert?: Prisma.NodeVoteUpsertWithWhereUniqueWithoutSessionInput | Prisma.NodeVoteUpsertWithWhereUniqueWithoutSessionInput[]
+  createMany?: Prisma.NodeVoteCreateManySessionInputEnvelope
+  set?: Prisma.NodeVoteWhereUniqueInput | Prisma.NodeVoteWhereUniqueInput[]
+  disconnect?: Prisma.NodeVoteWhereUniqueInput | Prisma.NodeVoteWhereUniqueInput[]
+  delete?: Prisma.NodeVoteWhereUniqueInput | Prisma.NodeVoteWhereUniqueInput[]
+  connect?: Prisma.NodeVoteWhereUniqueInput | Prisma.NodeVoteWhereUniqueInput[]
+  update?: Prisma.NodeVoteUpdateWithWhereUniqueWithoutSessionInput | Prisma.NodeVoteUpdateWithWhereUniqueWithoutSessionInput[]
+  updateMany?: Prisma.NodeVoteUpdateManyWithWhereWithoutSessionInput | Prisma.NodeVoteUpdateManyWithWhereWithoutSessionInput[]
+  deleteMany?: Prisma.NodeVoteScalarWhereInput | Prisma.NodeVoteScalarWhereInput[]
+}
+
+export type NodeVoteUncheckedUpdateManyWithoutSessionNestedInput = {
+  create?: Prisma.XOR<Prisma.NodeVoteCreateWithoutSessionInput, Prisma.NodeVoteUncheckedCreateWithoutSessionInput> | Prisma.NodeVoteCreateWithoutSessionInput[] | Prisma.NodeVoteUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.NodeVoteCreateOrConnectWithoutSessionInput | Prisma.NodeVoteCreateOrConnectWithoutSessionInput[]
+  upsert?: Prisma.NodeVoteUpsertWithWhereUniqueWithoutSessionInput | Prisma.NodeVoteUpsertWithWhereUniqueWithoutSessionInput[]
+  createMany?: Prisma.NodeVoteCreateManySessionInputEnvelope
+  set?: Prisma.NodeVoteWhereUniqueInput | Prisma.NodeVoteWhereUniqueInput[]
+  disconnect?: Prisma.NodeVoteWhereUniqueInput | Prisma.NodeVoteWhereUniqueInput[]
+  delete?: Prisma.NodeVoteWhereUniqueInput | Prisma.NodeVoteWhereUniqueInput[]
+  connect?: Prisma.NodeVoteWhereUniqueInput | Prisma.NodeVoteWhereUniqueInput[]
+  update?: Prisma.NodeVoteUpdateWithWhereUniqueWithoutSessionInput | Prisma.NodeVoteUpdateWithWhereUniqueWithoutSessionInput[]
+  updateMany?: Prisma.NodeVoteUpdateManyWithWhereWithoutSessionInput | Prisma.NodeVoteUpdateManyWithWhereWithoutSessionInput[]
+  deleteMany?: Prisma.NodeVoteScalarWhereInput | Prisma.NodeVoteScalarWhereInput[]
+}
+
+export type NodeVoteCreateWithoutSessionInput = {
+  id?: string
+  nodeId: string
+  playerId: string
+  choiceId: string
+  votedAt?: Date | string
+}
+
+export type NodeVoteUncheckedCreateWithoutSessionInput = {
+  id?: string
+  nodeId: string
+  playerId: string
+  choiceId: string
+  votedAt?: Date | string
+}
+
+export type NodeVoteCreateOrConnectWithoutSessionInput = {
+  where: Prisma.NodeVoteWhereUniqueInput
+  create: Prisma.XOR<Prisma.NodeVoteCreateWithoutSessionInput, Prisma.NodeVoteUncheckedCreateWithoutSessionInput>
+}
+
+export type NodeVoteCreateManySessionInputEnvelope = {
+  data: Prisma.NodeVoteCreateManySessionInput | Prisma.NodeVoteCreateManySessionInput[]
+  skipDuplicates?: boolean
+}
+
+export type NodeVoteUpsertWithWhereUniqueWithoutSessionInput = {
+  where: Prisma.NodeVoteWhereUniqueInput
+  update: Prisma.XOR<Prisma.NodeVoteUpdateWithoutSessionInput, Prisma.NodeVoteUncheckedUpdateWithoutSessionInput>
+  create: Prisma.XOR<Prisma.NodeVoteCreateWithoutSessionInput, Prisma.NodeVoteUncheckedCreateWithoutSessionInput>
+}
+
+export type NodeVoteUpdateWithWhereUniqueWithoutSessionInput = {
+  where: Prisma.NodeVoteWhereUniqueInput
+  data: Prisma.XOR<Prisma.NodeVoteUpdateWithoutSessionInput, Prisma.NodeVoteUncheckedUpdateWithoutSessionInput>
+}
+
+export type NodeVoteUpdateManyWithWhereWithoutSessionInput = {
+  where: Prisma.NodeVoteScalarWhereInput
+  data: Prisma.XOR<Prisma.NodeVoteUpdateManyMutationInput, Prisma.NodeVoteUncheckedUpdateManyWithoutSessionInput>
+}
+
+export type NodeVoteScalarWhereInput = {
+  AND?: Prisma.NodeVoteScalarWhereInput | Prisma.NodeVoteScalarWhereInput[]
+  OR?: Prisma.NodeVoteScalarWhereInput[]
+  NOT?: Prisma.NodeVoteScalarWhereInput | Prisma.NodeVoteScalarWhereInput[]
+  id?: Prisma.StringFilter<"NodeVote"> | string
+  sessionId?: Prisma.StringFilter<"NodeVote"> | string
+  nodeId?: Prisma.StringFilter<"NodeVote"> | string
+  playerId?: Prisma.StringFilter<"NodeVote"> | string
+  choiceId?: Prisma.StringFilter<"NodeVote"> | string
+  votedAt?: Prisma.DateTimeFilter<"NodeVote"> | Date | string
+}
+
+export type NodeVoteCreateManySessionInput = {
+  id?: string
+  nodeId: string
+  playerId: string
+  choiceId: string
+  votedAt?: Date | string
+}
+
+export type NodeVoteUpdateWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  playerId?: Prisma.StringFieldUpdateOperationsInput | string
+  choiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  votedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type NodeVoteUncheckedUpdateWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  playerId?: Prisma.StringFieldUpdateOperationsInput | string
+  choiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  votedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type NodeVoteUncheckedUpdateManyWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  playerId?: Prisma.StringFieldUpdateOperationsInput | string
+  choiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  votedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 
 
 export type NodeVoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -343,6 +483,7 @@ export type NodeVoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   playerId?: boolean
   choiceId?: boolean
   votedAt?: boolean
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["nodeVote"]>
 
 export type NodeVoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -352,6 +493,7 @@ export type NodeVoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   playerId?: boolean
   choiceId?: boolean
   votedAt?: boolean
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["nodeVote"]>
 
 export type NodeVoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -361,6 +503,7 @@ export type NodeVoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   playerId?: boolean
   choiceId?: boolean
   votedAt?: boolean
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["nodeVote"]>
 
 export type NodeVoteSelectScalar = {
@@ -373,10 +516,21 @@ export type NodeVoteSelectScalar = {
 }
 
 export type NodeVoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "nodeId" | "playerId" | "choiceId" | "votedAt", ExtArgs["result"]["nodeVote"]>
+export type NodeVoteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+}
+export type NodeVoteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+}
+export type NodeVoteIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+}
 
 export type $NodeVotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "NodeVote"
-  objects: {}
+  objects: {
+    session: Prisma.$GameSessionPayload<ExtArgs>
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     sessionId: string
@@ -778,6 +932,7 @@ readonly fields: NodeVoteFieldRefs;
  */
 export interface Prisma__NodeVoteClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  session<T extends Prisma.GameSessionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameSessionDefaultArgs<ExtArgs>>): Prisma.Prisma__GameSessionClient<runtime.Types.Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -830,6 +985,10 @@ export type NodeVoteFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.NodeVoteOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NodeVoteInclude<ExtArgs> | null
+  /**
    * Filter, which NodeVote to fetch.
    */
   where: Prisma.NodeVoteWhereUniqueInput
@@ -848,6 +1007,10 @@ export type NodeVoteFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensio
    */
   omit?: Prisma.NodeVoteOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NodeVoteInclude<ExtArgs> | null
+  /**
    * Filter, which NodeVote to fetch.
    */
   where: Prisma.NodeVoteWhereUniqueInput
@@ -865,6 +1028,10 @@ export type NodeVoteFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the NodeVote
    */
   omit?: Prisma.NodeVoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NodeVoteInclude<ExtArgs> | null
   /**
    * Filter, which NodeVote to fetch.
    */
@@ -914,6 +1081,10 @@ export type NodeVoteFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extension
    */
   omit?: Prisma.NodeVoteOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NodeVoteInclude<ExtArgs> | null
+  /**
    * Filter, which NodeVote to fetch.
    */
   where?: Prisma.NodeVoteWhereInput
@@ -962,6 +1133,10 @@ export type NodeVoteFindManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.NodeVoteOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NodeVoteInclude<ExtArgs> | null
+  /**
    * Filter, which NodeVotes to fetch.
    */
   where?: Prisma.NodeVoteWhereInput
@@ -1005,6 +1180,10 @@ export type NodeVoteCreateArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   omit?: Prisma.NodeVoteOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NodeVoteInclude<ExtArgs> | null
+  /**
    * The data needed to create a NodeVote.
    */
   data: Prisma.XOR<Prisma.NodeVoteCreateInput, Prisma.NodeVoteUncheckedCreateInput>
@@ -1038,6 +1217,10 @@ export type NodeVoteCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    */
   data: Prisma.NodeVoteCreateManyInput | Prisma.NodeVoteCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NodeVoteIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1052,6 +1235,10 @@ export type NodeVoteUpdateArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the NodeVote
    */
   omit?: Prisma.NodeVoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NodeVoteInclude<ExtArgs> | null
   /**
    * The data needed to update a NodeVote.
    */
@@ -1104,6 +1291,10 @@ export type NodeVoteUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    * Limit how many NodeVotes to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NodeVoteIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1118,6 +1309,10 @@ export type NodeVoteUpsertArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the NodeVote
    */
   omit?: Prisma.NodeVoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NodeVoteInclude<ExtArgs> | null
   /**
    * The filter to search for the NodeVote to update in case it exists.
    */
@@ -1144,6 +1339,10 @@ export type NodeVoteDeleteArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the NodeVote
    */
   omit?: Prisma.NodeVoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NodeVoteInclude<ExtArgs> | null
   /**
    * Filter which NodeVote to delete.
    */
@@ -1176,4 +1375,8 @@ export type NodeVoteDefaultArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Omit specific fields from the NodeVote
    */
   omit?: Prisma.NodeVoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NodeVoteInclude<ExtArgs> | null
 }
