@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  bot:
+    build: ./bot
+    container_name: yunami-bot
+    restart: unless-stopped
+    network_mode: host
+    env_file:
+      - ./bot/.env
+    depends_on:
+      - server
+
+  server:
+    build: ./server
+    container_name: yunami-server
+    restart: unless-stopped
+    network_mode: host
+    env_file:
+      - ./server/.env
