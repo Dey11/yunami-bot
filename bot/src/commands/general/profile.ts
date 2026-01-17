@@ -10,7 +10,7 @@ import {
   SKRSContext2D,
 } from '@napi-rs/canvas';
 import path from 'path';
-import { pathToFileURL } from 'url';
+import fs from 'fs';
 import { ProfileData } from '../../types/profiledata.js';
 import * as api from '../../api/client.js';
 const fontsPath = path.resolve(process.cwd(), 'assets', 'fonts');
@@ -194,7 +194,8 @@ export async function execute(interaction: CommandInteraction) {
   }
   const profilePath = path.resolve(process.cwd(), 'assets', 'profile.png');
   try {
-    const profileImage = await loadImage(pathToFileURL(profilePath).href);
+    const profileBuffer = fs.readFileSync(profilePath);
+    const profileImage = await loadImage(profileBuffer);
     const canvas = createCanvas(profileImage.width, profileImage.height);
     const ctx = canvas.getContext('2d');
     ctx.drawImage(profileImage, 0, 0);
