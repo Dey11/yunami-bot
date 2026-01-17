@@ -1,13 +1,10 @@
 # Bun runtime for server
 FROM oven/bun:1 AS base
 WORKDIR /app
+COPY . .
 
 # Install dependencies
-COPY package.json ./
 RUN bun install
-
-# Copy source files
-COPY . .
 
 # Generate Prisma client
 RUN bunx prisma generate

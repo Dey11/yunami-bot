@@ -2,12 +2,9 @@
 FROM oven/bun:1 AS builder
 WORKDIR /app
 
-# Install dependencies
-COPY package.json ./
-RUN bun install
-
 # Copy source and build
 COPY . .
+RUN bun install
 RUN bun run build
 
 # Production stage
