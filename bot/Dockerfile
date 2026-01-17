@@ -1,14 +1,17 @@
 # Build stage (ARM64 compatible)
-FROM --platform=linux/arm64 oven/bun:1-alpine AS builder
+FROM oven/bun:1-debian AS builder
 WORKDIR /app
+
+# Copy package files first for better caching
+COPY package.json bun.lock* ./
+RUN bun install || bun install --no-save
 
 # Copy source and build
 COPY . .
-RUN bun install
 RUN bun run build
 
 # Production stage
-FROM --platform=linux/arm64 node:20-alpine
+FROM node:20-slim
 WORKDIR /app
 
 # Copy built files and dependencies
