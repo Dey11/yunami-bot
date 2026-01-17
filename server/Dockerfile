@@ -1,5 +1,5 @@
-# Bun runtime for server
-FROM oven/bun:1 AS base
+# Bun runtime for server (ARM64 compatible)
+FROM --platform=linux/arm64 oven/bun:1-alpine AS base
 WORKDIR /app
 COPY . .
 
