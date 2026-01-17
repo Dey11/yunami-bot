@@ -27,6 +27,7 @@ services:
     network_mode: host
     environment:
       - DATABASE_URL
+      - NODE_ENV
 
 networks:
   default:
